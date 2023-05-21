@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IEC60870-5-104-simulator.API", "IEC60870-5-104-simulator.API\IEC60870-5-104-simulator.API.csproj", "{43A62A4A-A8FB-43B4-A599-FDF4C4A9384B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEC60870-5-104-simulator.API", "IEC60870-5-104-simulator.API\IEC60870-5-104-simulator.API.csproj", "{43A62A4A-A8FB-43B4-A599-FDF4C4A9384B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IEC60870-5-104-simulator.Infrastructure", "IEC60870-5-104-simulator.Infrastructure\IEC60870-5-104-simulator.Infrastructure.csproj", "{40503255-6AA1-4342-82C3-DC10F4FD8822}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{43A62A4A-A8FB-43B4-A599-FDF4C4A9384B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43A62A4A-A8FB-43B4-A599-FDF4C4A9384B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43A62A4A-A8FB-43B4-A599-FDF4C4A9384B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40503255-6AA1-4342-82C3-DC10F4FD8822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40503255-6AA1-4342-82C3-DC10F4FD8822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40503255-6AA1-4342-82C3-DC10F4FD8822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40503255-6AA1-4342-82C3-DC10F4FD8822}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

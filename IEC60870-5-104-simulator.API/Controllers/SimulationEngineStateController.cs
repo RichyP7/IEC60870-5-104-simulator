@@ -23,7 +23,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
         {
             return new OkResult();
         }
-        [HttpPost(Name = "Start")]
+        [HttpPost(Name = "commands")]
         public async Task<IActionResult> EngineCommand(ENGINE_COMMAND command, CancellationToken cs)
         {
             try
@@ -34,7 +34,8 @@ namespace IEC60870_5_104_simulator.API.Controllers
                 }
                 else if (command.Equals(ENGINE_COMMAND.Stop))
                 {
-                    await simulationEngine.StopAsync(cs);
+                    CancellationToken cancel = new CancellationToken(true);
+                    await simulationEngine.StopAsync(cancel);
                 }
                 else
                     return new BadRequestObjectResult("Supply valid command");
