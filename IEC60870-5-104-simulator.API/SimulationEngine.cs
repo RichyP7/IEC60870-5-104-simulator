@@ -6,9 +6,9 @@ namespace IEC60870_5_104_simulator.Service
     {
         private readonly ILogger<SimulationEngine> _logger;
 
-        private IIeC104ServerRunner iecService { get; }
+        private IIec104Service iecService { get; }
 
-        public SimulationEngine(ILogger<SimulationEngine> logger, IIeC104ServerRunner iecservice)
+        public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice)
         {
             _logger = logger;
             this.iecService = iecservice;
@@ -38,7 +38,6 @@ namespace IEC60870_5_104_simulator.Service
              _logger.LogInformation("Started worker at: {time}", DateTimeOffset.Now);
             await Task.Delay(1000, cancellationToken);
             await base.StartAsync(cancellationToken);
-            await this.iecService.Start();
             return;
             
         }

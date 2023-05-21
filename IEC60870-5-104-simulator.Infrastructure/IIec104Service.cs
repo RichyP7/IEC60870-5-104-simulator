@@ -1,6 +1,6 @@
 ﻿namespace IEC60870_5_104_simulator.Infrastructure
 {
-    public interface IIeC104ServerRunner
+    public interface IIec104Service
     {
         Task SimulateValues();
         Task Start();

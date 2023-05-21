@@ -2,16 +2,16 @@
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
-    public class IeC104ServerRunner : IIeC104ServerRunner
+    public class Iec104Service : IIec104Service
     {
         private lib60870.CS104.Server server;
-        public IeC104ServerRunner()
-        {
-            server = new();
-            server.DebugOutput = false;
-            server.MaxQueueSize = 100;
-            server.SetLocalPort(2404);
 
+        public IInformationObjectFactory factory { get; }
+
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory)
+        {
+            this.server = server;
+            this.factory = factory;
         }
 
         public Task Start()
@@ -27,9 +27,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Task SimulateValues()
         {
-            SinglePointInformation spi = new SinglePointInformation(1000, true, new QualityDescriptor());
+            var infoObject = factory.GetInformationObject("any");        
             ASDU newAsdu = CreateAsdu();
-            newAsdu.AddInformationObject(spi);
+            newAsdu.AddInformationObject(infoObject);
             server.EnqueueASDU(newAsdu);
             return Task.CompletedTask;
         }
