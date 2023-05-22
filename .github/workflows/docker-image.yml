@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ./IEC60870-5-104-simulator.API/Dockerfile --tag IEC60870-5-104-simulator:$(date +%s)
+      run: docker build . --file ./IEC60870-5-104-simulator.API/Dockerfile --tag iec60870-5-104-simulator:$(date +%s)
