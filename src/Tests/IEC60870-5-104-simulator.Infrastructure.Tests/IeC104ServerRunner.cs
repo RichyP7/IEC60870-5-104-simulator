@@ -21,6 +21,7 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
             mockFactory.Setup(v => v.GetInformationObject(It.IsAny<string>())).Returns(new DoublePointWithCP24Time2a(1000, DoublePointValue.OFF, new QualityDescriptor(), new lib60870.CP24Time2a()));
             
             service.SimulateValues();
+            throw new Exception();
 
             mockFactory.Verify(v=> v.GetInformationObject(It.IsAny<string>()));
         }

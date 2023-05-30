@@ -15,6 +15,20 @@ COPY . .
 WORKDIR "/src/IEC60870-5-104-simulator.API"
 RUN dotnet build "IEC60870-5-104-simulator.API.csproj" -c Release -o /app/build
 
+# test stage -- exposes optional entrypoint
+# target entrypoint with: docker build --target test
+FROM build AS test
+WORKDIR /src
+COPY /Tests/IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj tests/IEC60870-5-104-simulator.Infrastructure.Tests/
+WORKDIR /src/tests
+RUN dotnet restore IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
+
+#COPY /Tests/IEC60870-5-104-simulator.Infrastructure.Tests/ IEC60870-5-104-simulator.Infrastructure.Tests/
+COPY Tests/IEC60870-5-104-simulator.Infrastructure.Tests/ .
+RUN dotnet build --no-restore IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
+RUN dotnet test --no-restore --logger:trx -verbosity:normal IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
+###
+
 FROM build AS publish
 RUN dotnet publish "IEC60870-5-104-simulator.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
