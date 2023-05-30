@@ -8,6 +8,8 @@ The project is still in development and not ready to use yet.
 ## How to run
 
 ### Tests
+
+# inPROGRESS Tests are not executed yet
 cd PROJ_FOLDER
 docker build -f .\src\IEC60870-5-104-simulator.API\Dockerfile .\src --target test
 

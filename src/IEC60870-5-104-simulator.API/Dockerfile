@@ -23,7 +23,7 @@ COPY /Tests/IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulat
 WORKDIR /src/tests
 RUN dotnet restore IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
 
-#COPY /Tests/IEC60870-5-104-simulator.Infrastructure.Tests/ IEC60870-5-104-simulator.Infrastructure.Tests/
+
 COPY Tests/IEC60870-5-104-simulator.Infrastructure.Tests/ .
 RUN dotnet build --no-restore IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
 RUN dotnet test --no-restore --logger:trx -verbosity:normal IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
