@@ -1,10 +1,9 @@
+using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.Controllers;
 using IEC60870_5_104_simulator.Service;
 using ServiceExtensionMethods;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 // Add services to the container.
 
@@ -15,6 +14,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SimulationEngine>();
 builder.Services.AddHostedService<SimulationEngine>(provider => provider.GetService<SimulationEngine>());
 builder.Services.AddServices();
+builder.Services.Configure<SimulationOptions>(
+    builder.Configuration.GetSection(SimulationOptions.Simulation));
+
 
 
 var app = builder.Build();
