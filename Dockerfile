@@ -24,12 +24,10 @@ WORKDIR /src/Tests/IEC60870-5-104-simulator.Infrastructure.Tests/
 RUN dotnet restore -v m 
 COPY src/Tests/IEC60870-5-104-simulator.Infrastructure.Tests/ .
 
-RUN dotnet build -v n --no-restore
+RUN dotnet build --no-restore
 ENTRYPOINT ["dotnet", "test", "--logger:trx", "--no-build"]
-#RUN dotnet build -v n --no-restore IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
+# test end
 
-#RUN dotnet test --no-restore --logger:trx -verbosity:normal IEC60870-5-104-simulator.Infrastructure.Tests/IEC60870-5-104-simulator.Infrastructure.Tests.csproj
-###
 
 FROM build AS publish
 RUN dotnet publish "IEC60870-5-104-simulator.API.csproj" -c Release -o /app/publish /p:UseAppHost=false

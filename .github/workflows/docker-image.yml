@@ -19,4 +19,4 @@ jobs:
       run: docker build . --tag iec60870-5-104-simulator:$(date +%s)
 
     - name: Test the Docker image
-      run: docker run --tag iec60870-5-104-simulator:$(date +%s)
+      run: docker run --tag iec60870-5-104-simulator:$(date +%s) --target test
