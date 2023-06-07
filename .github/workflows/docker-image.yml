@@ -18,5 +18,8 @@ jobs:
     - name: Build the Docker image
       run: DOCKER_BUILDKIT=1 docker build --target final --tag iec60870-5-104-simulator:$(date +%s) .
 
-    - name: Test the Docker image
+    - name: Build  the test Docker image
       run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulator:$(date +%s) .
+
+    - name: Run tests in Docker image
+      run: docker run -t iec60870-5-104-simulator:$(date +%s)
