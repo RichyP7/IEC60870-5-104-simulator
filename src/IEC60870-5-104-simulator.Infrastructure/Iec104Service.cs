@@ -1,17 +1,20 @@
 ﻿using lib60870.CS101;
+using Microsoft.Extensions.Logging;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class Iec104Service : IIec104Service
     {
         private lib60870.CS104.Server server;
+        private readonly ILogger<Iec104Service> logger;
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ILogger<Iec104Service> logger)
         {
             this.server = server;
             this.factory = factory;
+            this.logger = logger;
         }
 
         public Task Start()
@@ -31,6 +34,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
             ASDU newAsdu = CreateAsdu();
             newAsdu.AddInformationObject(infoObject);
             server.EnqueueASDU(newAsdu);
+            logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
+
             return Task.CompletedTask;
         }
 
