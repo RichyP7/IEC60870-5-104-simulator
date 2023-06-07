@@ -14,5 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+  
     - name: Build the Docker image
-      run: docker build ./src --file ./src/IEC60870-5-104-simulator.API/Dockerfile --tag iec60870-5-104-simulator:$(date +%s)
+      run: DOCKER_BUILDKIT=1 docker build --target final --tag iec60870-5-104-simulator:$(date +%s) .
+
+    - name: Build  the test Docker image
+      run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulatortest:${{ github.run_id }} .
+
+    - name: Run tests in Docker image
+      run: docker run -t iec60870-5-104-simulatortest:${{ github.run_id }}

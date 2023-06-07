@@ -1,4 +1,6 @@
+using Castle.Core.Logging;
 using lib60870.CS101;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit.Sdk;
 
@@ -13,7 +15,7 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         {
             mockFactory = new();
             testServer = new lib60870.CS104.Server();
-            service = new Iec104Service(testServer, mockFactory.Object);
+            service = new Iec104Service(testServer, mockFactory.Object, NullLogger< Iec104Service>.Instance);
         }
         [Fact]
         public void SimulateDataTest()
