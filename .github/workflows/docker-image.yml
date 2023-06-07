@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v3
   
     - name: Build the Docker image
-      run: docker build ./src --file ./src/IEC60870-5-104-simulator.API/Dockerfile --tag iec60870-5-104-simulator:$(date +%s)
+      run: docker build --tag iec60870-5-104-simulator:$(date +%s)
 
     - name: Test the Docker image
       run: docker run --tag iec60870-5-104-simulator:$(date +%s)
