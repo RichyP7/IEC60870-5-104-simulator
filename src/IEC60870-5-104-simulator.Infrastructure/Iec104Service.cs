@@ -34,12 +34,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private void SetupIecDataPointList(Iec104DataPointConfiguration configuration)
         {
             objectsToSimulate.Clear();
-            foreach(var datapoint in configuration.GetDataPointList())
+            foreach (var datapoint in configuration.GetDataPointList())
             {
                 var infoObject = factory.GetInformationObject(datapoint);
                 objectsToSimulate.Add(infoObject);
             }
-            if(this.objectsToSimulate.Count ==0)
+            if (this.objectsToSimulate.Count == 0)
             {
                 throw new InvalidOperationException("Empty configuration list provided");
             }
@@ -53,13 +53,15 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Task SimulateValues()
         {
+            //Todo: Iterate for all types available
+            var myList = this.objectsToSimulate.Where(v => v.Type.Equals(TypeID.M_SP_NA_1));
             ASDU newAsdu = CreateAsdu();
-            foreach (var iecConfigObject in this.configuration.GetDataPointList())
+            foreach (InformationObject typeddataPoints in myList)
             {
-                InformationObject iOa= factory.GetInformationObject(iecConfigObject);
-                newAsdu.AddInformationObject(iOa);
-                server.EnqueueASDU(newAsdu);
+                newAsdu.AddInformationObject(typeddataPoints);
             }
+
+            server.EnqueueASDU(newAsdu);
             logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
             return Task.CompletedTask;
         }
