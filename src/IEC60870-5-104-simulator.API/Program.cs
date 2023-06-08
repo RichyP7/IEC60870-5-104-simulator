@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SimulationEngine>();
-builder.Services.AddHostedService<SimulationEngine>(provider => provider.GetService<SimulationEngine>());
+builder.Services.AddHostedService(provider => provider.GetService<SimulationEngine>() ?? throw new InvalidProgramException("Register Simulation Engine "));
 builder.Services.AddServices();
 builder.Services.Configure<SimulationOptions>(
     builder.Configuration.GetSection(SimulationOptions.Simulation));
