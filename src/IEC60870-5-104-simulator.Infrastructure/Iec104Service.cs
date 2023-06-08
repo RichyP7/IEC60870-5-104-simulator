@@ -19,6 +19,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Task Start()
         {
+
             this.server.Start();
             return Task.CompletedTask;
         }

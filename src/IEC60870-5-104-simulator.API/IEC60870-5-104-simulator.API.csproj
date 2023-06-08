@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IEC60870-5-104-simulator.Domain\IEC60870-5-104-simulator.Domain.csproj" />
     <ProjectReference Include="..\IEC60870-5-104-simulator.Infrastructure\IEC60870-5-104-simulator.Infrastructure.csproj" />
   </ItemGroup>
 
