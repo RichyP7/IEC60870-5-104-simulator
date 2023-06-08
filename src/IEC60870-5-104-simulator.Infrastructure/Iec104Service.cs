@@ -1,5 +1,7 @@
-﻿using lib60870.CS101;
+﻿using IEC60870_5_104_simulator.Domain;
+using lib60870.CS101;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
@@ -7,22 +9,42 @@ namespace IEC60870_5_104_simulator.Infrastructure
     {
         private lib60870.CS104.Server server;
         private readonly ILogger<Iec104Service> logger;
+        private Iec104DataPointConfiguration configuration;
+        private List<InformationObject> objectsToSimulate;
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ILogger<Iec104Service> logger)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ILogger<Iec104Service> logger, Iec104DataPointConfiguration configuration)
         {
             this.server = server;
             this.factory = factory;
             this.logger = logger;
+            this.configuration = configuration;
+            objectsToSimulate = new List<InformationObject>();
         }
 
-        public Task Start()
+        public Task Start(Iec104DataPointConfiguration configuration)
         {
-
+            this.configuration = configuration;
+            SetupIecDataPointList(this.configuration);
             this.server.Start();
             return Task.CompletedTask;
         }
+
+        private void SetupIecDataPointList(Iec104DataPointConfiguration configuration)
+        {
+            objectsToSimulate.Clear();
+            foreach(var datapoint in configuration.GetDataPointList())
+            {
+                var infoObject = factory.GetInformationObject(datapoint);
+                objectsToSimulate.Add(infoObject);
+            }
+            if(this.objectsToSimulate.Count ==0)
+            {
+                throw new InvalidOperationException("Empty configuration list provided");
+            }
+        }
+
         public Task Stop()
         {
             this.server.Stop();
@@ -31,12 +53,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Task SimulateValues()
         {
-            var infoObject = factory.GetInformationObject("any");        
             ASDU newAsdu = CreateAsdu();
-            newAsdu.AddInformationObject(infoObject);
-            server.EnqueueASDU(newAsdu);
+            foreach (var iecConfigObject in this.configuration.GetDataPointList())
+            {
+                InformationObject iOa= factory.GetInformationObject(iecConfigObject);
+                newAsdu.AddInformationObject(iOa);
+                server.EnqueueASDU(newAsdu);
+            }
             logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
-
             return Task.CompletedTask;
         }
 

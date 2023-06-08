@@ -27,7 +27,7 @@ namespace IEC60870_5_104_simulator.Service
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await this.iecService.Start();
+            await this.iecService.Start(this.datapointConfig);
             while (!stoppingToken.IsCancellationRequested)
             {
                 try

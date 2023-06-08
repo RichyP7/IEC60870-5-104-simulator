@@ -9,6 +9,7 @@ EXPOSE 2404
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY src/IEC60870-5-104-simulator.API/*.csproj  IEC60870-5-104-simulator.API/
+COPY src/IEC60870-5-104-simulator.Domain/*.csproj IEC60870-5-104-simulator.Domain/
 COPY src/IEC60870-5-104-simulator.Infrastructure/*.csproj IEC60870-5-104-simulator.Infrastructure/
 RUN dotnet restore IEC60870-5-104-simulator.API/IEC60870-5-104-simulator.API.csproj 
 COPY /src /src
