@@ -1,4 +1,5 @@
 using Castle.Core.Logging;
+using IEC60870_5_104_simulator.Domain;
 using lib60870.CS101;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -15,16 +16,16 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         {
             mockFactory = new();
             testServer = new lib60870.CS104.Server();
-            service = new Iec104Service(testServer, mockFactory.Object, NullLogger< Iec104Service>.Instance);
+            service = new Iec104Service(testServer, mockFactory.Object, NullLogger<Iec104Service>.Instance, new Domain.Iec104DataPointConfiguration()); ;
         }
         [Fact]
         public void SimulateDataTest()
         {
-            mockFactory.Setup(v => v.GetInformationObject(It.IsAny<string>())).Returns(new DoublePointWithCP24Time2a(1000, DoublePointValue.OFF, new QualityDescriptor(), new lib60870.CP24Time2a()));
+            mockFactory.Setup(v => v.GetInformationObject(It.IsAny<Iec104DataPoint>())).Returns(new DoublePointWithCP24Time2a(1000, DoublePointValue.OFF, new QualityDescriptor(), new lib60870.CP24Time2a()));
             
             service.SimulateValues();
 
-            mockFactory.Verify(v=> v.GetInformationObject(It.IsAny<string>()));
+            mockFactory.Verify(v=> v.GetInformationObject(It.IsAny<Iec104DataPoint>()));
         }
     }
 }

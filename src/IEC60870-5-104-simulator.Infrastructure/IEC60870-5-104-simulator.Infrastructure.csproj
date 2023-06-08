@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IEC60870-5-104-simulator.Domain\IEC60870-5-104-simulator.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
