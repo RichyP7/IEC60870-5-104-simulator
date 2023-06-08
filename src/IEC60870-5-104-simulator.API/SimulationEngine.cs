@@ -1,4 +1,5 @@
 using IEC60870_5_104_simulator.API;
+using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Infrastructure;
 using Microsoft.Extensions.Options;
 
@@ -8,18 +9,20 @@ namespace IEC60870_5_104_simulator.Service
     {
         private readonly ILogger<SimulationEngine> _logger;
         private readonly SimulationOptions options;
+        private readonly Iec104DataPointConfiguration datapointConfig;
 
         private IIec104Service iecService { get; }
         private int cycleTimeMs;
 
-        public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<SimulationOptions> options)
+        public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<SimulationOptions> options, Iec104DataPointConfiguration datapointconfig)
         {
             _logger = logger;
             
             this.iecService = iecservice;
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
-            
+            this.datapointConfig = datapointconfig;
+
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
