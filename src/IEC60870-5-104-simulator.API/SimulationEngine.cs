@@ -22,7 +22,6 @@ namespace IEC60870_5_104_simulator.Service
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
             this.datapointConfig = datapointconfig;
-
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,14 +49,14 @@ namespace IEC60870_5_104_simulator.Service
             return options.CycleTimeMs > 10 ? options.CycleTimeMs : 10;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public override async Task StartAsync(CancellationToken cancellationToken)
         {
              _logger.LogInformation("Started worker at: {time}", DateTimeOffset.Now);
             await base.StartAsync(cancellationToken);
             return;
             
         }
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopped worker at: {time}", DateTimeOffset.Now);
             await base.StopAsync(cancellationToken);

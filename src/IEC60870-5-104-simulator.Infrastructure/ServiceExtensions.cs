@@ -25,6 +25,7 @@ namespace ServiceExtensionMethods
                 return server;
             });
             services.AddSingleton<IInformationObjectFactory, InformationObjectFactory>();
+            services.AddSingleton<IValueSimulatorFactory, RandomSimulatorFactory>();
             return services;
         }
 
