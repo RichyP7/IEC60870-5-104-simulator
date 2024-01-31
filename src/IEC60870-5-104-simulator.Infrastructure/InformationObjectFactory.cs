@@ -17,7 +17,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     return new DoublePointInformation(dataPoint.ObjectAdress, DoublePointValue.ON, new QualityDescriptor());
                 case Iec104DataTypes.M_ME_NA_1:
                     return new MeasuredValueScaled(dataPoint.ObjectAdress, Random.Shared.Next(), new QualityDescriptor());
-                default:
+                case Iec104DataTypes.M_ST_NA_1://todo it is no measurment
+                    return new StepCommand(dataPoint.ObjectAdress, StepCommandValue.HIGHER, false, 0);
+;                default:
                     throw new NotImplementedException("IecType is not implemented yet");
             }
             
