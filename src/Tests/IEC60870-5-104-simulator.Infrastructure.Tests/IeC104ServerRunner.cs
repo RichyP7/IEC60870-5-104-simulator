@@ -21,11 +21,11 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         [Fact]
         public void SimulateDataTest()
         {
-            mockFactory.Setup(v => v.GetInformationObject(It.IsAny<Iec104DataPoint>())).Returns(new DoublePointWithCP24Time2a(1000, DoublePointValue.OFF, new QualityDescriptor(), new lib60870.CP24Time2a()));
+            mockFactory.Setup(v => v.GetInformationObject(It.IsAny<Iec104DataPointConfig>())).Returns(new DoublePointWithCP24Time2a(1000, DoublePointValue.OFF, new QualityDescriptor(), new lib60870.CP24Time2a()));
             
             service.SimulateValues();
 
-            mockFactory.Verify(v=> v.GetInformationObject(It.IsAny<Iec104DataPoint>()));
+            mockFactory.Verify(v=> v.GetInformationObject(It.IsAny<Iec104DataPointConfig>()));
         }
     }
 }

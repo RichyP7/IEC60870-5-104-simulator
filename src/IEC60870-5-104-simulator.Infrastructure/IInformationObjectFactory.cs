@@ -5,6 +5,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
 {
     public interface IInformationObjectFactory
     {
-        InformationObject GetInformationObject(Iec104DataPoint dataPoint);
+        InformationObject GetInformationObject(Iec104DataPointConfig dataPoint);
     }
 }

@@ -8,32 +8,43 @@ namespace IEC60870_5_104_simulator.Domain
 {
     public class Iec104DataPointConfiguration
     {
-        List<Iec104DataPoint> dataPoints;
-        List<Iec104CommandDataPoint> commandDataPoints;
+        public Dictionary<IecAddress, Iec104DataPointConfig> DataPoints { get; }
+        public Dictionary<IecAddress,Iec104CommandDataPointConfig> commandDataPoints;
         public Iec104DataPointConfiguration()
         {
-            dataPoints = new List<Iec104DataPoint>();
-            commandDataPoints = new List<Iec104CommandDataPoint>(); 
+            DataPoints = new();
+            commandDataPoints = new();
             SetupHardcoded();
         }
 
         private void SetupHardcoded()
         {
             //hardcoded
-            dataPoints.Add(new Iec104DataPoint(1, Iec104DataTypes.M_SP_NA_1));
-            dataPoints.Add(new Iec104DataPoint(101, Iec104DataTypes.M_SP_NA_1));
-            dataPoints.Add(new Iec104DataPoint(3, Iec104DataTypes.M_DP_NA_1));
-            Iec104DataPoint steppositionTest = new Iec104DataPoint(9, Iec104DataTypes.M_ST_NA_1);
-            dataPoints.Add(steppositionTest);
+            var address = new IecAddress(5,123);
+            DataPoints.Add(address,new Iec104DataPointConfig(address, Iec104DataTypes.M_SP_NA_1));
 
-            var firstcommand = new Iec104CommandDataPoint(10, Iec104DataTypes.C_RC_NA_1);
+            var spaddress = new IecAddress(6, 123);
+            Iec104DataPointConfig steppositionTest = new Iec104DataPointConfig(spaddress, Iec104DataTypes.M_ST_NA_1);
+            DataPoints.Add(spaddress,steppositionTest);
+
+            IecAddress commandAddress = new IecAddress(64798, 1);
+            var firstcommand = new Iec104CommandDataPointConfig(commandAddress, Iec104DataTypes.C_RC_NA_1);
             firstcommand.AssignResponseDataPoint(steppositionTest);
-            commandDataPoints.Add(new Iec104CommandDataPoint(10, Iec104DataTypes.C_RC_NA_1));
+            commandDataPoints.Add(commandAddress, firstcommand);
         }
 
-        public List<Iec104DataPoint> GetDataPointList()
+        public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
         {
-            return dataPoints;
+            if(commandDataPoints.TryGetValue(iecAddress, out Iec104CommandDataPointConfig value))
+            {
+                return value;
+            }
+            throw new KeyNotFoundException("no iec config for this iec address has been found");
+        }
+        public bool CheckCommandExisting(IecAddress iecAddress)
+        {
+            return commandDataPoints.TryGetValue(iecAddress, out _) ;
+
         }
 
     }
