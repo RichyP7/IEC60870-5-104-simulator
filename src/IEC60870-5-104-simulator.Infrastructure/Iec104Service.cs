@@ -11,13 +11,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private lib60870.CS104.Server server;
         private readonly ICommandResponseFactory responseFactory;
         private readonly ILogger<Iec104Service> logger;
-        private Iec104ConfigurationService configuration;
+        private IIec104ConfigurationService configuration;
         private readonly IValueSimulatorFactory valueFactory;
         private List<InformationObject> objectsToSimulate;
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, Iec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, IIec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile)
         {
             this.server = server;
             this.factory = factory;
@@ -30,14 +30,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Task Start()
         {
-            SetupIecDataPointList(this.configuration);
+            SetupIecDataPointList();
             server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
 
             this.server.Start();
             return Task.CompletedTask;
         }
 
-        private void SetupIecDataPointList(Iec104ConfigurationService configuration)
+        private void SetupIecDataPointList()
         {
             objectsToSimulate.Clear();
             foreach (var datapoint in configuration.DataPoints)

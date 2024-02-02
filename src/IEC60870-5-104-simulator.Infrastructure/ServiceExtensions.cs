@@ -15,7 +15,7 @@ namespace ServiceExtensionMethods
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddSingleton<IIec104Service, Iec104Service>();
-            services.AddSingleton<Iec104ConfigurationService>();
+            services.AddSingleton<IIec104ConfigurationService, Iec104ConfigurationService>();
             services.AddSingleton<lib60870.CS104.Server>(v =>
             {
                 var server = new lib60870.CS104.Server();

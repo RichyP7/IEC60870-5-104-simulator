@@ -9,7 +9,7 @@ namespace IEC60870_5_104_simulator.Service
     {
         private readonly ILogger<SimulationEngine> _logger;
         private readonly SimulationOptions options;
-        private readonly IIec104ConfigurationService datapointConfig;
+        private readonly IIec104ConfigurationService datapointConfigService;
 
         private IIec104Service iecService { get; }
         private int cycleTimeMs;
@@ -21,7 +21,7 @@ namespace IEC60870_5_104_simulator.Service
             this.iecService = iecservice;
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
-            this.datapointConfig = datapointconfig;
+            this.datapointConfigService = datapointconfig;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
