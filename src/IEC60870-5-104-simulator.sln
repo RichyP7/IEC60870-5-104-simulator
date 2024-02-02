@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		..\Dockerfile = ..\Dockerfile
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEC60870-5-104-simulator.Domain.UnitTests", "Tests\IEC60870-5-104-simulator.Domain\IEC60870-5-104-simulator.Domain.UnitTests.csproj", "{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,12 +42,17 @@ Global
 		{F9BDC952-6D94-4588-8A40-8CBB12EAAABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9BDC952-6D94-4588-8A40-8CBB12EAAABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9BDC952-6D94-4588-8A40-8CBB12EAAABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{82AD27A5-DC95-4FD3-A4EE-94B66107B4CB} = {4A085BA3-8F44-4C19-AA67-219C3D59A39D}
+		{0D72FAD3-99C1-4B34-B8FD-E4BF448ECC9B} = {4A085BA3-8F44-4C19-AA67-219C3D59A39D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7B88DDD7-896C-49D9-8B0D-93B0CCC76AE7}
