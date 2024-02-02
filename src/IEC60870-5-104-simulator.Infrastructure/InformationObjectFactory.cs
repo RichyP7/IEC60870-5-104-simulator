@@ -7,18 +7,18 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class InformationObjectFactory : IInformationObjectFactory
     {
 
-        public InformationObject GetInformationObject(Iec104DataPoint dataPoint)
+        public InformationObject GetInformationObject(Iec104DataPointConfig dataPoint)
         {
-            switch (dataPoint.Iec104DataTypes)
+            switch (dataPoint.Iec104DataType)
             {
                 case Iec104DataTypes.M_SP_NA_1:
-                    return new SinglePointInformation(dataPoint.ObjectAdress, false, new QualityDescriptor());
+                    return new SinglePointInformation(dataPoint.Address.ObjectAddress, false, new QualityDescriptor());
                 case Iec104DataTypes.M_DP_NA_1:
-                    return new DoublePointInformation(dataPoint.ObjectAdress, DoublePointValue.ON, new QualityDescriptor());
+                    return new DoublePointInformation(dataPoint.Address.ObjectAddress, DoublePointValue.ON, new QualityDescriptor());
                 case Iec104DataTypes.M_ME_NA_1:
-                    return new MeasuredValueScaled(dataPoint.ObjectAdress, Random.Shared.Next(), new QualityDescriptor());
+                    return new MeasuredValueScaled(dataPoint.Address.ObjectAddress, Random.Shared.Next(), new QualityDescriptor());
                 case Iec104DataTypes.M_ST_NA_1://todo it is no measurment
-                    return new StepCommand(dataPoint.ObjectAdress, StepCommandValue.HIGHER, false, 0);
+                    return new StepCommand(dataPoint.Address.ObjectAddress, StepCommandValue.HIGHER, false, 0);
 ;                default:
                     throw new NotImplementedException("IecType is not implemented yet");
             }

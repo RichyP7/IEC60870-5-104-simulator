@@ -8,6 +8,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class Iec104Service : IIec104Service
     {
         private lib60870.CS104.Server server;
+        private readonly ICommandResponseFactory responseFactory;
         private readonly ILogger<Iec104Service> logger;
         private Iec104DataPointConfiguration configuration;
         private readonly IValueSimulatorFactory valueFactory;
@@ -15,10 +16,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ILogger<Iec104Service> logger, Iec104DataPointConfiguration configuration, IValueSimulatorFactory simulatorProfile)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, Iec104DataPointConfiguration configuration, IValueSimulatorFactory simulatorProfile)
         {
             this.server = server;
             this.factory = factory;
+            this.responseFactory = responseFactory;
             this.logger = logger;
             this.configuration = configuration;
             this.valueFactory = simulatorProfile;
@@ -29,7 +31,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             this.configuration = configuration;
             SetupIecDataPointList(this.configuration);
-            server.SetASDUHandler(asduHandler, null);
+            server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
 
             this.server.Start();
             return Task.CompletedTask;
@@ -38,9 +40,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private void SetupIecDataPointList(Iec104DataPointConfiguration configuration)
         {
             objectsToSimulate.Clear();
-            foreach (var datapoint in configuration.GetDataPointList())
+            foreach (var datapoint in configuration.DataPoints)
             {
-                var infoObject = factory.GetInformationObject(datapoint);
+                var infoObject = factory.GetInformationObject(datapoint.Value);
                 objectsToSimulate.Add(infoObject);
             }
             if (this.objectsToSimulate.Count == 0)
@@ -56,7 +58,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
 
         public Task SimulateValues()
-
         {
             valueFactory.SimulateValues(this.objectsToSimulate);
             ASDU newAsdu = CreateAsdu();
@@ -64,30 +65,69 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 newAsdu.AddInformationObject(typeddataPoints);
             }
-            server.EnqueueASDU(newAsdu);
+            //server.EnqueueASDU(newAsdu);
             logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
             return Task.CompletedTask;
         }
-        private bool asduHandler(object parameter, IMasterConnection connection, ASDU asdu)
+        /// <summary>
+        /// Handler for Iec receiver
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <param name="connection"></param>
+        /// <param name="asdu"></param>
+        /// <returns></returns>
+        private bool AsduSendMirrorAcknowledgements(object parameter, IMasterConnection connection, ASDU asdu)
         {
-            if (asdu.TypeId == TypeID.C_RC_NA_1)
-            {
-                logger.LogDebug("StepCommandd");
-                StepCommand sc = (StepCommand)asdu.GetElement(0);
-                ASDU newAsdu = CreateAsdu();
-                asdu.Cot = CauseOfTransmission.ACTIVATION_TERMINATION;
-                asdu.IsNegative = false;
-                asdu.AddInformationObject(sc);
-                server.EnqueueASDU(asdu);
 
-                return true;
+            if (IsNonCommandType(asdu))
+                return false;
+            AcknowledgeAllCommands(asdu);
+            List<InformationObject> responses = GetGeneratedResponses(asdu);
+            SendGeneratedResponses(responses);
+            return true;
+        }
+
+        private void AcknowledgeAllCommands(ASDU asdu)
+        {
+            asdu.Cot = CauseOfTransmission.ACTIVATION_TERMINATION;
+            asdu.IsNegative = false;
+            server.EnqueueASDU(asdu);
+        }
+
+        private List<InformationObject> GetGeneratedResponses(ASDU asdu)
+        {
+            List<InformationObject> responseInformationObjects = new();
+            for (int i = 0; i < asdu.NumberOfElements; i++)
+            {
+                InformationObject ioa = asdu.GetElement(i);
+                IecAddress searchAddress = new IecAddress(asdu.Ca, ioa.ObjectAddress);
+                if (this.configuration.CheckCommandExisting(searchAddress))
+                {
+                    logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been configured ");
+                    Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(searchAddress);
+                    responseInformationObjects.Add(responseFactory.GetResponseInformationObject(commandConfig, ioa));
+                }
             }
-            return false;
+            return responseInformationObjects;
+        }
+
+        private bool IsNonCommandType(ASDU asdu)
+        {
+            return (int)asdu.TypeId < 45 || (int)asdu.TypeId > 107;
         }
 
         private ASDU CreateAsdu()
         {
-            return new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.PERIODIC, false, false, 1, 1, false);
+            return new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.SPONTANEOUS, false, false, 1, 1, false);
+        }
+        private void SendGeneratedResponses(List<InformationObject> responses)
+        {
+            if (responses.Count > 0)
+            {
+                ASDU newAsduWithResponses = CreateAsdu();
+                responses.ForEach(v => newAsduWithResponses.AddInformationObject(v));
+                server.EnqueueASDU(newAsduWithResponses);
+            }
         }
     }
 }
