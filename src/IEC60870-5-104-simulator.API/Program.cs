@@ -1,7 +1,9 @@
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.Controllers;
+using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Service;
 using ServiceExtensionMethods;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SimulationEngine>();
 builder.Services.AddHostedService(provider => provider.GetService<SimulationEngine>() ?? throw new InvalidProgramException("Register Simulation Engine "));
 builder.Services.AddServices();
-builder.Services.Configure<SimulationOptions>(
-    builder.Configuration.GetSection(SimulationOptions.Simulation));
+
+Type t = typeof(IecConfigProfile);
+Assembly assemFromType = t.Assembly;
+builder.Services.AddAutoMapper(t.Assembly);
+
+builder.Services.Configure<Iec104SimulationOptions>(
+    builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation));
 
 
 

@@ -5,7 +5,7 @@
         Dictionary<IecAddress, Iec104DataPointConfig> DataPoints { get; }
 
         bool CheckCommandExisting(IecAddress iecAddress);
-        void ConfigureDataPoints();
+        void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPointConfig> datapoints);
         Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress);
     }
 }

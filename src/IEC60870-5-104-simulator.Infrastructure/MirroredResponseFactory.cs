@@ -12,7 +12,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 case Iec104DataTypes.M_ST_NA_1:
                     var stepValue = GetStepValue(sentCommand);
-                    return new StepPositionInformation(commandCfg.Adress.ObjectAddress, (int)stepValue, true, new QualityDescriptor());
+                    return new StepPositionInformation(commandCfg.Address.ObjectAddress, (int)stepValue, true, new QualityDescriptor());
                 default:
                     throw new NotImplementedException();
             }
