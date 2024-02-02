@@ -8,14 +8,19 @@ namespace IEC60870_5_104_simulator.Domain
 {
     public class Iec104DataPointConfig
     {
-        public IecAddress Address { get;  }
-        public Iec104DataTypes Iec104DataType { get; }
+        public string Id { get; set; }
+        public IecAddress Address { get; set; }
+        public Iec104DataTypes Iec104DataType { get; set; }
 
 
-        public Iec104DataPointConfig(IecAddress address, Iec104DataTypes iec104DataTypes)
+        public Iec104DataPointConfig(IecAddress address, Iec104DataTypes iec104DataType)
         {
             Address = address;
-            Iec104DataType = iec104DataTypes;
+            this.Iec104DataType = iec104DataType;
+        }
+
+        public Iec104DataPointConfig()
+        {
         }
     }
 }

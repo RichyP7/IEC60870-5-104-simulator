@@ -14,22 +14,18 @@ namespace IEC60870_5_104_simulator.Domain.Service
         {
             DataPoints = new();
             commandDataPoints = new();
-            ConfigureDataPoints();
         }
 
-        public void ConfigureDataPoints()
+        public void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPointConfig> datapoints)
         {
-            var address = new IecAddress(5, 123);
-            DataPoints.Add(address, new Iec104DataPointConfig(address, Iec104DataTypes.M_SP_NA_1));
-
-            var spaddress = new IecAddress(6, 123);
-            Iec104DataPointConfig steppositionTest = new Iec104DataPointConfig(spaddress, Iec104DataTypes.M_ST_NA_1);
-            DataPoints.Add(spaddress, steppositionTest);
-
-            IecAddress commandAddress = new IecAddress(64798, 1);
-            var firstcommand = new Iec104CommandDataPointConfig(commandAddress, Iec104DataTypes.C_RC_NA_1);
-            firstcommand.AssignResponseDataPoint(steppositionTest);
-            commandDataPoints.Add(commandAddress, firstcommand);
+            foreach (var data in datapoints)
+            {
+                DataPoints.Add(data.Address, data);
+            }
+            foreach (var command in commands)
+            {
+                commandDataPoints.Add(command.Address, command);
+            }
         }
 
         public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
