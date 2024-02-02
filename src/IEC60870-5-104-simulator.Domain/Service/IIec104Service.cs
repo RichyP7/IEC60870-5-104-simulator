@@ -1,9 +1,9 @@
-﻿namespace IEC60870_5_104_simulator.Domain
+﻿namespace IEC60870_5_104_simulator.Domain.Service
 {
     public interface IIec104Service
     {
         Task SimulateValues();
-        Task Start(Iec104DataPointConfiguration config );
+        Task Start();
         Task Stop();
     }
 }
