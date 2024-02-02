@@ -65,7 +65,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 newAsdu.AddInformationObject(typeddataPoints);
             }
-            //server.EnqueueASDU(newAsdu);
+            server.EnqueueASDU(newAsdu);
             logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
             return Task.CompletedTask;
         }
