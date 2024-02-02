@@ -1,4 +1,5 @@
 ﻿using IEC60870_5_104_simulator.Domain;
+using IEC60870_5_104_simulator.Domain.Service;
 using lib60870.CS101;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
@@ -10,13 +11,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private lib60870.CS104.Server server;
         private readonly ICommandResponseFactory responseFactory;
         private readonly ILogger<Iec104Service> logger;
-        private Iec104DataPointConfiguration configuration;
+        private Iec104ConfigurationService configuration;
         private readonly IValueSimulatorFactory valueFactory;
         private List<InformationObject> objectsToSimulate;
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, Iec104DataPointConfiguration configuration, IValueSimulatorFactory simulatorProfile)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, Iec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile)
         {
             this.server = server;
             this.factory = factory;
@@ -27,9 +28,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
             objectsToSimulate = new List<InformationObject>();
         }
 
-        public Task Start(Iec104DataPointConfiguration configuration)
+        public Task Start()
         {
-            this.configuration = configuration;
             SetupIecDataPointList(this.configuration);
             server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
 
@@ -37,7 +37,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return Task.CompletedTask;
         }
 
-        private void SetupIecDataPointList(Iec104DataPointConfiguration configuration)
+        private void SetupIecDataPointList(Iec104ConfigurationService configuration)
         {
             objectsToSimulate.Clear();
             foreach (var datapoint in configuration.DataPoints)
