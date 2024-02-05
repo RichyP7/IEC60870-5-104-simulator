@@ -18,7 +18,6 @@ builder.Services.AddHostedService(provider => provider.GetService<SimulationEngi
 builder.Services.AddServices();
 
 Type t = typeof(IecConfigProfile);
-Assembly assemFromType = t.Assembly;
 builder.Services.AddAutoMapper(t.Assembly);
 
 builder.Services.Configure<Iec104SimulationOptions>(

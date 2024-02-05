@@ -45,6 +45,10 @@ namespace IEC60870_5_104_simulator.Service
                     _logger.LogWarning("Task was cancelled");
                     throw ex;
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Simulation failed", ex.Message);
+                }
             }
         }
 

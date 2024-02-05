@@ -20,6 +20,7 @@ namespace ServiceExtensionMethods
             {
                 var server = new lib60870.CS104.Server();
                 server.DebugOutput = false;
+                server.EnqueueMode = lib60870.CS104.EnqueueMode.REMOVE_OLDEST;
                 server.MaxQueueSize = 100;
                 server.SetLocalPort(2404);
                 return server;
