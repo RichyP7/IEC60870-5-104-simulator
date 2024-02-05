@@ -26,7 +26,7 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         [Fact]
         public void SimulateDataTest()
         {
-            service.SimulateValues();
+            service.SimulateValues(5);
 
             mockValueFactory.Verify(v => v.SimulateValues(It.IsAny<IEnumerable<InformationObject>>()));
         }

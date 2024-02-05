@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("IEC60870-5-104-simulator.Infrastructure.Tests")]
 namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class Iec104Service : IIec104Service
@@ -105,26 +106,31 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return Task.CompletedTask;
         }
 
-        public Task SimulateValues()
+        public Task Simulate()
         {
             int FIXEDca = 1;
             if (this._connected)
             {
-                valueFactory.SimulateValues(this.objectsToSimulate);
-                ASDU newAsdu = CreateAsdu(FIXEDca);
-                foreach (InformationObject typeddataPoints in objectsToSimulate)
-                {
-                    newAsdu.AddInformationObject(typeddataPoints);
-                }
-                if (newAsdu.NumberOfElements > 1)
-                {
-                    server.EnqueueASDU(newAsdu);
-                    logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
-                }
-
+                SimulateValues(FIXEDca);
             }
             return Task.CompletedTask;
         }
+
+        internal void SimulateValues(int FIXEDca)
+        {
+            valueFactory.SimulateValues(this.objectsToSimulate);
+            ASDU newAsdu = CreateAsdu(FIXEDca);
+            foreach (InformationObject typeddataPoints in objectsToSimulate)
+            {
+                newAsdu.AddInformationObject(typeddataPoints);
+            }
+            if (newAsdu.NumberOfElements > 1)
+            {
+                server.EnqueueASDU(newAsdu);
+                logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
+            }
+        }
+
         /// <summary>
         /// Handler for Iec receiver
         /// </summary>

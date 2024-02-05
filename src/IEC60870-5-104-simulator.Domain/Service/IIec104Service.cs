@@ -2,7 +2,7 @@
 {
     public interface IIec104Service
     {
-        Task SimulateValues();
+        Task Simulate();
         Task Start();
         Task Stop();
     }
