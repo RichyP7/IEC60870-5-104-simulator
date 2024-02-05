@@ -5,5 +5,6 @@
         Task Simulate();
         Task Start();
         Task Stop();
+        bool ConnectionEstablished();
     }
 }

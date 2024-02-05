@@ -1,5 +1,6 @@
 using AutoMapper;
 using IEC60870_5_104_simulator.API;
+using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Infrastructure;
@@ -13,25 +14,28 @@ namespace IEC60870_5_104_simulator.Service
         private readonly Iec104SimulationOptions options;
         private readonly IIec104ConfigurationService datapointConfigService;
         private readonly IMapper mapper;
+        private readonly ServerStartedHealthCheck healthCheck;
 
         private IIec104Service iecService { get; }
         private int cycleTimeMs;
 
-        public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options, IIec104ConfigurationService datapointconfig, IMapper mapper)
+        public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options, IIec104ConfigurationService datapointconfig, IMapper mapper,
+            ServerStartedHealthCheck healthCheck)
         {
             _logger = logger;
-
             this.iecService = iecservice;
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
             this.datapointConfigService = datapointconfig;
             this.mapper = mapper;
+            this.healthCheck = healthCheck;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Configure();
             await this.iecService.Start();
+            healthCheck.ServerIsRunning = true;
             while (!stoppingToken.IsCancellationRequested)
             {
                 try

@@ -18,6 +18,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private readonly IValueSimulatorFactory valueFactory;
         private List<InformationObject> objectsToSimulate;
         private bool _connected = false;
+        private bool _started = false;
+
 
         public IInformationObjectFactory factory { get; }
 
@@ -40,9 +42,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
             server.SetConnectionEventHandler(handler, null);
             server.SetInterrogationHandler(handlerinterrogation, null);
             server.SetConnectionRequestHandler(requesthandler, null);
-
-
             this.server.Start();
+            this._started = true;
         }
 
         private bool requesthandler(object parameter, IPAddress ipAddress)
@@ -191,6 +192,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 responses.ForEach(v => newAsduWithResponses.AddInformationObject(v));
                 server.EnqueueASDU(newAsduWithResponses);
             }
+        }
+
+        public bool ConnectionEstablished()
+        {
+            return this._connected;
         }
     }
 }
