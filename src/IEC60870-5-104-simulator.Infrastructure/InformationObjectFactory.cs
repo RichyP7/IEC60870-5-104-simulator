@@ -7,7 +7,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class InformationObjectFactory : IInformationObjectFactory
     {
 
-        public InformationObject GetInformationObject(Iec104DataPointConfig dataPoint)
+        public InformationObject GetInformationObject(Iec104DataPoint dataPoint)
         {
             switch (dataPoint.Iec104DataType)
             {

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IEC60870_5_104_simulator.Domain.Interfaces;
+using IEC60870_5_104_simulator.Domain.ValueTypes;
 
 namespace IEC60870_5_104_simulator.Domain.Service
 {
     public class Iec104ConfigurationService : IIec104ConfigurationService
     {
-        public Dictionary<IecAddress, Iec104DataPointConfig> DataPoints { get; }
+        public Dictionary<IecAddress, Iec104DataPoint> DataPoints { get; }
         public Dictionary<IecAddress, Iec104CommandDataPointConfig> commandDataPoints;
         public Iec104ConfigurationService()
         {
@@ -16,7 +18,7 @@ namespace IEC60870_5_104_simulator.Domain.Service
             commandDataPoints = new();
         }
 
-        public void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPointConfig> datapoints)
+        public void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPoint> datapoints)
         {
             foreach (var data in datapoints)
             {

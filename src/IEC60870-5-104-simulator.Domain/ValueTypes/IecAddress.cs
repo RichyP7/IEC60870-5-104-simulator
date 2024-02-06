@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IEC60870_5_104_simulator.Domain
+﻿namespace IEC60870_5_104_simulator.Domain.ValueTypes
 {
-    public  record IecAddress
+    public record IecAddress
     {
         public IecAddress(int stationaryAddress, int objectAddress)
         {

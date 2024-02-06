@@ -1,4 +1,5 @@
-﻿using IEC60870_5_104_simulator.Domain.Service;
+﻿using IEC60870_5_104_simulator.Domain.Interfaces;
+using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -28,6 +29,7 @@ namespace ServiceExtensionMethods
             services.AddSingleton<IInformationObjectFactory, InformationObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
             services.AddSingleton<IValueSimulatorFactory, RandomSimulatorFactory>();
+            services.AddSingleton<IIecValueLocalStorageRepository, IecValueLocalStorageRepository>();
             return services;
         }
 
