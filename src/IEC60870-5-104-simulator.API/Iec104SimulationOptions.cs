@@ -10,17 +10,26 @@ namespace IEC60870_5_104_simulator.API
         public int CycleTimeMs { get; set; }
         public IecConfiguration DataPointConfiguration { get; set; }
 
+
         public class IecConfiguration
         {
             public List<DataPointConfig> Measures { get; set; }
             public List<CommandPointConfig> Commands { get; set; }
         }
         public class DataPointConfig
-        { 
+        {
             public int Ca { get; set; }
             public int Oa { get; set; }
             public int TypeId { get; set; }
             public string Id { get; set; }
+            public SimulationModeConfig Mode {get;set;}
+
+        }
+        public enum SimulationModeConfig
+        {
+            None,
+            Cyclic,
+            Random
         }
         public class CommandPointConfig
         {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IEC60870_5_104_simulator.Infrastructure
+namespace IEC60870_5_104_simulator.Infrastructure.Interfaces
 {
     public interface ICommandResponseFactory
     {
