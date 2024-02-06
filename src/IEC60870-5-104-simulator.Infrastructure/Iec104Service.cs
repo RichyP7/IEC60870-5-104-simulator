@@ -107,19 +107,19 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
 
         internal void SimulateValues(int FIXEDca)
-        {
-            //valueFactory.SimulateValues(this.objectsToSimulate);
-            ASDU newAsdu = CreateAsdu(FIXEDca);
-            var objectsToSimulate = new List<InformationObject>();
-            foreach (InformationObject typeddataPoints in objectsToSimulate)
-            {
-                newAsdu.AddInformationObject(typeddataPoints);
-            }
-            if (newAsdu.NumberOfElements > 1)
-            {
-                server.EnqueueASDU(newAsdu);
-                logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
-            }
+        {//TODo implement cyclic Simulation
+
+            //valueFactory.SimulateValues(.Get);
+            //ASDU newAsdu = CreateAsdu(FIXEDca);
+            //foreach (InformationObject typeddataPoints in objectsToSimulate)
+            //{
+            //    newAsdu.AddInformationObject(typeddataPoints);
+            //}
+            //if (newAsdu.NumberOfElements > 1)
+            //{
+            //    server.EnqueueASDU(newAsdu);
+            //    logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
+            //}
         }
 
         /// <summary>
