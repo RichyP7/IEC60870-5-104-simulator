@@ -2,6 +2,7 @@ using AutoMapper;
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.Domain;
+using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Infrastructure;
 using Microsoft.Extensions.Options;
@@ -80,12 +81,12 @@ namespace IEC60870_5_104_simulator.Service
             var commands = options.DataPointConfiguration.Commands;
             var measures = options.DataPointConfiguration.Measures;
             var commandDataPoints = this.mapper.Map<List<Iec104CommandDataPointConfig>>(commands);
-            var resultMeasures = this.mapper.Map<List<Iec104DataPointConfig>>(measures);
+            var resultMeasures = this.mapper.Map<List<Iec104DataPoint>>(measures);
             AssignResponses(commands, commandDataPoints, resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
         }
 
-        private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPointConfig> resultMeasures)
+        private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPoint> resultMeasures)
         {
             foreach (var item in commands)
             {

@@ -1,5 +1,7 @@
 ﻿using IEC60870_5_104_simulator.Domain;
+using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
+using IEC60870_5_104_simulator.Domain.ValueTypes;
 using lib60870.CS101;
 using lib60870.CS104;
 using Microsoft.Extensions.Logging;
@@ -168,7 +170,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 {
                     logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been configured ");
                     Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(searchAddress);
-                    responseInformationObjects.Add(responseFactory.GetResponseInformationObject(commandConfig, ioa));
+                    InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, ioa);
+                    responseInformationObjects.Add(response);
                 }
             }
             return responseInformationObjects;
