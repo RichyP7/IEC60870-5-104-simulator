@@ -1,6 +1,7 @@
 using Castle.Core.Logging;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Service;
+using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using lib60870.CS101;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;

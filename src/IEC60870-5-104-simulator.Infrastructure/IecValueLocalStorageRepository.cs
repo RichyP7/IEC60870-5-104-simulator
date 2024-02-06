@@ -1,9 +1,11 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
+using lib60870.CS101;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +36,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 var ret = test.Value as IecIntValueObject;
                 test.Value = new IecIntValueObject(value);
             }
-            throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
 
         public bool GetSinglePoint(IecAddress address)
@@ -46,13 +49,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
             }
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
-        public bool SetSinglePoint(IecAddress address,bool value)
+        public void SetSinglePoint(IecAddress address,bool value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
             {
                 test.Value = new IecSinglePointValueObject(value);
             }
-            throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
 
         public IecDoublePointValue GetDoublePoint(IecAddress address)
@@ -65,13 +69,41 @@ namespace IEC60870_5_104_simulator.Infrastructure
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
 
-        public IecDoublePointValue SetDoublePoint(IecAddress address, IecDoublePointValue value)
+        public void SetDoublePoint(IecAddress address, IecDoublePointValue value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
             {
                 test.Value = new IecDoublePointValueObject(value);
             }
-            throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+        }
+
+        public void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint)
+        {
+            if(StoredDataPoints.TryAdd(address, newdatapoint))
+            {
+                switch (newdatapoint.Iec104DataType)
+                {
+                    case Iec104DataTypes.M_ST_NA_1:
+                    case Iec104DataTypes.M_ST_TA_1:
+                    case Iec104DataTypes.M_ST_TB_1:
+                        newdatapoint.Value = new IecIntValueObject(0);
+                        break;
+                    case Iec104DataTypes.M_SP_NA_1:
+                    case Iec104DataTypes.M_SP_TA_1:
+                    case Iec104DataTypes.M_SP_TB_1:
+                        newdatapoint.Value = new IecSinglePointValueObject(false);
+                        break;
+                    case Iec104DataTypes.M_DP_NA_1:
+                    case Iec104DataTypes.M_DP_TA_1:
+                    case Iec104DataTypes.M_DP_TB_1:
+                        newdatapoint.Value = new IecDoublePointValueObject( IecDoublePointValue.OFF);
+                        break;
+                    default:
+                        throw new NotImplementedException($"{newdatapoint.Iec104DataType} is not implemented");
+                }
+            }
         }
     }
     

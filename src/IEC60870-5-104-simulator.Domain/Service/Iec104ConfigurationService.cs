@@ -12,10 +12,13 @@ namespace IEC60870_5_104_simulator.Domain.Service
     {
         public Dictionary<IecAddress, Iec104DataPoint> DataPoints { get; }
         public Dictionary<IecAddress, Iec104CommandDataPointConfig> commandDataPoints;
-        public Iec104ConfigurationService()
+        private readonly IIecValueLocalStorageRepository storage;
+
+        public Iec104ConfigurationService(IIecValueLocalStorageRepository storage)
         {
             DataPoints = new();
             commandDataPoints = new();
+            this.storage = storage;
         }
 
         public void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPoint> datapoints)
@@ -28,21 +31,33 @@ namespace IEC60870_5_104_simulator.Domain.Service
             {
                 commandDataPoints.Add(command.Address, command);
             }
-        }
+            InitStorage();
 
-        public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
+        }
+        private void InitStorage()
         {
-            if (commandDataPoints.TryGetValue(iecAddress, out Iec104CommandDataPointConfig value))
+
+            foreach (var data in DataPoints)
             {
-                return value;
-            }
-            throw new KeyNotFoundException("no iec config for this iec address has been found");
-        }
-        public bool CheckCommandExisting(IecAddress iecAddress)
-        {
-            return commandDataPoints.TryGetValue(iecAddress, out _);
 
+                storage.AddDataPoint(data.Key, data.Value);
+            }
         }
+    
+
+    public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
+    {
+        if (commandDataPoints.TryGetValue(iecAddress, out Iec104CommandDataPointConfig value))
+        {
+            return value;
+        }
+        throw new KeyNotFoundException("no iec config for this iec address has been found");
+    }
+    public bool CheckCommandExisting(IecAddress iecAddress)
+    {
+        return commandDataPoints.TryGetValue(iecAddress, out _);
 
     }
+
+}
 }

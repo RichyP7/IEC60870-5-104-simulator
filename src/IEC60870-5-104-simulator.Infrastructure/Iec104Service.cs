@@ -2,6 +2,7 @@
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
+using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using lib60870.CS101;
 using lib60870.CS104;
 using Microsoft.Extensions.Logging;
@@ -18,14 +19,15 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private readonly ILogger<Iec104Service> logger;
         private IIec104ConfigurationService configuration;
         private readonly IValueSimulatorFactory valueFactory;
-        private List<InformationObject> objectsToSimulate;
+        private readonly IIecValueLocalStorageRepository repository;
         private bool _connected = false;
         private bool _started = false;
 
 
         public IInformationObjectFactory factory { get; }
 
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger, IIec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile)
+        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger,
+            IIec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile, IIecValueLocalStorageRepository repository)
         {
             this.server = server;
             this.factory = factory;
@@ -33,13 +35,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
             this.logger = logger;
             this.configuration = configuration;
             this.valueFactory = simulatorProfile;
-            objectsToSimulate = new List<InformationObject>();
+            this.repository = repository;
         }
 
         public async Task Start()
         {
             SendInitialize();
-            SetupIecDataPointList();
             server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
             server.SetConnectionEventHandler(handler, null);
             server.SetInterrogationHandler(handlerinterrogation, null);
@@ -89,20 +90,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         }
 
-        private void SetupIecDataPointList()
-        {
-            objectsToSimulate.Clear();
-            foreach (var datapoint in configuration.DataPoints)
-            {
-                var infoObject = factory.GetInformationObject(datapoint.Value);
-                objectsToSimulate.Add(infoObject);
-            }
-            if (this.objectsToSimulate.Count == 0)
-            {
-                throw new InvalidOperationException("Empty configuration list provided");
-            }
-        }
-
         public Task Stop()
         {
             this.server.Stop();
@@ -121,8 +108,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         internal void SimulateValues(int FIXEDca)
         {
-            valueFactory.SimulateValues(this.objectsToSimulate);
+            //valueFactory.SimulateValues(this.objectsToSimulate);
             ASDU newAsdu = CreateAsdu(FIXEDca);
+            var objectsToSimulate = new List<InformationObject>();
             foreach (InformationObject typeddataPoints in objectsToSimulate)
             {
                 newAsdu.AddInformationObject(typeddataPoints);

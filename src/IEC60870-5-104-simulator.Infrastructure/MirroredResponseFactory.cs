@@ -1,6 +1,7 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
+using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using lib60870;
 using lib60870.CS101;
 
@@ -40,7 +41,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     return new SinglePointWithCP56Time2a(responseDataPoint.Address.ObjectAddress, value_M_SP_TB_1, new QualityDescriptor(), GetCP56Now());
                 case Iec104DataTypes.M_DP_NA_1:
                     DoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
-                    return new DoublePointInformation(responseDataPoint.Address.ObjectAddress, DoublePointValue.ON, new QualityDescriptor());
+                    return new DoublePointInformation(responseDataPoint.Address.ObjectAddress, value_M_DP_NA_1, new QualityDescriptor());
                 case Iec104DataTypes.M_DP_TA_1:
                     DoublePointValue value_M_DP_TA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
                     return new DoublePointWithCP24Time2a(responseDataPoint.Address.ObjectAddress, value_M_DP_TA_1, new QualityDescriptor(), GetCP24Now());
@@ -59,7 +60,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
             if (sentCommand is DoubleCommand)
             {
                 DoubleCommand dc = (DoubleCommand)sentCommand;
-                return (DoublePointValue)this.repository.SetDoublePoint(address, (IecDoublePointValue)dc.State);
+                var dcValue = (IecDoublePointValue)dc.State;
+                this.repository.SetDoublePoint(address, dcValue);
+                return (DoublePointValue)dcValue;
             }
             else
                 throw new InvalidCastException($"type {sentCommand}, Oa:{sentCommand.ObjectAddress}is not a doublecommand");
@@ -74,7 +77,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return new lib60870.CP56Time2a(DateTime.Now);
         }
 
-        private static CP24Time2a GetCP24Now()
+        private CP24Time2a GetCP24Now()
         {
             return new lib60870.CP24Time2a(DateTime.Now.Minute, DateTime.Now.Second, DateTime.Now.Millisecond);
         }
