@@ -123,7 +123,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
 
         /// <summary>
-        /// Handler for Iec receiver
+        /// Send ack and response message from the same stationary address
         /// </summary>
         /// <param name="parameter"></param>
         /// <param name="connection"></param>
@@ -136,7 +136,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 return false;
             AcknowledgeAllCommands(asdu);
             List<InformationObject> responses = GetGeneratedResponses(asdu);
-            SendGeneratedResponses(responses);
+            SendGeneratedResponses(responses,asdu.Ca);
             return true;
         }
 
@@ -174,9 +174,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             return new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.PERIODIC, false, false, 1, ca, false);
         }
-        private void SendGeneratedResponses(List<InformationObject> responses)
+        private void SendGeneratedResponses(List<InformationObject> responses,int ca)
         {
-            int ca = 1;
             if (responses.Count > 0)
             {
                 ASDU newAsduWithResponses = CreateAsdu(ca);
