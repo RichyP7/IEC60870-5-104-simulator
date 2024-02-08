@@ -1,6 +1,7 @@
 # IEC60870-5-104-simulator
 
-<img src="https://github.com/RichyP7/IEC60870-5-104-simulator/assets/14166202/f8c22afe-d4a0-4a1e-8655-43f6c3116cfe)" width=25% height=25%>
+<img src="https://github.com/RichyP7/IEC60870-5-104-simulator/assets/14166202/f8c22afe-d4a0-4a1e-8655-43f6c3116cfe)" width=25% height=25%> <sup>[1](#myfootnote1)</sup>
+
 
 ## Overview
 
@@ -56,3 +57,6 @@ Useful flags:
 cd PROJ_FOLDER
 docker build --target test . 
 ```
+
+<a name="myfootnote1">1</a>: Supported by DALL·E 3
+
