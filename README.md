@@ -2,14 +2,13 @@
 
 <img src="https://github.com/RichyP7/IEC60870-5-104-simulator/assets/14166202/f8c22afe-d4a0-4a1e-8655-43f6c3116cfe)" width=25% height=25%> <sup>[1](#myfootnote1)</sup>
 
-
 ## Overview
 
 This repository contains an IEC 60870-104 protocol simulator written in .NET. The simulator allows you to emulate communication between an IEC 60870-104 master and outstations (slaves). Whether you're testing your SCADA system or developing a new application, this simulator provides a convenient way to validate your implementation.
 Containerized simulator for testing the protocol in cloud native scenarios. The simulator currently is capable of being IEC104 Server Application which opens a port on the container and enables a TCP/IEC104 Client to connect to it.
 Whether you’re testing your SCADA system or developing a new application, this simulator provides a convenient way to validate your implementation.
 
-The library is basically a application which is using the awesome work of [mz-automation](https://github.com/mz-automation)
+The application is a just as good as it´s core library, which is using the awesome work of [mz-automation](https://github.com/mz-automation)
 
 ### What is IEC 60870
 Wikipedia:
@@ -44,8 +43,10 @@ If you are using docker set DOCKER_BUILDKIT=1 for skipping unused build targets 
 ### Simulator 
 
 ```
-docker build .
+docker pull ghcr.io/richyp7/iec60870-5-104-simulator:main
+docker run ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
+Currently it is just acknowledging commands. See [Roadmap](##Roadmap)
 
 Useful flags:
 ```
