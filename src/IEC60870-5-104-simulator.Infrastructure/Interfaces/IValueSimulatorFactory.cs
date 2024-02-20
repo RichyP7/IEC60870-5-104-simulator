@@ -1,9 +1,10 @@
-﻿using lib60870.CS101;
+﻿using IEC60870_5_104_simulator.Domain;
+using lib60870.CS101;
 
 namespace IEC60870_5_104_simulator.Infrastructure.Interfaces
 {
     public interface IValueSimulatorFactory
     {
-        void SimulateValues(IEnumerable<InformationObject> myList);
+        InformationObject SimulateValues(Iec104DataPoint datapoints);
     }
 }

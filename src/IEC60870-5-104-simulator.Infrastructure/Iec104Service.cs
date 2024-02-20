@@ -18,7 +18,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private readonly ICommandResponseFactory responseFactory;
         private readonly ILogger<Iec104Service> logger;
         private IIec104ConfigurationService configuration;
-        private readonly IValueSimulatorFactory valueFactory;
         private readonly IIecValueLocalStorageRepository repository;
         private bool _connected = false;
         private bool _started = false;
@@ -27,14 +26,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public IInformationObjectFactory factory { get; }
 
         public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger,
-            IIec104ConfigurationService configuration, IValueSimulatorFactory simulatorProfile, IIecValueLocalStorageRepository repository)
+            IIec104ConfigurationService configuration, IIecValueLocalStorageRepository repository)
         {
             this.server = server;
             this.factory = factory;
             this.responseFactory = responseFactory;
             this.logger = logger;
             this.configuration = configuration;
-            this.valueFactory = simulatorProfile;
             this.repository = repository;
         }
 
@@ -96,30 +94,30 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return Task.CompletedTask;
         }
 
-        public Task Simulate()
+        public Task Simulate(IEnumerable<Iec104DataPoint> datapoints)
         {
-            int FIXEDca = 1;
             if (this._connected)
             {
-                SimulateValues(FIXEDca);
+                SimulateValues(datapoints);
             }
             return Task.CompletedTask;
         }
 
-        internal void SimulateValues(int FIXEDca)
-        {//TODo implement cyclic Simulation
+        internal void SimulateValues(IEnumerable<Iec104DataPoint> datapoints)
+        {
+            //todo implement correct CA
+            ASDU newAsdu = CreateAsdu(10);
 
-            //valueFactory.SimulateValues(.Get);
-            //ASDU newAsdu = CreateAsdu(FIXEDca);
-            //foreach (InformationObject typeddataPoints in objectsToSimulate)
-            //{
-            //    newAsdu.AddInformationObject(typeddataPoints);
-            //}
-            //if (newAsdu.NumberOfElements > 1)
-            //{
-            //    server.EnqueueASDU(newAsdu);
-            //    logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
-            //}
+            foreach (Iec104DataPoint dataPoint in datapoints)
+            {
+                var ioa= factory.GetInformationObject(dataPoint);
+                newAsdu.AddInformationObject(ioa);
+            }
+            if (newAsdu.NumberOfElements > 0)
+            {
+                server.EnqueueASDU(newAsdu);
+                logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
+            }
         }
 
         /// <summary>

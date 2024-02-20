@@ -29,7 +29,6 @@ namespace ServiceExtensionMethods
             });
             services.AddSingleton<IInformationObjectFactory, InformationObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
-            services.AddSingleton<IValueSimulatorFactory, RandomSimulatorFactory>();
             services.AddSingleton<IIecValueLocalStorageRepository, IecValueLocalStorageRepository>();
             return services;
         }
