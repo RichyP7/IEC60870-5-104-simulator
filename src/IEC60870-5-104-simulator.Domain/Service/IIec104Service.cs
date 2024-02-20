@@ -2,7 +2,7 @@
 {
     public interface IIec104Service
     {
-        Task Simulate();
+        Task Simulate(IEnumerable<Iec104DataPoint> datapoints);
         Task Start();
         Task Stop();
         bool ConnectionEstablished();

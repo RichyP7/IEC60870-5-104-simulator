@@ -43,7 +43,7 @@ namespace IEC60870_5_104_simulator.Service
                 {
                     _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
                     await Task.Delay(cycleTimeMs);
-                    await this.iecService.Simulate();
+                    await this.iecService.Simulate(datapointConfigService.DataPoints.Values);
                 }
                 catch (TaskCanceledException ex)
                 {
