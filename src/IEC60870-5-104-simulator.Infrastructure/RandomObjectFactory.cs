@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
-    public class InformationObjectFactory : IInformationObjectFactory
+    public class RandomObjectFactory : IInformationObjectFactory
     {
 
         public InformationObject GetInformationObject(Iec104DataPoint responseDataPoint)
@@ -16,9 +16,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
             int oa = responseDataPoint.Address.ObjectAddress;
             switch (responseDataPoint.Iec104DataType)
             {
-                //case Iec104DataTypes.M_ST_NA_1:
-                //    int stepValue = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                //    return new StepPositionInformation(oa, (int)stepValue, true, new QualityDescriptor());
+                case Iec104DataTypes.M_ST_NA_1:
+                    int stepValue = CreateAdjustedStepValue(responseDataPoint.Address);
+                    return new StepPositionInformation(oa, (int)stepValue, true, new QualityDescriptor());
                 //case Iec104DataTypes.M_ST_TA_1:
                 //    int stepValuetime = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
                 //    return new StepPositionWithCP24Time2a(oa, (int)stepValuetime, true, new QualityDescriptor(), GetCP24Now());
@@ -38,7 +38,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 //    DoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
                 //    return new DoublePointInformation(oa, value_M_DP_NA_1, new QualityDescriptor());
                 case Iec104DataTypes.M_DP_TA_1:
-                    DoublePointValue value_M_DP_TA_1 = CreateDoublePointValue( );
+                    DoublePointValue value_M_DP_TA_1 = CreateDoublePointValue();
                     return new DoublePointWithCP24Time2a(oa, value_M_DP_TA_1, new QualityDescriptor(), GetCP24Now());
                 case Iec104DataTypes.M_DP_TB_1:
                     DoublePointValue value_M_DP_TB_1 = CreateDoublePointValue();
@@ -53,9 +53,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private DoublePointValue CreateDoublePointValue()
         {
             Random random = new();
-            return  random.NextDouble() >= 0.5 ? DoublePointValue.OFF: DoublePointValue.ON;
+            return random.NextDouble() >= 0.5 ? DoublePointValue.OFF : DoublePointValue.ON;
         }
-
+        private int CreateAdjustedStepValue(IecAddress address)
+        {
+            Random random = new();
+            return (int)random.NextInt64(1, 5);
+        }
         private CP56Time2a GetCP56Now()
         {
             return new lib60870.CP56Time2a(DateTime.Now);
