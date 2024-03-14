@@ -27,8 +27,9 @@ namespace ServiceExtensionMethods
                 server.SetLocalPort(2404);
                 return server;
             });
-            services.AddSingleton<IInformationObjectFactory, InformationObjectFactory>();
+            services.AddSingleton<IInformationObjectFactory, RandomObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
+            services.AddSingleton<IInformationObjectTemplate, InformationObjectTemplateMethod>();
             services.AddSingleton<IIecValueLocalStorageRepository, IecValueLocalStorageRepository>();
             return services;
         }

@@ -10,10 +10,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class MirroredResponseFactory : ICommandResponseFactory
     {
         private readonly IIecValueLocalStorageRepository repository;
+        private readonly IInformationObjectTemplate template;
 
-        public MirroredResponseFactory(IIecValueLocalStorageRepository repository)
+        public MirroredResponseFactory(IIecValueLocalStorageRepository repository, IInformationObjectTemplate template)
         {
             this.repository = repository;
+            this.template = template;
         }
 
         public InformationObject GetResponseInformationObject(Iec104CommandDataPointConfig commandCfg, InformationObject sentCommand)
@@ -22,47 +24,49 @@ namespace IEC60870_5_104_simulator.Infrastructure
             switch (responseDataPoint.Iec104DataType)
             {
                 case Iec104DataTypes.M_ST_NA_1:
-                    int stepValue = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                    return new StepPositionInformation(responseDataPoint.Address.ObjectAddress, (int)stepValue, true, new QualityDescriptor());
                 case Iec104DataTypes.M_ST_TA_1:
-                    int stepValuetime = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                    return new StepPositionWithCP24Time2a(responseDataPoint.Address.ObjectAddress, (int)stepValuetime, true, new QualityDescriptor(), GetCP24Now());
                 case Iec104DataTypes.M_ST_TB_1:
-                    int stepValuetime56 = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                    return new StepPositionWithCP56Time2a(responseDataPoint.Address.ObjectAddress, (int)stepValuetime56, true, new QualityDescriptor(), GetCP56Now());
+                    int stepValue = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
+                    return template.GetStepposition(responseDataPoint.Address.ObjectAddress, new IecIntValueObject(stepValue), responseDataPoint.Iec104DataType);
                 case Iec104DataTypes.M_SP_NA_1:
-                    bool spaValue = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                    return new SinglePointInformation(responseDataPoint.Address.ObjectAddress,spaValue, new QualityDescriptor());
                 case Iec104DataTypes.M_SP_TA_1:
-                    bool value_M_SP_TA_1 = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                    return new SinglePointWithCP24Time2a(responseDataPoint.Address.ObjectAddress, value_M_SP_TA_1, new QualityDescriptor(), GetCP24Now());
                 case Iec104DataTypes.M_SP_TB_1:
-                    bool value_M_SP_TB_1 = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                    return new SinglePointWithCP56Time2a(responseDataPoint.Address.ObjectAddress, value_M_SP_TB_1, new QualityDescriptor(), GetCP56Now());
+                    bool spaValue = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
+                    return template.GetSinglePoint(responseDataPoint.Address.ObjectAddress, new IecSinglePointValueObject(spaValue), responseDataPoint.Iec104DataType);
                 case Iec104DataTypes.M_DP_NA_1:
-                    DoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
-                    return new DoublePointInformation(responseDataPoint.Address.ObjectAddress, value_M_DP_NA_1, new QualityDescriptor());
                 case Iec104DataTypes.M_DP_TA_1:
-                    DoublePointValue value_M_DP_TA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
-                    return new DoublePointWithCP24Time2a(responseDataPoint.Address.ObjectAddress, value_M_DP_TA_1, new QualityDescriptor(), GetCP24Now());
                 case Iec104DataTypes.M_DP_TB_1:
-                    DoublePointValue value_M_DP_TB_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
-                    return new DoubleCommandWithCP56Time2a(responseDataPoint.Address.ObjectAddress,(int)value_M_DP_TB_1,false,0, GetCP56Now());
+                    IecDoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
+                    return template.GetDoublePoint(responseDataPoint.Address.ObjectAddress, new IecDoublePointValueObject(value_M_DP_NA_1), responseDataPoint.Iec104DataType);
                 case Iec104DataTypes.M_ME_NA_1:
-                    return new MeasuredValueScaled(responseDataPoint.Address.ObjectAddress, Random.Shared.Next(), new QualityDescriptor());
+                case Iec104DataTypes.M_ME_TB_1:
+                case Iec104DataTypes.M_ME_TE_1:
+                    int scaled = CreateMeasuredValueScaled(sentCommand, responseDataPoint.Address);
+                    return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress, new IecIntValueObject(scaled), responseDataPoint.Iec104DataType);
                 default:
                     throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
             }
         }
 
-        private DoublePointValue CreateDoublePointValue(InformationObject sentCommand, IecAddress address)
+        private int CreateMeasuredValueScaled(InformationObject sentCommand, IecAddress address)
+        {
+            if (sentCommand is SetpointCommandScaled)
+            {
+                SetpointCommandScaled dc = (SetpointCommandScaled)sentCommand;
+                return dc.ScaledValue?.Value ?? throw new InvalidCastException("ScaledValue is zero");
+            }
+            else
+                throw new InvalidCastException($"type {sentCommand}, Oa:{sentCommand.ObjectAddress}is not a SetpointCommandScaled");
+        }
+
+        private IecDoublePointValue CreateDoublePointValue(InformationObject sentCommand, IecAddress address)
         {
             if (sentCommand is DoubleCommand)
             {
                 DoubleCommand dc = (DoubleCommand)sentCommand;
                 var dcValue = (IecDoublePointValue)dc.State;
                 this.repository.SetDoublePoint(address, dcValue);
-                return (DoublePointValue)dcValue;
+                return dcValue;
             }
             else
                 throw new InvalidCastException($"type {sentCommand}, Oa:{sentCommand.ObjectAddress}is not a doublecommand");

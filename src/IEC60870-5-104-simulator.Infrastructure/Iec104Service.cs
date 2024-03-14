@@ -98,7 +98,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             if (this._connected)
             {
-                SimulateValues(datapoints);
+              SimulateValues(datapoints);
             }
             return Task.CompletedTask;
         }
@@ -154,7 +154,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 IecAddress searchAddress = new IecAddress(asdu.Ca, ioa.ObjectAddress);
                 if (this.configuration.CheckCommandExisting(searchAddress))
                 {
-                    logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been configured ");
+                    logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been found and configured ");
                     Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(searchAddress);
                     InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, ioa);
                     responseInformationObjects.Add(response);
