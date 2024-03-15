@@ -66,5 +66,16 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 _ => throw new NotImplementedException($"no measuredvaluescaled for this type {type}"),
             };
         }
+
+        public InformationObject GetMeasuredValueShort(int objectAddress, IecValueShortObject value, Iec104DataTypes type)
+        {
+            return type switch
+            {
+                Iec104DataTypes.M_ME_NC_1 => new MeasuredValueShort(objectAddress, (float)value.GetValue(), new QualityDescriptor()),
+                Iec104DataTypes.M_ME_TC_1 => new MeasuredValueShortWithCP24Time2a(objectAddress, (int)value.GetValue(), new QualityDescriptor(), GetCP24Now()),
+                Iec104DataTypes.M_ME_TF_1 => new MeasuredValueShortWithCP56Time2a(objectAddress, (int)value.GetValue(), new QualityDescriptor(), GetCP56Now()),
+                _ => throw new NotImplementedException($"no {nameof(MeasuredValueShort)} for this type {type}"),
+            };
+        }
     }
 }

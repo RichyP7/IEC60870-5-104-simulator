@@ -44,17 +44,29 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     int scaled = CreateMeasuredValueScaled(sentCommand, responseDataPoint.Address);
                     return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress, new IecIntValueObject(scaled), responseDataPoint.Iec104DataType);
                 case Iec104DataTypes.M_ME_NC_1:
-                    throw new NotImplementedException("short");
+                case Iec104DataTypes.M_ME_TC_1:
+                case Iec104DataTypes.M_ME_TF_1:
+                    float valueFloat= CreateMeasuredValueShort(sentCommand, responseDataPoint.Address);
+                    return template.GetMeasuredValueShort(responseDataPoint.Address.ObjectAddress, new IecValueShortObject(valueFloat), responseDataPoint.Iec104DataType);
                 default:
                     throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
             }
         }
 
+        private float CreateMeasuredValueShort(InformationObject sentCommand, IecAddress address)
+        {
+            if (sentCommand is SetpointCommandShort dc)
+            {
+                return dc.Value;
+            }
+            else
+                throw new InvalidCastException($"type {sentCommand}, Oa:{sentCommand.ObjectAddress}is not a {nameof(SetpointCommandShort)}");
+        }
+
         private int CreateMeasuredValueScaled(InformationObject sentCommand, IecAddress address)
         {
-            if (sentCommand is SetpointCommandScaled)
+            if (sentCommand is SetpointCommandScaled dc)
             {
-                SetpointCommandScaled dc = (SetpointCommandScaled)sentCommand;
                 return dc.ScaledValue?.Value ?? throw new InvalidCastException("ScaledValue is zero");
             }
             else

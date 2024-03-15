@@ -105,6 +105,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     case Iec104DataTypes.M_ME_TE_1:
                         newdatapoint.Value = new IecValueScaledObject(new ScaledValueRecord(0));
                         break;
+                    case Iec104DataTypes.M_ME_NC_1:
+                    case Iec104DataTypes.M_ME_TC_1:
+                    case Iec104DataTypes.M_ME_TF_1:
+                        newdatapoint.Value = new IecValueShortObject(0.0f);
+                        break;
                     default:
                         throw new NotImplementedException($"{newdatapoint.Iec104DataType} is not implemented");
                 }
