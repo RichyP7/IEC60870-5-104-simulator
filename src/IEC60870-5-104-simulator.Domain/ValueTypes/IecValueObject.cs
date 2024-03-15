@@ -56,6 +56,19 @@
             return Value;
         }
     }
+    public record IecValueShortObject : IecValueObject
+    {
+        public float Value { get; set; }
+        public IecValueShortObject(float value)
+        {
+            Value = value;
+        }
+
+        public override object GetValue()
+        {
+            return Value;
+        }
+    }
     public record ScaledValueRecord
     {
         public ScaledValueRecord(int value)
