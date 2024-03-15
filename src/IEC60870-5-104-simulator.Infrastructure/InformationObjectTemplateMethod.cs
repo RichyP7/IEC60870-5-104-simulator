@@ -60,7 +60,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             return type switch
             {
-                Iec104DataTypes.M_ME_NA_1 => new MeasuredValueScaled(objectAddress, (int)value.GetValue(), new QualityDescriptor()),
+                Iec104DataTypes.M_ME_NB_1 => new MeasuredValueScaled(objectAddress, (int)value.GetValue(), new QualityDescriptor()),
                 Iec104DataTypes.M_ME_TB_1 => new MeasuredValueScaledWithCP24Time2a(objectAddress, (int)value.GetValue(), new QualityDescriptor(), GetCP24Now()),
                 Iec104DataTypes.M_ME_TE_1 => new MeasuredValueScaledWithCP56Time2a(objectAddress, (int)value.GetValue(), new QualityDescriptor(), GetCP56Now()),
                 _ => throw new NotImplementedException($"no measuredvaluescaled for this type {type}"),

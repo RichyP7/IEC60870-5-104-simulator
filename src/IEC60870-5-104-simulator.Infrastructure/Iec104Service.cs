@@ -98,7 +98,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             if (this._connected)
             {
-              SimulateValues(datapoints);
+              //SimulateValues(datapoints);
             }
             return Task.CompletedTask;
         }
@@ -129,13 +129,21 @@ namespace IEC60870_5_104_simulator.Infrastructure
         /// <returns></returns>
         private bool AsduSendMirrorAcknowledgements(object parameter, IMasterConnection connection, ASDU asdu)
         {
-
-            if (IsNonCommandType(asdu))
+            try
+            {
+                if (IsNonCommandType(asdu))
+                    return false;
+                AcknowledgeAllCommands(asdu);
+                List<InformationObject> responses = GetGeneratedResponses(asdu);
+                SendGeneratedResponses(responses, asdu.Ca);
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                logger.LogWarning("Command processing failed for {ca} \n {message}", asdu.Ca,ex.Message);
                 return false;
-            AcknowledgeAllCommands(asdu);
-            List<InformationObject> responses = GetGeneratedResponses(asdu);
-            SendGeneratedResponses(responses,asdu.Ca);
-            return true;
+            }
+
         }
 
         private void AcknowledgeAllCommands(ASDU asdu)
@@ -156,6 +164,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 {
                     logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been found and configured ");
                     Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(searchAddress);
+                    if (commandConfig.SimulatedDataPoint == null)
+                        continue;
                     InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, ioa);
                     responseInformationObjects.Add(response);
                 }

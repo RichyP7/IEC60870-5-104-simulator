@@ -38,11 +38,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 case Iec104DataTypes.M_DP_TB_1:
                     IecDoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
                     return template.GetDoublePoint(responseDataPoint.Address.ObjectAddress, new IecDoublePointValueObject(value_M_DP_NA_1), responseDataPoint.Iec104DataType);
-                case Iec104DataTypes.M_ME_NA_1:
+                case Iec104DataTypes.M_ME_NB_1:
                 case Iec104DataTypes.M_ME_TB_1:
                 case Iec104DataTypes.M_ME_TE_1:
                     int scaled = CreateMeasuredValueScaled(sentCommand, responseDataPoint.Address);
                     return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress, new IecIntValueObject(scaled), responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_ME_NC_1:
+                    throw new NotImplementedException("short");
                 default:
                     throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
             }

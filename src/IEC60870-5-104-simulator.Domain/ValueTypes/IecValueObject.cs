@@ -43,4 +43,27 @@
             return Value;
         }
     }
+    public record IecValueScaledObject : IecValueObject
+    {
+        public ScaledValueRecord Value { get; set; }
+        public IecValueScaledObject(ScaledValueRecord value)
+        {
+            Value = value;
+        }
+
+        public override object GetValue()
+        {
+            return Value;
+        }
+    }
+    public record ScaledValueRecord
+    {
+        public ScaledValueRecord(int value)
+        {
+            Value = value;
+        }
+
+        public int Value { get; set; }
+        public short ShortValue { get; }
+    }
 }
