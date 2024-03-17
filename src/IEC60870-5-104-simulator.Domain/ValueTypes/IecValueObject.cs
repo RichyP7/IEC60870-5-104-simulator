@@ -56,10 +56,10 @@
             return Value;
         }
     }
-    public record IecValueShortObject : IecValueObject
+    public record IecValueFloatObject : IecValueObject
     {
         public float Value { get; set; }
-        public IecValueShortObject(float value)
+        public IecValueFloatObject(float value)
         {
             Value = value;
         }
