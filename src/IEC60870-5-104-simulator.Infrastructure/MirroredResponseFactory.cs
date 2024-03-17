@@ -47,10 +47,25 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 case Iec104DataTypes.M_ME_TC_1:
                 case Iec104DataTypes.M_ME_TF_1:
                     float valueFloat= CreateMeasuredValueShort(sentCommand, responseDataPoint.Address);
-                    return template.GetMeasuredValueShort(responseDataPoint.Address.ObjectAddress, new IecValueShortObject(valueFloat), responseDataPoint.Iec104DataType);
+                    return template.GetMeasuredValueShort(responseDataPoint.Address.ObjectAddress, new IecValueFloatObject(valueFloat), responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_ME_NA_1:
+                case Iec104DataTypes.M_ME_TA_1:
+                case Iec104DataTypes.M_ME_ND_1:
+                    float valueNormalized = CreateMeasuredValueNormalized(sentCommand, responseDataPoint.Address);
+                    return template.GetMeasuredValueNormalized(responseDataPoint.Address.ObjectAddress, new IecValueFloatObject(valueNormalized), responseDataPoint.Iec104DataType);
                 default:
                     throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
             }
+        }
+
+        private float CreateMeasuredValueNormalized(InformationObject sentCommand, IecAddress address)
+        {
+            if (sentCommand is SetpointCommandNormalized dc)
+            {
+                return dc.NormalizedValue;
+            }
+            else
+                throw new InvalidCastException($"type {sentCommand}, Oa:{sentCommand.ObjectAddress}is not a {nameof(SetpointCommandNormalized)}");
         }
 
         private float CreateMeasuredValueShort(InformationObject sentCommand, IecAddress address)
