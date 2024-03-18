@@ -10,6 +10,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class RandomObjectFactory : IInformationObjectFactory
     {
+        //Todo: implement remaining types
 
         public InformationObject GetInformationObject(Iec104DataPoint responseDataPoint)
         {
@@ -18,26 +19,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 case Iec104DataTypes.M_ST_NA_1:
                     int stepValue = CreateAdjustedStepValue(responseDataPoint.Address);
-                    return new StepPositionInformation(oa, (int)stepValue, true, new QualityDescriptor());
-                //case Iec104DataTypes.M_ST_TA_1:
-                //    int stepValuetime = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                //    return new StepPositionWithCP24Time2a(oa, (int)stepValuetime, true, new QualityDescriptor(), GetCP24Now());
-                //case Iec104DataTypes.M_ST_TB_1:
-                //    int stepValuetime56 = CreateAdjustedStepValue(sentCommand, responseDataPoint.Address);
-                //    return new StepPositionWithCP56Time2a(oa, (int)stepValuetime56, true, new QualityDescriptor(), GetCP56Now());
-                //case Iec104DataTypes.M_SP_NA_1:
-                //    bool spaValue = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                //    return new SinglePointInformation(oa, spaValue, new QualityDescriptor());
-                //case Iec104DataTypes.M_SP_TA_1:
-                //    bool value_M_SP_TA_1 = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                //    return new SinglePointWithCP24Time2a(oa, value_M_SP_TA_1, new QualityDescriptor(), GetCP24Now());
-                //case Iec104DataTypes.M_SP_TB_1:
-                //    bool value_M_SP_TB_1 = CreateMirroredSinglePointValue(sentCommand, responseDataPoint.Address);
-                //    return new SinglePointWithCP56Time2a(oa, value_M_SP_TB_1, new QualityDescriptor(), GetCP56Now());
-                //case Iec104DataTypes.M_DP_NA_1:
-                //    DoublePointValue value_M_DP_NA_1 = CreateDoublePointValue(sentCommand, responseDataPoint.Address);
-                //    return new DoublePointInformation(oa, value_M_DP_NA_1, new QualityDescriptor());
-                case Iec104DataTypes.M_DP_TA_1:
+                    return new StepPositionInformation(oa, (int)stepValue, true, new QualityDescriptor());case Iec104DataTypes.M_DP_TA_1:
                     DoublePointValue value_M_DP_TA_1 = CreateDoublePointValue();
                     return new DoublePointWithCP24Time2a(oa, value_M_DP_TA_1, new QualityDescriptor(), GetCP24Now());
                 case Iec104DataTypes.M_DP_TB_1:
