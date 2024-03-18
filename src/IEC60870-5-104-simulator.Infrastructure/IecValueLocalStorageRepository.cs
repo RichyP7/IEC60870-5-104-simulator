@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
-    internal class IecValueLocalStorageRepository : IIecValueLocalStorageRepository
+    internal class IecValueLocalStorageRepository : IIecValueRepository
     {
         public ConcurrentDictionary<IecAddress, Iec104DataPoint> StoredDataPoints;
         public IecValueLocalStorageRepository()

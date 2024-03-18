@@ -9,10 +9,10 @@ namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class MirroredResponseFactory : ICommandResponseFactory
     {
-        private readonly IIecValueLocalStorageRepository repository;
+        private readonly IIecValueRepository repository;
         private readonly IInformationObjectTemplate template;
 
-        public MirroredResponseFactory(IIecValueLocalStorageRepository repository, IInformationObjectTemplate template)
+        public MirroredResponseFactory(IIecValueRepository repository, IInformationObjectTemplate template)
         {
             this.repository = repository;
             this.template = template;

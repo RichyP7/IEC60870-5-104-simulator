@@ -9,11 +9,11 @@ namespace IEC60870_5_104_simulator.Domain.UnitTests
     public class Iec104ConfigurationServiceTest
     {
         Iec104ConfigurationService service;
-        Mock<IIecValueLocalStorageRepository> storageMock;
+        Mock<IIecValueRepository> storageMock;
 
         public Iec104ConfigurationServiceTest()
         {
-            storageMock = new Mock<IIecValueLocalStorageRepository>();
+            storageMock = new Mock<IIecValueRepository>();
             this.service = new Iec104ConfigurationService(storageMock.Object);
         }
         [Fact]
