@@ -2,7 +2,7 @@
 
 namespace IEC60870_5_104_simulator.Domain.Interfaces
 {
-    public interface IIecValueLocalStorageRepository
+    public interface IIecValueRepository
     {
         bool GetSinglePoint(IecAddress address);
         void SetSinglePoint(IecAddress address, bool value);

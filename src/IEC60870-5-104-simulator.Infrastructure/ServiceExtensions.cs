@@ -30,7 +30,7 @@ namespace ServiceExtensionMethods
             services.AddSingleton<IInformationObjectFactory, RandomObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
             services.AddSingleton<IInformationObjectTemplate, InformationObjectTemplateMethod>();
-            services.AddSingleton<IIecValueLocalStorageRepository, IecValueLocalStorageRepository>();
+            services.AddSingleton<IIecValueRepository, IecValueLocalStorageRepository>();
             return services;
         }
 

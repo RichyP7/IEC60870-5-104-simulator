@@ -15,7 +15,7 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         private Mock<IInformationObjectFactory> mockFactory;
         private Mock<ICommandResponseFactory> mockCommandFactory;
         private Mock<IValueSimulatorFactory> mockValueFactory;
-        private Mock<IIecValueLocalStorageRepository> storageMock;
+        private Mock<IIecValueRepository> storageMock;
         lib60870.CS104.Server testServer;
         private Iec104Service service;
         public IeC104ServerRunnerTest() 

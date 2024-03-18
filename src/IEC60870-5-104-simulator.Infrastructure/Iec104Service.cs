@@ -18,7 +18,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private readonly ICommandResponseFactory responseFactory;
         private readonly ILogger<Iec104Service> logger;
         private IIec104ConfigurationService configuration;
-        private readonly IIecValueLocalStorageRepository repository;
+        private readonly IIecValueRepository repository;
         private bool _connected = false;
         private bool _started = false;
 
@@ -26,7 +26,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public IInformationObjectFactory factory { get; }
 
         public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger,
-            IIec104ConfigurationService configuration, IIecValueLocalStorageRepository repository)
+            IIec104ConfigurationService configuration, IIecValueRepository repository)
         {
             this.server = server;
             this.factory = factory;

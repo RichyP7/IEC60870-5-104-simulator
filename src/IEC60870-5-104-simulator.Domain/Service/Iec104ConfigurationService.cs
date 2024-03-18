@@ -12,9 +12,9 @@ namespace IEC60870_5_104_simulator.Domain.Service
     {
         public Dictionary<IecAddress, Iec104DataPoint> DataPoints { get; }
         public Dictionary<IecAddress, Iec104CommandDataPointConfig> commandDataPoints;
-        private readonly IIecValueLocalStorageRepository storage;
+        private readonly IIecValueRepository storage;
 
-        public Iec104ConfigurationService(IIecValueLocalStorageRepository storage)
+        public Iec104ConfigurationService(IIecValueRepository storage)
         {
             DataPoints = new();
             commandDataPoints = new();
