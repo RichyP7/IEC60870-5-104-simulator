@@ -105,7 +105,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         internal void SimulateValues(IEnumerable<Iec104DataPoint> datapoints)
         {
-            List<InformationObject> cyclicIoPoints = new List<InformationObject>();
+            List<InformationObject> cyclicIoPoints = new();
             IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(datapoints);
             foreach (Iec104DataPoint dataPoint in GetCyclicDataPoints(datapoints))
             {
@@ -113,7 +113,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
                 myASDU.Value.AddInformationObject(ioa);
             }
-
             Send(asdus.Select(v => v.Value));
         }
 
@@ -130,7 +129,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     .GroupBy(x => new { x.Address?.StationaryAddress, x.Iec104DataType })
                     .Select(g => new { station = g.First().Address.StationaryAddress, iectype = g.First().Iec104DataType }))
             {
-                ASDU newAsdu = CreateAsdu(groupByStationAndType.station);
+                ASDU newAsdu = CreateAsdu(groupByStationAndType.station, CauseOfTransmission.PERIODIC);
                 asdusPerTypeandCa.Add(new KeyValuePair<Iec104DataTypes, ASDU>(groupByStationAndType.iectype, newAsdu));
             }
             return asdusPerTypeandCa;
@@ -142,7 +141,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                                    select toSend)
             {
                 server.EnqueueASDU(toSend);
-                logger.LogDebug("Enqeued {asdu} items", toSend.NumberOfElements);
+                logger.LogDebug("Enqeued {asdu} items on station {ca}", toSend.NumberOfElements, toSend.Ca);
             }
         }
 
@@ -205,15 +204,15 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return (int)asdu.TypeId < 45 || (int)asdu.TypeId > 107;
         }
 
-        private ASDU CreateAsdu(int ca)
+        private ASDU CreateAsdu(int ca, CauseOfTransmission cot)
         {
-            return new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.PERIODIC, false, false, 1, ca, false);
+            return new ASDU(server.GetApplicationLayerParameters(), cot, false, false, 1, ca, false);
         }
         private void SendGeneratedResponses(List<InformationObject> responses, int ca)
         {
             if (responses.Count > 0)
             {
-                ASDU newAsduWithResponses = CreateAsdu(ca);
+                ASDU newAsduWithResponses = CreateAsdu(ca,CauseOfTransmission.SPONTANEOUS);
                 responses.ForEach(v => newAsduWithResponses.AddInformationObject(v));
                 server.EnqueueASDU(newAsduWithResponses);
             }
