@@ -98,27 +98,54 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             if (this._connected)
             {
-              //SimulateValues(datapoints);
+                SimulateValues(datapoints);
             }
             return Task.CompletedTask;
         }
 
         internal void SimulateValues(IEnumerable<Iec104DataPoint> datapoints)
         {
-            //todo implement correct CA
-            ASDU newAsdu = CreateAsdu(10);
-
-            foreach (Iec104DataPoint dataPoint in datapoints)
+            List<InformationObject> cyclicIoPoints = new List<InformationObject>();
+            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(datapoints);
+            foreach (Iec104DataPoint dataPoint in GetCyclicDataPoints(datapoints))
             {
-                var ioa= factory.GetInformationObject(dataPoint);
-                newAsdu.AddInformationObject(ioa);
+                var ioa = factory.GetInformationObject(dataPoint);
+                var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
+                myASDU.Value.AddInformationObject(ioa);
             }
-            if (newAsdu.NumberOfElements > 0)
+
+            Send(asdus.Select(v => v.Value));
+        }
+
+        private static IEnumerable<Iec104DataPoint> GetCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
+        {
+            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic));
+        }
+
+        private IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)
+        {
+            List<KeyValuePair<Iec104DataTypes, ASDU>> asdusPerTypeandCa = new();
+            foreach (var groupByStationAndType in
+                    datapoints
+                    .GroupBy(x => new { x.Address?.StationaryAddress, x.Iec104DataType })
+                    .Select(g => new { station = g.First().Address.StationaryAddress, iectype = g.First().Iec104DataType }))
             {
-                server.EnqueueASDU(newAsdu);
-                logger.LogDebug("Enqeued {asdu} items", newAsdu.NumberOfElements);
+                ASDU newAsdu = CreateAsdu(groupByStationAndType.station);
+                asdusPerTypeandCa.Add(new KeyValuePair<Iec104DataTypes, ASDU>(groupByStationAndType.iectype, newAsdu));
+            }
+            return asdusPerTypeandCa;
+        }
+        private void Send(IEnumerable<ASDU> asdus)
+        {
+            foreach (var toSend in from ASDU toSend in asdus
+                                   where toSend.NumberOfElements > 0
+                                   select toSend)
+            {
+                server.EnqueueASDU(toSend);
+                logger.LogDebug("Enqeued {asdu} items", toSend.NumberOfElements);
             }
         }
+
 
         /// <summary>
         /// Send ack and response message from the same stationary address
@@ -138,9 +165,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 SendGeneratedResponses(responses, asdu.Ca);
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                logger.LogWarning("Command processing failed for {ca} \n {message}", asdu.Ca,ex.Message);
+                logger.LogWarning("Command processing failed for {ca} \n {message}", asdu.Ca, ex.Message);
                 return false;
             }
 
@@ -182,7 +209,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             return new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.PERIODIC, false, false, 1, ca, false);
         }
-        private void SendGeneratedResponses(List<InformationObject> responses,int ca)
+        private void SendGeneratedResponses(List<InformationObject> responses, int ca)
         {
             if (responses.Count > 0)
             {
