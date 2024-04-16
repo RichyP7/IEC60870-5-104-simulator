@@ -20,9 +20,10 @@ The project is still in early development and there are a lot of feature missing
 
 | **Feature**                 | **Description**                                                                                   | **Status**       |
 |-----------------------------|---------------------------------------------------------------------------------------------------|------------------|
-| Basic Communication         | Establish communication channels between master and outstations.                                | ✅ Implemented   |
-| Command acknowledgkent      | Acknowledge all command types                                                                    | ✅ Implemented   |
-| Sim Measurements for Commands | Send Measurement types if a connected command gets send                                       | ⏳ In Progress   |
+| Basic Communication         | Establish communication channels between master and outstations.                                  | ✅ Implemented   |
+| Command acknowledgkent      | Acknowledge all command types                                                                     | ✅ Implemented   |
+| Cyclic random Measurments   | Send cyclic random measurement for configured types                                               | ✅ Implemented  |
+| Sim Measurements for Commands | Send Measurement types if a connected command gets send                                         | ⏳ In Progress   |
 | ASDU Types                  | Support all ASDU types 1, 2, 30, 31                                                     | ⏳ In Progress   |
 | Unit Testing                | Comprehensive unit tests to ensure reliability.                                                  | ⏳ In Progress   |
 | Logging and Debugging       | Detailed logs for troubleshooting and debugging.                                                 | ⏳ In Progress   |
@@ -52,12 +53,33 @@ Useful flags:
 ```
 --progress=plain --no-cache  to show command outputs
 ```
+
+#### Initial Configuration
+
+Supply configuration for Iec104 DataPoints via IConfiguration (e.g environment variables)
+```
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+
+      "Measures": [
+        {
+          "Id": "Point1",
+          "Ca": "20",
+          "Oa": "25",
+          "TypeId": 5,
+          "Mode": "Cyclic"
+        },
+```
+
 ### Tests
 
 ```
 cd PROJ_FOLDER
 docker build --target test . 
 ```
+
+
 
 <a name="myfootnote1">1</a>: Supported by DALL·E 3
 
