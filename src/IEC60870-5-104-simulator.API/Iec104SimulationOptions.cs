@@ -13,8 +13,8 @@ namespace IEC60870_5_104_simulator.API
 
         public class IecConfiguration
         {
-            public List<DataPointConfig> Measures { get; set; }
-            public List<CommandPointConfig> Commands { get; set; }
+            public List<DataPointConfig> Measures { get; set; } = new List<DataPointConfig>();
+            public List<CommandPointConfig> Commands { get; set; }= new List<CommandPointConfig>();
         }
         public class DataPointConfig
         {

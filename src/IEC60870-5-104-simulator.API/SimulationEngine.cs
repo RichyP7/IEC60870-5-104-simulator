@@ -82,8 +82,10 @@ namespace IEC60870_5_104_simulator.Service
             var measures = options.DataPointConfiguration.Measures;
             var commandDataPoints = this.mapper.Map<List<Iec104CommandDataPointConfig>>(commands);
             var resultMeasures = this.mapper.Map<List<Iec104DataPoint>>(measures);
-            AssignResponses(commands, commandDataPoints, resultMeasures);
+            if(commands!= null)
+                AssignResponses(commands, commandDataPoints, resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
+            _logger.LogInformation("{numbercommands} commands and {numbermeasures} measurements got configured", commands?.Count, measures?.Count);
         }
 
         private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPoint> resultMeasures)
