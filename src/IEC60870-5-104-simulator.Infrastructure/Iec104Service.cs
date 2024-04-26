@@ -105,9 +105,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         internal void SimulateValues(IEnumerable<Iec104DataPoint> datapoints)
         {
-            List<InformationObject> cyclicIoPoints = new();
-            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(datapoints);
-            foreach (Iec104DataPoint dataPoint in GetCyclicDataPoints(datapoints))
+            var cyclicDataPoints = GetCyclicDataPoints(datapoints);
+            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(cyclicDataPoints);
+            foreach (Iec104DataPoint dataPoint in cyclicDataPoints)
             {
                 var ioa = factory.GetInformationObject(dataPoint);
                 var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
