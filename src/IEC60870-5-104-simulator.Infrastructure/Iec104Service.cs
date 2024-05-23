@@ -141,7 +141,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                                    select toSend)
             {
                 server.EnqueueASDU(toSend);
-                logger.LogDebug("Enqeued {asdu} items on station {ca}", toSend.NumberOfElements, toSend.Ca);
+                logger.LogInformation("Enqeued {asdu} items on station {ca}", toSend.NumberOfElements, toSend.Ca);
             }
         }
 

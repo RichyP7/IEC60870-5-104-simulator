@@ -85,7 +85,10 @@ namespace IEC60870_5_104_simulator.Service
             if(commands!= null)
                 AssignResponses(commands, commandDataPoints, resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
+            
             _logger.LogInformation("{numbercommands} commands and {numbermeasures} measurements got configured", commands?.Count, measures?.Count);
+            resultMeasures.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType));
+            commandDataPoints.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type:{type}, Resp: {response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType,v.SimulatedDataPoint?.Id));
         }
 
         private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPoint> resultMeasures)
