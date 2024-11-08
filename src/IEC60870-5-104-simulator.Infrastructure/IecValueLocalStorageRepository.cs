@@ -120,6 +120,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 }
             }
         }
+
+        public ConcurrentDictionary<IecAddress, Iec104DataPoint> GetAllDataPoints()
+        {
+            return StoredDataPoints;
+        }
     }
     
 }

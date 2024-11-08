@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IEC60870_5_104_simulator.Domain;
+using IEC60870_5_104_simulator.Domain.ValueTypes;
+using IEC60870_5_104_simulator.Infrastructure.DataPointsService;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,18 +11,28 @@ namespace IEC60870_5_104_simulator.API.Controllers
     [ApiController]
     public class DataPointConfigsController : ControllerBase
     {
+        private DataPointService _dataPointService;
+        public DataPointConfigsController(DataPointService dataPointService)
+        {
+            _dataPointService = dataPointService;
+        }
+        
         // GET: api/<DataPointsController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Iec104DataPoint> Get()
         {
-            return new string[] { "value1", "value2" };
+            var data = _dataPointService.GetAllDataPoints();
+            
+            return data;
         }
 
         // GET api/<DataPointsController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            //IecAddress address = new IecAddress(id);
+            //var point = _dataPointService.GetDataPoint(id);
+            return "";
         }
 
         // POST api/<DataPointsController>
