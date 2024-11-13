@@ -141,7 +141,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                                    select toSend)
             {
                 server.EnqueueASDU(toSend);
-                logger.LogInformation("Enqeued {asdu} items on station {ca}", toSend.NumberOfElements, toSend.Ca);
+                logger.LogInformation("Enqeued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
             }
         }
 
@@ -159,24 +159,45 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 if (IsNonCommandType(asdu))
                     return false;
-                AcknowledgeAllCommands(asdu);
+                AcknowledgeConfiguredCommands(asdu);
                 List<InformationObject> responses = GetGeneratedResponses(asdu);
                 SendGeneratedResponses(responses, asdu.Ca);
                 return true;
             }
+            catch (KeyNotFoundException kex)
+            {
+                logger.LogWarning(kex, "Command processing failed for {Ca}", asdu.Ca);
+                asdu.Cot = CauseOfTransmission.UNKNOWN_INFORMATION_OBJECT_ADDRESS;
+                asdu.IsNegative = true;
+                server.EnqueueASDU(asdu);
+                return false;
+            }
             catch (Exception ex)
             {
-                logger.LogWarning("Command processing failed for {ca} \n {message}", asdu.Ca, ex.Message);
+                logger.LogWarning(ex, "Command processing failed for {Ca}", asdu.Ca);
                 return false;
             }
 
         }
 
-        private void AcknowledgeAllCommands(ASDU asdu)
+        private void AcknowledgeConfiguredCommands(ASDU asdu)
         {
-            asdu.Cot = CauseOfTransmission.ACTIVATION_TERMINATION;
+            for (int i = 0; i < asdu.NumberOfElements; i++)
+            {
+                GetConfiguration(asdu, i);
+            }
+            asdu.Cot = CauseOfTransmission.ACTIVATION_CON;
             asdu.IsNegative = false;
             server.EnqueueASDU(asdu);
+        }
+
+        private IecAddress GetConfiguration(ASDU asdu, int i)
+        {
+            InformationObject ioa = asdu.GetElement(i);
+            IecAddress iecAddress = new IecAddress(asdu.Ca, ioa.ObjectAddress);
+            if (this.configuration.CheckCommandExisting(iecAddress))
+                return iecAddress;
+            throw new KeyNotFoundException($"Command with CA: {iecAddress.StationaryAddress} and IOA:{iecAddress.ObjectAddress} not found");
         }
 
         private List<InformationObject> GetGeneratedResponses(ASDU asdu)
@@ -184,17 +205,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
             List<InformationObject> responseInformationObjects = new();
             for (int i = 0; i < asdu.NumberOfElements; i++)
             {
-                InformationObject ioa = asdu.GetElement(i);
-                IecAddress searchAddress = new IecAddress(asdu.Ca, ioa.ObjectAddress);
-                if (this.configuration.CheckCommandExisting(searchAddress))
-                {
-                    logger.LogDebug($"Command OA:'{ioa.ObjectAddress}' StationCA:{asdu.Ca}  has been found and configured ");
-                    Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(searchAddress);
-                    if (commandConfig.SimulatedDataPoint == null)
-                        continue;
-                    InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, ioa);
-                    responseInformationObjects.Add(response);
-                }
+                var config = GetConfiguration(asdu, i);
+                Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(config);
+                if (commandConfig.SimulatedDataPoint == null)
+                    continue;
+                InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, asdu.GetElement(i));
+                responseInformationObjects.Add(response);
             }
             return responseInformationObjects;
         }
@@ -212,7 +228,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             if (responses.Count > 0)
             {
-                ASDU newAsduWithResponses = CreateAsdu(ca,CauseOfTransmission.SPONTANEOUS);
+                ASDU newAsduWithResponses = CreateAsdu(ca, CauseOfTransmission.SPONTANEOUS);
                 responses.ForEach(v => newAsduWithResponses.AddInformationObject(v));
                 server.EnqueueASDU(newAsduWithResponses);
             }
