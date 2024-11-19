@@ -170,12 +170,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 asdu.Cot = CauseOfTransmission.UNKNOWN_INFORMATION_OBJECT_ADDRESS;
                 asdu.IsNegative = true;
                 server.EnqueueASDU(asdu);
-                return false;
+                return true;
             }
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Command processing failed for {Ca}", asdu.Ca);
-                return false;
+                return false; // Return false results in a IsNegative message with unknown TypeID
             }
 
         }
