@@ -7,12 +7,17 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ServiceExtensionMethods;
 using System.Reflection;
+using IEC60870_5_104_simulator.API.JsonConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new IecValueObjectConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,6 +32,7 @@ builder.Services.AddSingleton<ServerStartedHealthCheck>();
 Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
+builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<Iec104SimulationOptions>(
     builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation));
 

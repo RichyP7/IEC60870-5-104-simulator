@@ -25,32 +25,32 @@ namespace IEC60870_5_104_simulator.API.Controllers
             
             return data;
         }
-
-        // GET api/<DataPointsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        
+        [HttpGet("{idStationary}/{idObject}")]
+        public Iec104DataPoint Get([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-            //IecAddress address = new IecAddress(id);
-            //var point = _dataPointService.GetDataPoint(id);
-            return "";
+            IecAddress address = new IecAddress(idStationary, idObject);
+            var dataPoint = _dataPointService.GetDataPoint(address);
+            return dataPoint;
         }
-
-        // POST api/<DataPointsController>
+        
         [HttpPost]
-        public void Post([FromBody] string value)
+        public Iec104DataPoint Post([FromBody] Iec104DataPoint dataPoint)
         {
+            var createdDataPoint = _dataPointService.CreateDataPoint(dataPoint) ;
+            return createdDataPoint;
         }
-
-        // PUT api/<DataPointsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        
+        
+        [HttpDelete("{idStationary}/{idObject}")]
+        public IActionResult Delete([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-        }
-
-        // DELETE api/<DataPointsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var deleteSuccess = _dataPointService.DeleteDataPoint(idStationary, idObject);
+            if (deleteSuccess)
+            {
+                return NoContent();
+            }
+            else return NotFound();
         }
     }
 }
