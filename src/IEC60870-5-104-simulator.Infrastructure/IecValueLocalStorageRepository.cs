@@ -49,6 +49,16 @@ namespace IEC60870_5_104_simulator.Infrastructure
             }
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
+        
+        public void DeleteDataPoint(IecAddress address)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint foundValue))
+            {
+                StoredDataPoints.Remove(address, out Iec104DataPoint removedValue);
+                if (removedValue != null) return;
+            }
+            throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+        }
         public void SetSinglePoint(IecAddress address,bool value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
@@ -119,6 +129,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
                         throw new NotImplementedException($"{newdatapoint.Iec104DataType} is not implemented");
                 }
             }
+        }
+
+        public ConcurrentDictionary<IecAddress, Iec104DataPoint> GetAllDataPoints()
+        {
+            return StoredDataPoints;
         }
     }
     
