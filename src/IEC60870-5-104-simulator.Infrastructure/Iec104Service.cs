@@ -209,7 +209,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(config);
                 if (commandConfig.SimulatedDataPoint == null)
                     continue;
-                InformationObject response = responseFactory.GetResponseInformationObject(commandConfig, asdu.GetElement(i));
+                InformationObject response = responseFactory.Update(commandConfig, asdu.GetElement(i));
                 responseInformationObjects.Add(response);
             }
             return responseInformationObjects;

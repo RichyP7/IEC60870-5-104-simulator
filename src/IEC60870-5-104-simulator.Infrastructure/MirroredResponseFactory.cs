@@ -18,7 +18,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             this.template = template;
         }
 
-        public InformationObject GetResponseInformationObject(Iec104CommandDataPointConfig commandCfg, InformationObject sentCommand)
+        public InformationObject Update(Iec104CommandDataPointConfig commandCfg, InformationObject sentCommand)
         {
             var responseDataPoint = commandCfg.SimulatedDataPoint;
             switch (responseDataPoint.Iec104DataType)
@@ -117,20 +117,21 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         private int CreateAdjustedStepValue(InformationObject commands, IecAddress address)
         {
-
             if (commands is StepCommand)
             {
                 StepCommand stepc = (StepCommand)commands;
                 int stepState;
-                if (stepc.State == StepCommandValue.HIGHER)
+                if (stepc.State == StepCommandValue.HIGHER )
                 {
                     stepState = repository.GetStepValue(address);
-                    stepState++;
+                    if(stepState < 63)
+                        stepState++;
                 }
                 else if (stepc.State == StepCommandValue.LOWER)
                 {
                     stepState = repository.GetStepValue(address);
-                    stepState--;
+                    if (stepState > -64)
+                        stepState--;
                 }
                 else
                     return -1;

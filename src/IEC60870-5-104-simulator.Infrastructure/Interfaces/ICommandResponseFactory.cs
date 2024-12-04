@@ -10,6 +10,6 @@ namespace IEC60870_5_104_simulator.Infrastructure.Interfaces
 {
     public interface ICommandResponseFactory
     {
-        InformationObject GetResponseInformationObject(Iec104CommandDataPointConfig datapoint, InformationObject sentCommand);
+        InformationObject Update(Iec104CommandDataPointConfig datapoint, InformationObject sentCommand);
     }
 }
