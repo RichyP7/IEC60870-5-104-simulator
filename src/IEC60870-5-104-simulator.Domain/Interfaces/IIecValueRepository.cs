@@ -12,7 +12,8 @@ namespace IEC60870_5_104_simulator.Domain.Interfaces
         int GetStepValue(IecAddress address);
         void SetStepValue(IecAddress address, int value);
         void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint);
-        ConcurrentDictionary<IecAddress, Iec104DataPoint> GetAllDataPoints();
+        IEnumerable<Iec104DataPoint> GetAllDataPoints();
+        Iec104DataPoint GetDataPoint(IecAddress address);
         void DeleteDataPoint(IecAddress address);
     }
 }

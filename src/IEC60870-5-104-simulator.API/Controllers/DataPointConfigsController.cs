@@ -1,6 +1,7 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.DataPointsService;
+using IEC60870_5_104_simulator.Infrastructure.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,7 +20,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
         
         // GET: api/<DataPointsController>
         [HttpGet]
-        public IEnumerable<Iec104DataPoint> Get()
+        public IEnumerable<Iec104DataPointDto> Get()
         {
             var data = _dataPointService.GetAllDataPoints();
             
@@ -27,7 +28,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
         }
         
         [HttpGet("{idStationary}/{idObject}")]
-        public Iec104DataPoint Get([FromRoute ]int idStationary, [FromRoute] int idObject)
+        public Iec104DataPointDto Get([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
             IecAddress address = new IecAddress(idStationary, idObject);
             var dataPoint = _dataPointService.GetDataPoint(address);
@@ -35,7 +36,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
         }
         
         [HttpPost]
-        public Iec104DataPoint Post([FromBody] Iec104DataPoint dataPoint)
+        public Iec104DataPoint Post([FromBody] Iec104DataPointDto dataPoint)
         {
             var createdDataPoint = _dataPointService.CreateDataPoint(dataPoint) ;
             return createdDataPoint;

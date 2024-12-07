@@ -1,23 +1,16 @@
 using IEC60870_5_104_simulator.API;
-using IEC60870_5_104_simulator.API.Controllers;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ServiceExtensionMethods;
-using System.Reflection;
-using IEC60870_5_104_simulator.API.JsonConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new IecValueObjectConverter());
-    });
+builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
