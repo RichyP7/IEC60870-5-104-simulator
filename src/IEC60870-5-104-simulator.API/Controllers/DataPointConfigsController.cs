@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IEC60870_5_104_simulator.Domain;
+using IEC60870_5_104_simulator.Domain.ValueTypes;
+using IEC60870_5_104_simulator.Infrastructure.DataPointsService;
+using IEC60870_5_104_simulator.Infrastructure.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +12,46 @@ namespace IEC60870_5_104_simulator.API.Controllers
     [ApiController]
     public class DataPointConfigsController : ControllerBase
     {
+        private DataPointService _dataPointService;
+        public DataPointConfigsController(DataPointService dataPointService)
+        {
+            _dataPointService = dataPointService;
+        }
+        
         // GET: api/<DataPointsController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Iec104DataPointDto> Get()
         {
-            return new string[] { "value1", "value2" };
+            var data = _dataPointService.GetAllDataPoints();
+            
+            return data;
         }
-
-        // GET api/<DataPointsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        
+        [HttpGet("{idStationary}/{idObject}")]
+        public Iec104DataPointDto Get([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-            return "value";
+            IecAddress address = new IecAddress(idStationary, idObject);
+            var dataPoint = _dataPointService.GetDataPoint(address);
+            return dataPoint;
         }
-
-        // POST api/<DataPointsController>
+        
         [HttpPost]
-        public void Post([FromBody] string value)
+        public Iec104DataPoint Post([FromBody] Iec104DataPointDto dataPoint)
         {
+            var createdDataPoint = _dataPointService.CreateDataPoint(dataPoint) ;
+            return createdDataPoint;
         }
-
-        // PUT api/<DataPointsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        
+        
+        [HttpDelete("{idStationary}/{idObject}")]
+        public IActionResult Delete([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-        }
-
-        // DELETE api/<DataPointsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var deleteSuccess = _dataPointService.DeleteDataPoint(idStationary, idObject);
+            if (deleteSuccess)
+            {
+                return NoContent();
+            }
+            else return NotFound();
         }
     }
 }

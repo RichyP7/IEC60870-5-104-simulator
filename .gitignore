@@ -396,3 +396,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/src/.idea/.idea.IEC60870-5-104-simulator/.idea/vcs.xml
+/.idea/vcs.xml
+/src/.idea/.idea.IEC60870-5-104-simulator/.idea/indexLayout.xml
+/src/.idea/.idea.IEC60870-5-104-simulator/.idea/encodings.xml
+/.idea/encodings.xml
+/src/.idea/.idea.IEC60870-5-104-simulator/.idea/.name
+/src/.idea/.idea.IEC60870-5-104-simulator/.idea/.gitignore
+/.idea/.gitignore
+/.idea/indexLayout.xml

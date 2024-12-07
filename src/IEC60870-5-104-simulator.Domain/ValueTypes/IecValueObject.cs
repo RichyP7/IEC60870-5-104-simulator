@@ -16,6 +16,11 @@
         {
             return Value;
         }
+        
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
     public record IecSinglePointValueObject : IecValueObject
     {
@@ -28,6 +33,11 @@
         public override object GetValue()
         {
             return Value;
+        }
+        
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
     public record IecDoublePointValueObject : IecValueObject
@@ -42,6 +52,11 @@
         {
             return Value;
         }
+        
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
     public record IecValueScaledObject : IecValueObject
     {
@@ -55,6 +70,11 @@
         {
             return Value;
         }
+        
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
     public record IecValueFloatObject : IecValueObject
     {
@@ -67,6 +87,11 @@
         public override object GetValue()
         {
             return Value;
+        }
+        
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
     public record ScaledValueRecord
