@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>IEC60870_5_104_simulator.Infrastructure</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -16,5 +16,4 @@
   <ItemGroup>
     <ProjectReference Include="..\IEC60870-5-104-simulator.Domain\IEC60870-5-104-simulator.Domain.csproj" />
   </ItemGroup>
-
 </Project>

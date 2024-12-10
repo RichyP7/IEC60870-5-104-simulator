@@ -1,4 +1,5 @@
-﻿using IEC60870_5_104_simulator.Domain.ValueTypes;
+﻿using System.Collections.Concurrent;
+using IEC60870_5_104_simulator.Domain.ValueTypes;
 
 namespace IEC60870_5_104_simulator.Domain.Interfaces
 {
@@ -11,5 +12,8 @@ namespace IEC60870_5_104_simulator.Domain.Interfaces
         int GetStepValue(IecAddress address);
         void SetStepValue(IecAddress address, int value);
         void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint);
+        IEnumerable<Iec104DataPoint> GetAllDataPoints();
+        Iec104DataPoint GetDataPoint(IecAddress address);
+        void DeleteDataPoint(IecAddress address);
     }
 }

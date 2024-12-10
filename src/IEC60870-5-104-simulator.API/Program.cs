@@ -1,12 +1,10 @@
 using IEC60870_5_104_simulator.API;
-using IEC60870_5_104_simulator.API.Controllers;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ServiceExtensionMethods;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +25,7 @@ builder.Services.AddSingleton<ServerStartedHealthCheck>();
 Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
+builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<Iec104SimulationOptions>(
     builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation));
 
