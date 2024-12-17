@@ -49,3 +49,5 @@ app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = healthC
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
