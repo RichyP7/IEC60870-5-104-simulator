@@ -1,0 +1,33 @@
+﻿{
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+
+      "Measures": [
+        {
+          "Id": "SPM1",
+          "Ca": "20",
+          "Oa": "26",
+          "TypeId": 1
+        },
+        {
+          "Id": "SPM2",
+          "Ca": "20",
+          "Oa": "57",
+          "TypeId": 1,
+          "Mode": "Cyclic"
+        }
+      ],
+      "Commands":[
+        {
+          "Id": "SPC1",
+          "Ca": "100",
+          "Oa": "26",
+          "TypeId": 45,
+          "ResponseId": "SPM1"
+        }
+      ]
+    }
+  }
+
+}
