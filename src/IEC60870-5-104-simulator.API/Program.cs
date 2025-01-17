@@ -21,7 +21,11 @@ builder.Services.AddHealthChecks()
     .AddCheck<ConnectionEstablishedHealthCheck>("readiness",HealthStatus.Healthy, new List<string> { "ready"})
     .AddCheck<ServerStartedHealthCheck>("liveness");
 builder.Services.AddSingleton<ServerStartedHealthCheck>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy => policy.WithOrigins("*"));
+});
 Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
@@ -41,7 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAngularApp");
 app.UseAuthorization();
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = healthCheck => healthCheck.Tags.Contains("ready") });
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = healthCheck => !healthCheck.Tags.Contains("ready") }); //all but ready

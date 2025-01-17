@@ -1,0 +1,24 @@
+<div class="card">
+  <p-accordion>
+    <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i">
+      <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
+      <p-accordion-content *ngFor="let item of tab.items">
+        <div class="item-details" (click)="logge(tab)">
+          <div>
+            <p class="m-0">ID: {{ item.id }}</p>
+            <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>
+            <p class="m-0">Object Address: {{ item.objectAddress }}</p>
+            <p class="m-0">IEC104 Data Type: {{ item.iec104DataType }}</p>
+            <p class="m-0">Value: {{ item.value }}</p>
+            <p class="m-0">Mode: {{ item.mode }}</p>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+</div>
+<div class="card flex justify-center">
+  <p-button label="Reload DataPoints" (onClick)="reloadData()" />
+</div>
+
+

@@ -6,6 +6,7 @@ namespace IntegrationTests.TestPreparation;
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
+    string OptionsPath = "../../../Configuration/SimulationOptionsTest.json";
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -14,8 +15,13 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         {
             configBuilder.Sources.Clear();
             var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, "../../../Configuration/SimulationOptionsTest.json");
+            var configPath = Path.Combine(projectDir, OptionsPath);
             configBuilder.AddJsonFile(configPath, optional: false, reloadOnChange: true);
         });
+    }
+
+    public void UpdateOptionsPath(String newPath)
+    {
+        OptionsPath = newPath;
     }
 }
