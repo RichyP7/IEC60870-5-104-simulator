@@ -27,7 +27,7 @@ jobs:
       run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulatortest:${{ github.run_id }} .
 
     - name: Build the service test Docker image
-      run: DOCKER_BUILDKIT=1 docker build --pull --target service-tests -t iec60870-5-104-simulator-servicetest:${{ github.run_id }} .
+      run: DOCKER_BUILDKIT=1 docker build --pull --target test-service -t iec60870-5-104-simulator-servicetest:${{ github.run_id }} .
       
     - name: Run tests in Docker image
       run: docker run -t iec60870-5-104-simulatortest:${{ github.run_id }}
