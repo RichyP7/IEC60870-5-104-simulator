@@ -28,6 +28,18 @@ RUN dotnet build --no-restore
 ENTRYPOINT ["dotnet", "test", "--logger:trx", "--no-build"]
 # test end
 
+# test service tests
+FROM build AS test-service
+WORKDIR /src
+COPY src/Tests/IntegrationTests/IntegrationTests.csproj Tests/IntegrationTests/
+WORKDIR /src/Tests/IntegrationTests/
+RUN dotnet restore -v m 
+COPY src/Tests/IntegrationTests/ .
+
+RUN dotnet build --no-restore
+ENTRYPOINT ["dotnet", "test", "--logger:trx", "--no-build"]
+# test end
+
 
 FROM build AS publish
 RUN dotnet publish "IEC60870-5-104-simulator.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
