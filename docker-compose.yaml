@@ -1,0 +1,21 @@
+﻿services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2404:2404"
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      
+  frontend:
+    build:
+      context: ./simulation-ui/IEC-104-UI
+      dockerfile: ui.Dockerfile
+    ports:
+      - "4300:80"
+    depends_on:
+      - backend
+        
+  
