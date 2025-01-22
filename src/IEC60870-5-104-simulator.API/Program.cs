@@ -25,7 +25,7 @@ builder.Services.AddSingleton<ServerStartedHealthCheck>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
-        policy => policy.WithOrigins("*"));
+        policy => policy.WithOrigins("http://localhost:4200", "http://localhost:4300"));
 });
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
 Type t = typeof(IecConfigProfile);
