@@ -24,12 +24,6 @@ public sealed class TestSinglePoint: IClassFixture<CustomWebApplicationFactory<P
     }
 
     [Fact]
-    public async Task Test_Simulator_Starts_Correctly()
-    {
-	    _factory.CreateClient();
-    }
-
-    [Fact]
     // Starts Simulator and Client in parallel and waits for periodic measurement
     public async Task Test_Simulate_Scaled_Measured_Value()
     {

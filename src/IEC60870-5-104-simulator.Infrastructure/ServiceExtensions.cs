@@ -12,6 +12,7 @@ namespace ServiceExtensionMethods
         {
             services.AddSingleton<IIec104Service, Iec104Service>();
             services.AddScoped<DataPointService, DataPointService>();
+            services.AddScoped<ValueService, ValueService>();
             services.AddSingleton<IIec104ConfigurationService, Iec104ConfigurationService>();
             services.AddSingleton<lib60870.CS104.Server>(v =>
             {
