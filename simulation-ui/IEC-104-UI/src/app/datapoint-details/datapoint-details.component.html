@@ -1,0 +1,12 @@
+<div class="details-card" *ngIf="item != null">
+  <h2>Details</h2>
+  <p>ID: {{ item.id }}</p>
+  <p>Stationary Address: {{ item.stationaryAddress }}</p>
+  <p>Object Address: {{ item.objectAddress }}</p>
+  <p>IEC104 Data Type: {{ item.iec104DataType }}</p>
+  <p>Value: {{ item.value }}</p>
+  <p>Mode: {{ item.mode }}</p>
+  <div class="card flex justify-center">
+    <p-button *ngIf="item.iec104DataType === 3 || item.iec104DataType === 1" label="Toggle value" (onClick)="toggleDoublePointValue(item)" />
+  </div>
+</div>

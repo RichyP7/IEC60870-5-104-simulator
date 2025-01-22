@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Accordion, AccordionContent, AccordionHeader, AccordionPanel, AccordionTab} from 'primeng/accordion';
 import {NgForOf} from '@angular/common';
 import {PrimeTemplate} from 'primeng/api';
 import {HttpClient} from '@angular/common/http';
-import {tap} from 'rxjs';
 import {Button} from 'primeng/button';
+import {Router} from '@angular/router';
+import {DataService} from './DataService/data.service';
 
 @Component({
   selector: 'app-list-view',
@@ -24,20 +25,24 @@ import {Button} from 'primeng/button';
 })
 export class ListViewComponent implements OnInit {
 
+  @Output()
+  itemSelected = new EventEmitter<DataPoint>();
+
   groupedData: GroupedData[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private dataService: DataService
+  ) {}
 
   ngOnInit() {
-    //this.groupedData = this.groupDataByStationaryAddress(this.data);
-    this.http
-      .get<DataPoint[]>('http://localhost:8080/api/DataPointConfigs')
-      .pipe(
-        tap((data) => {
-          this.groupedData = this.groupDataByStationaryAddress(data);
-        })
-      )
-      .subscribe();
+    this.dataService.data$.subscribe((data) => {
+      this.groupedData = this.groupDataByStationaryAddress(data);
+    });
+
+    // Fetch initial data
+    this.dataService.fetchData();
   }
 
   groupDataByStationaryAddress(data: DataPoint[]): GroupedData[] {
@@ -50,9 +55,10 @@ export class ListViewComponent implements OnInit {
     return Object.values(grouped);
   }
 
-  logge(tab: GroupedData) {
-    console.log(tab);
-
+  clickOnDataPoint(item: DataPoint) {
+    console.log(item);
+    this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
+    this.itemSelected.emit(item)
   }
 
   reloadData() {
@@ -60,7 +66,7 @@ export class ListViewComponent implements OnInit {
   }
 }
 
-interface DataPoint {
+export interface DataPoint {
   id: string;
   stationaryAddress: number;
   objectAddress: number;
@@ -69,7 +75,7 @@ interface DataPoint {
   mode: number;
 }
 
-interface GroupedData {
+export interface GroupedData {
   stationaryAddress: number;
   items: DataPoint[];
 }

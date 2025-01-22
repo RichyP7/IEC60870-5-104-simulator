@@ -1,9 +1,10 @@
 <div class="card">
+  <h2>Data Points to simulate</h2>
   <p-accordion>
     <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i">
       <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
       <p-accordion-content *ngFor="let item of tab.items">
-        <div class="item-details" (click)="logge(tab)">
+        <div class="item-details" (click)="clickOnDataPoint(item)">
           <div>
             <p class="m-0">ID: {{ item.id }}</p>
             <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>

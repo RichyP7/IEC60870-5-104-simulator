@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  gap: 20px; /* Adds spacing between the list and details */
+}
+
+app-list-view {
+  flex: 1; /* List will take up remaining space */
+  max-width: 50%; /* Optional: Limit the width of the list view */
+}
+
+app-item-details {
+  flex: 1; /* Details will take equal space */
+  max-width: 50%; /* Optional: Limit the width of the details */
+}
