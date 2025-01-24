@@ -1,19 +1,21 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {DataPoint} from '../list-view/list-view.component';
+import {DataPoint, SimulationMode} from '../list-view/list-view.component';
 import {NgIf} from '@angular/common';
 import {environment} from '../../environments/environment.development';
 import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {subscribe} from 'node:diagnostics_channel';
 import {DataService} from '../list-view/DataService/data.service';
-import {Button} from 'primeng/button';
+import {Button, ButtonDirective, ButtonIcon} from 'primeng/button';
 
 @Component({
   selector: 'app-datapoint-details',
   standalone: true,
   imports: [
     NgIf,
-    Button
+    Button,
+    ButtonDirective,
+    ButtonIcon
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
@@ -37,6 +39,10 @@ export class DatapointDetailsComponent implements OnChanges{
         })
       )
       .subscribe();
+  }
+
+  toggleSimulationMode(point: DataPoint) {
+    this.dataService.toggleSimulationMode(point);
   }
 
   private syncWithUpdatedData(): void {

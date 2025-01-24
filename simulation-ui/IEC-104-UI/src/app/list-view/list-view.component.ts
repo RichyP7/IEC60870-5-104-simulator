@@ -70,12 +70,19 @@ export interface DataPoint {
   id: string;
   stationaryAddress: number;
   objectAddress: number;
-  iec104DataType: number;
+  iec104DataType: string;
   value: string;
-  mode: number;
+  mode: SimulationMode;
 }
 
 export interface GroupedData {
   stationaryAddress: number;
   items: DataPoint[];
 }
+
+export enum SimulationMode {
+  None = 'None',
+  Cyclic = 'Cyclic',
+  Response = 'Response'
+}
+
