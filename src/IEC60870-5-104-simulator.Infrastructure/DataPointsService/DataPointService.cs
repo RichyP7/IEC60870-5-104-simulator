@@ -32,6 +32,13 @@ public class DataPointService
 
     }
 
+    public Iec104DataPointDto UpdateSimulationMode(IecAddress address, SimulationMode mode)
+    {
+        _iecValueRepository.GetDataPoint(address);
+        _iecValueRepository.SetSimulationMode(address, mode);
+        return mapper.MapToDto(_iecValueRepository.GetDataPoint(address));
+    }
+
     public Iec104DataPointDto GetDataPoint(IecAddress id)
     {
         return mapper.MapToDto(_iecValueRepository.GetDataPoint(id));
