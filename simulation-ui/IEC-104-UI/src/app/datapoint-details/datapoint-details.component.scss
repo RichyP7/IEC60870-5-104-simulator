@@ -9,3 +9,24 @@
 .ml-2 {
   margin-left: 0.5rem;
 }
+
+.details-card {
+  margin-top: 4rem
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.grid-item {
+  margin-top: 0.3rem;
+}
+

@@ -7,6 +7,9 @@ import {HttpClient} from '@angular/common/http';
 import {subscribe} from 'node:diagnostics_channel';
 import {DataService} from '../list-view/DataService/data.service';
 import {Button, ButtonDirective, ButtonIcon} from 'primeng/button';
+import {Card} from 'primeng/card';
+import {TableModule} from 'primeng/table';
+import {Panel} from 'primeng/panel';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -15,7 +18,10 @@ import {Button, ButtonDirective, ButtonIcon} from 'primeng/button';
     NgIf,
     Button,
     ButtonDirective,
-    ButtonIcon
+    ButtonIcon,
+    Card,
+    TableModule,
+    Panel
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'

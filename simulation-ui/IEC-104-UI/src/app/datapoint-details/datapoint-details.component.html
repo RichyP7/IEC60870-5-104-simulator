@@ -1,22 +1,42 @@
 <div class="details-card" *ngIf="item != null">
-  <h2>Details</h2>
-  <p>ID: {{ item.id }}</p>
-  <p>Stationary Address: {{ item.stationaryAddress }}</p>
-  <p>Object Address: {{ item.objectAddress }}</p>
-  <p>IEC104 Data Type: {{ item.iec104DataType }}</p>
-  <div class="flex align-items-center">
-    <p>Simulation Mode: {{ item.mode }}</p>
-    <button
-      class="ml-2"
-      pButton type="button"
-      icon="{{item.mode === 'Cyclic' ? 'pi pi-stop' : 'pi pi-play-circle'}}"
-      iconPos="left"
-      (click)="toggleSimulationMode(item)"
-    >
-    </button>
-  </div>
-  <div class="flex align-items-center">
-    <p>Value: {{ item.value }}</p>
-    <p-button class="ml-2" *ngIf="item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1'" label="Toggle value" (onClick)="toggleDoublePointValue(item)" />
-  </div>
+  <p-card header="Datapoint Details">
+    <div class="grid details-grid">
+      <div class="grid-item label">ID:</div>
+      <div class="grid-item value">{{ item.id }}</div>
+
+      <div class="grid-item label">Stationary Address:</div>
+      <div class="grid-item value">{{ item.stationaryAddress }}</div>
+
+      <div class="grid-item label">Object Address:</div>
+      <div class="grid-item value">{{ item.objectAddress }}</div>
+
+      <div class="grid-item label">IEC104 Data Type:</div>
+      <div class="grid-item value">{{ item.iec104DataType }}</div>
+
+      <div class="grid-item label">Simulation Mode:</div>
+      <div class="grid-item value flex align-items-center">
+        {{ item.mode }}
+        <button
+          class="ml-2"
+          pButton
+          type="button"
+          icon="{{ item.mode === 'Cyclic' ? 'pi pi-stop' : 'pi pi-play-circle' }}"
+          iconPos="left"
+          (click)="toggleSimulationMode(item)"
+        >
+        </button>
+      </div>
+
+      <div class="grid-item label">Value:</div>
+      <div class="grid-item value flex align-items-center">
+        {{ item.value }}
+        <p-button
+          class="ml-2"
+          *ngIf="item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1'"
+          label="Toggle value"
+          (onClick)="toggleDoublePointValue(item)"
+        />
+      </div>
+    </div>
+  </p-card>
 </div>
