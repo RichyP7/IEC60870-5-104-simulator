@@ -403,5 +403,4 @@ FodyWeavers.xsd
 /.idea/indexLayout.xml
 /.idea/watcherTasks.xml
 /simulation-ui/IEC-104-UI/.gitignore
-/simulation-ui/IEC-104-UI/.editorconfig
 /.idea/IEC60870-5-104-simulator.iml

@@ -15,6 +15,8 @@
       dockerfile: ui.Dockerfile
     ports:
       - "4300:80"
+    environment:
+      - ENV_API_ENDPOINT=http://localhost:8080/api/
     depends_on:
       - backend
         

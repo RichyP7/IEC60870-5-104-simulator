@@ -26,15 +26,19 @@ builder.Services.AddHealthChecks()
     .AddCheck<ConnectionEstablishedHealthCheck>("readiness",HealthStatus.Healthy, new List<string> { "ready"})
     .AddCheck<ServerStartedHealthCheck>("liveness");
 builder.Services.AddSingleton<ServerStartedHealthCheck>();
+
+
+var allowedOrigins = builder.Configuration.GetSection("CorsPolicies:AllowAngularApp:Origins").Get<string[]>()
+    ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularApp",
-        policy => policy
-            .WithOrigins("http://localhost:4200", "http://localhost:4300")
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials()
-        );
+            .AllowCredentials();
+    });
 });
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
 builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
