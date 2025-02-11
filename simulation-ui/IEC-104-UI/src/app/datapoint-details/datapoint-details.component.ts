@@ -30,7 +30,7 @@ export class DatapointDetailsComponent implements OnChanges{
   toggleDoublePointValue(doublePoint: DataPoint) {
     console.log("action");
     this.http
-      .get<DataPoint[]>(environment.apiUrl + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
+      .get<DataPoint[]>(environment.API_ENDPOINT + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
       .pipe(
         tap(() => {
           this.dataService.fetchData();

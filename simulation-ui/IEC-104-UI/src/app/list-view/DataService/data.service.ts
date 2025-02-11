@@ -14,7 +14,7 @@ export class DataService {
   constructor(private http: HttpClient) {}
 
   fetchData(): void {
-    this.http.get<DataPoint[]>(environment.apiUrl + 'DataPointConfigs').subscribe((data) => {
+    this.http.get<DataPoint[]>(environment.API_ENDPOINT + 'DataPointConfigs').subscribe((data) => {
       this.dataSubject.next(data);
     });
   }
