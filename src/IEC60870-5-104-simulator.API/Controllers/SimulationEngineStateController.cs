@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IEC60870_5_104_simulator.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SimulationEngineStateController : ControllerBase
     {
 
@@ -19,9 +19,10 @@ namespace IEC60870_5_104_simulator.API.Controllers
         public SimulationEngine simulationEngine { get; }
 
         [HttpGet]
-        public IActionResult Get()
+        public SimulationEngine.SimulationState Get()
         {
-            return new OkResult();
+            var simulationStatus = simulationEngine.SimulationStatus;
+            return simulationStatus;
         }
         [HttpPost(Name = "commands")]
         public async Task<IActionResult> EngineCommand(ENGINE_COMMAND command, CancellationToken cs)
@@ -40,7 +41,9 @@ namespace IEC60870_5_104_simulator.API.Controllers
                 else
                     return new BadRequestObjectResult("Supply valid command");
                 
-                return new OkObjectResult("started");
+                var simulationState = simulationEngine.SimulationStatus;
+                
+                return new OkObjectResult(simulationState);
             }        
             catch (TaskCanceledException ex) 
             {

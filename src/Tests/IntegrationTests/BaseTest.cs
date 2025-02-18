@@ -8,12 +8,10 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests;
 
-public sealed class BaseTest: IClassFixture<CustomWebApplicationFactory<Program>>
+public sealed class BaseTest: BaseWebApplication
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
     private readonly ITestOutputHelper _testOutputHelper;
-
-    private const String HostName = "127.0.0.1";
 
     public BaseTest(CustomWebApplicationFactory<Program> factory, ITestOutputHelper testOutputHelper)
     {
@@ -68,23 +66,5 @@ public sealed class BaseTest: IClassFixture<CustomWebApplicationFactory<Program>
 	    await tcs.Task.WaitAsync(TimeSpan.FromSeconds(30));
 	    con.Close();
     }
-    
-		private static void ConnectionHandler (object parameter, ConnectionEvent connectionEvent)
-		{
-			switch (connectionEvent) {
-				case ConnectionEvent.OPENED:
-					Console.WriteLine ("Connected");
-					break;
-				case ConnectionEvent.CLOSED:
-					Console.WriteLine ("Connection closed");
-					break;
-				case ConnectionEvent.STARTDT_CON_RECEIVED:
-					Console.WriteLine ("STARTDT CON received");
-					break;
-				case ConnectionEvent.STOPDT_CON_RECEIVED:
-					Console.WriteLine ("STOPDT CON received");
-					break;
-			}
-		}
 
 }

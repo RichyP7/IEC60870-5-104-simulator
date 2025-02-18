@@ -106,6 +106,16 @@ namespace IEC60870_5_104_simulator.Infrastructure
             else
                 throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
+        
+        public void SetObjectValue(IecAddress address, IecValueObject value)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            {
+                test.Value = value;
+            }
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+        }
 
         public void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint)
         {

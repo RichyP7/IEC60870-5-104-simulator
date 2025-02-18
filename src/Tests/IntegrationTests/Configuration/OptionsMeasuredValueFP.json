@@ -1,0 +1,27 @@
+﻿{
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+
+      "Measures": [
+        {
+          "Id": "SHORTM1",
+          "Ca": "20",
+          "Oa": "29",
+          "TypeId": 13,
+          "Mode": "Cyclic"
+        }
+      ],
+      "Commands":[
+        {
+          "Id": "SHORTC1",
+          "Ca": "100",
+          "Oa": "30",
+          "TypeId": 49,
+          "ResponseId": "SHORTM1"
+        }
+      ]
+    }
+  }
+
+}

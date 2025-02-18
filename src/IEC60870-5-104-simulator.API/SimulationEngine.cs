@@ -4,7 +4,7 @@ using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
-using IEC60870_5_104_simulator.Infrastructure;
+using IEC60870_5_104_simulator.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace IEC60870_5_104_simulator.Service
@@ -16,6 +16,8 @@ namespace IEC60870_5_104_simulator.Service
         private readonly IIec104ConfigurationService datapointConfigService;
         private readonly IMapper mapper;
         private readonly ServerStartedHealthCheck healthCheck;
+        private bool dataConfigurationDone = false;
+        public SimulationState SimulationStatus { get; set; } = SimulationState.Stopped;
 
         private IIec104Service iecService { get; }
         private int cycleTimeMs;
@@ -34,8 +36,11 @@ namespace IEC60870_5_104_simulator.Service
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Configure();
-            await this.iecService.Start();
+            if (!dataConfigurationDone)
+            {
+                Configure();
+            }
+            await iecService.Start();
             healthCheck.ServerIsRunning = true;
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -64,16 +69,20 @@ namespace IEC60870_5_104_simulator.Service
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            if (SimulationStatus == SimulationState.Running) throw new BadRequestException("Simulation is already running.");
             _logger.LogInformation("Started worker at: {time}", DateTimeOffset.Now);
             await base.StartAsync(cancellationToken);
+            SimulationStatus = SimulationState.Running;
             return;
 
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            if (SimulationStatus == SimulationState.Stopped) throw new BadRequestException("Simulation is already stopped.");
             _logger.LogInformation("Stopped worker at: {time}", DateTimeOffset.Now);
             await base.StopAsync(cancellationToken);
             await this.iecService.Stop();
+            SimulationStatus = SimulationState.Stopped;
             return;
         }
         private void Configure()
@@ -89,6 +98,7 @@ namespace IEC60870_5_104_simulator.Service
             _logger.LogInformation("{numbercommands} commands and {numbermeasures} measurements got configured", commands?.Count, measures?.Count);
             resultMeasures.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType));
             commandDataPoints.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type:{type}, Resp: {response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType,v.SimulatedDataPoint?.Id));
+            dataConfigurationDone = true;
         }
 
         private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPoint> resultMeasures)
@@ -106,6 +116,12 @@ namespace IEC60870_5_104_simulator.Service
                     commandDataPoint.AssignResponseDataPoint(responseDataPoint);
                 }
             }
+        }
+        
+        public enum SimulationState
+        {
+            Stopped,
+            Running
         }
     }
 }
