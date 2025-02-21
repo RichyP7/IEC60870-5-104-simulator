@@ -15,16 +15,21 @@
 
       <div class="grid-item label">Simulation Mode:</div>
       <div class="grid-item value flex align-items-center">
-        {{ item.mode }}
-        <button
-          class="ml-2"
-          pButton
-          type="button"
-          icon="{{ item.mode === 'Cyclic' ? 'pi pi-stop' : 'pi pi-play-circle' }}"
-          iconPos="left"
-          (click)="toggleSimulationMode(item)"
-        >
-        </button>
+        <p-dropdown [options]="simulationModes" [(ngModel)]="item.mode" optionLabel="label" optionValue="value"
+          (onChange)="toggleSimulationMode(item)">
+          <ng-template let-option pTemplate="selectedItem">
+            <div class="dropdown-item">
+              <span>{{ option.label }}</span>
+              <i *ngIf="option.icon" [class]="option.icon"></i>
+            </div>
+          </ng-template>
+          <ng-template let-option pTemplate="item">
+            <div class="dropdown-item flex align-items-center">
+              <span>{{ option.label }}</span>
+              <i *ngIf="option.icon" [class]="option.icon"></i>
+            </div>
+          </ng-template>
+        </p-dropdown>
       </div>
 
       <div class="grid-item label">Value:</div>

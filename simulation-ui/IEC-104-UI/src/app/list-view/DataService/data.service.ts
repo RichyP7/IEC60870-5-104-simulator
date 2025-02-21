@@ -1,7 +1,7 @@
 ﻿import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {DataPoint, SimulationMode} from '../list-view.component';
+import {DataPoint} from '../list-view.component';
 import {environment} from '../../../environments/environment.development';
 
 @Injectable({
@@ -20,8 +20,8 @@ export class DataService {
   }
 
   toggleSimulationMode(dataPoint: DataPoint) {
-    let simulationMode = dataPoint.mode === SimulationMode.Cyclic ? SimulationMode.None : SimulationMode.Cyclic;
-    this.http.put<DataPoint>(`${environment.apiUrl}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
+    let simulationMode = dataPoint.mode
+    this.http.put<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
       ,
       {
         headers: { 'Content-Type': 'application/json' },
@@ -35,4 +35,42 @@ export class DataService {
     });
   }
 
+  updateSimulationEngineState(simulationState: SimulationState) {
+    let command = (simulationState === SimulationState.Stopped) ? 'Stop' : 'Start';
+    this.http.post<SimulationState>(`${environment.API_ENDPOINT}SimulationEngineState?command=${command}`, null)
+      .subscribe({
+        next: () => {  },
+        error: (err) => {
+          console.error('Error while updating simulation state:', err);
+        }
+      });
+  }
+
+  createDataPoint(datapoint: DataPoint): Observable<DataPoint> {
+    return this.http.post<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs`, datapoint);
+  }
+
+  fetchSimulationEngineState(): SimulationState | null {
+    let result: SimulationState | null = null;
+
+    this.http.get<SimulationState>(environment.API_ENDPOINT + 'SimulationEngineState')
+      .subscribe({
+        next: (data) => result = data,
+        error: (err) => {
+          console.error('Error fetching SimulationState', err);
+          result = null;
+        }
+      });
+
+    return result;
+  }
+
+
+
+
+}
+
+export enum SimulationState {
+  Running = 'Running',
+  Stopped = 'Stopped'
 }

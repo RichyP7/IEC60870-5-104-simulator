@@ -4,12 +4,12 @@ import {NgIf} from '@angular/common';
 import {environment} from '../../environments/environment.development';
 import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {subscribe} from 'node:diagnostics_channel';
 import {DataService} from '../list-view/DataService/data.service';
-import {Button, ButtonDirective, ButtonIcon} from 'primeng/button';
+import {Button} from 'primeng/button';
 import {Card} from 'primeng/card';
 import {TableModule} from 'primeng/table';
-import {Panel} from 'primeng/panel';
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -17,11 +17,10 @@ import {Panel} from 'primeng/panel';
   imports: [
     NgIf,
     Button,
-    ButtonDirective,
-    ButtonIcon,
     Card,
     TableModule,
-    Panel
+    DropdownModule,
+    FormsModule
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
@@ -29,6 +28,12 @@ import {Panel} from 'primeng/panel';
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
   item: DataPoint | null = null;
+
+  simulationModes = [
+    { label: 'Cyclic Random', value: SimulationMode.Cyclic, icon: 'pi pi-sort-alt' },
+    { label: 'Cyclic Static', value: SimulationMode.CyclicStatic, icon: 'pi pi-lock' },
+    { label: 'None', value: SimulationMode.None, icon: 'pi pi-play-circle' }
+  ];
 
   constructor(
     private http: HttpClient,

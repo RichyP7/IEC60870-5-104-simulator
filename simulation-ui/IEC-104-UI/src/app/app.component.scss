@@ -3,12 +3,14 @@
   gap: 20px;
 }
 
+
+
 app-list-view {
   flex: 1;
   max-width: 50%;
 }
 
-app-item-details {
+app-datapoint-details {
   flex: 1;
-  max-width: 50%;
+  max-width: 40%;
 }

@@ -1,10 +1,19 @@
 <div class="card">
-  <h2>Data Points to simulate</h2>
+  <h2 class="text-xl font-medium">
+    Data Points to Simulate:
+  </h2>
+
+
   <p-accordion>
-    <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i">
+    <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i"
+    >
       <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
-      <p-accordion-content *ngFor="let item of tab.items">
-        <div class="item-details" (click)="clickOnDataPoint(item)">
+      <p-accordion-content *ngFor="let item of tab.items" >
+        <div
+          [ngClass]="{'selected-item': item === selectedItem}"
+          class="item-details p-2 border-round cursor-pointer"
+          (click)="clickOnDataPoint(item)"
+        >
           <div>
             <p class="m-0">ID: {{ item.id }}</p>
             <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>
@@ -17,8 +26,14 @@
     </p-accordion-panel>
   </p-accordion>
 </div>
-<div class="card flex justify-center">
+<div class="card accordion-container">
   <p-button label="Reload DataPoints" (onClick)="reloadData()" />
+  <p-button label="Create DataPoint" (click)="showDialog = true" />
 </div>
+<app-create-dialog
+  [visible]="showDialog"
+  (visibleChange)="processDialogChange($event)"
+  (dataPointCreated)="createDataPoint($event)"
+></app-create-dialog>
 
 

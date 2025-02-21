@@ -3,7 +3,20 @@ p-accordion {
   display: block;
   min-width: 200px;
 
-  max-height: 75vh;
-  overflow: scroll;
+  max-height: 70vh;
+  overflow: auto;
+
+
+  font-size: math;
 }
 
+.indented-list {
+  padding-left: 1rem;
+}
+
+.accordion-container {
+  display: flex;
+  padding-top: 1.5rem;
+  justify-content: space-between;
+  width: 90%;
+}

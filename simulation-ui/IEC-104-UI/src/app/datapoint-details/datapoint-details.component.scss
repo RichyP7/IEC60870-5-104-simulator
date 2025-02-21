@@ -11,7 +11,23 @@
 }
 
 .details-card {
-  margin-top: 4rem
+  margin-top: 4rem;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+p-card {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  font-size: math;
+}
+
+p-card > div {
+  flex-grow: 1; /* Ensure card content stretches */
+  display: flex;
+  flex-direction: column;
 }
 
 .details-grid {
@@ -20,6 +36,7 @@
   row-gap: 0.5rem;
   column-gap: 1rem;
   align-items: center;
+  width: 100%;
 }
 
 .label {
@@ -29,4 +46,15 @@
 .grid-item {
   margin-top: 0.3rem;
 }
+
+.grid-item.value {
+  width: 100%;
+  word-break: break-word;
+}
+
+.dropdown-item i {
+  margin-left: 8px;
+  vertical-align: text-top;
+}
+
 

@@ -1,0 +1,22 @@
+.project-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.status-chip {
+  margin-right: 1rem;
+}
+
+.github-link {
+  margin-left: 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.github-link i {
+  font-size: 1.5rem;
+  vertical-align: sub;
+}
+.github-link:hover {
+  color: #c9c9c9;
+}

@@ -1,0 +1,18 @@
+<p-menubar>
+  <ng-template pTemplate="start">
+    <span class="project-name">IEC60870-5-104 Simulator</span>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+
+    <p-toggleButton [(ngModel)]="isSimulating"
+                    (ngModelChange)="updateSimulationState($event)"
+                    onLabel="Running" offLabel="Stopped"
+                    onIcon="pi pi-check" offIcon="pi pi-pause-circle">
+    </p-toggleButton>
+
+    <a href="https://github.com/RichyP7/IEC60870-5-104-simulator" target="_blank" class="github-link">
+      <i class="pi pi-github"></i>
+    </a>
+  </ng-template>
+</p-menubar>

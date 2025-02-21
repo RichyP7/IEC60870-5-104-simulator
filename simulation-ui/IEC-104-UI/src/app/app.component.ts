@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {Button} from "primeng/button";
 import {DataPoint, ListViewComponent} from './list-view/list-view.component';
 import {DatapointDetailsComponent} from './datapoint-details/datapoint-details.component';
+import {FormsModule} from '@angular/forms';
+import {HeaderComponent} from './header/header.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Button, ListViewComponent, DatapointDetailsComponent],
+  imports: [ListViewComponent, DatapointDetailsComponent, FormsModule, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

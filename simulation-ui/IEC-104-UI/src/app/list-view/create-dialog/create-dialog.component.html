@@ -1,0 +1,38 @@
+<p-dialog header="Add DataPoint" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }" (onHide)="closeDialog()">
+  <form [formGroup]="profileForm" (ngSubmit)="save()">
+    <div class="flex items-center gap-4 mb-4">
+      <label for="id" class="font-semibold w-36">ID</label>
+      <input pInputText id="id" class="flex-auto" formControlName="id" [ngClass]="{'p-invalid': profileForm.get('id')?.invalid}" autocomplete="off" />
+    </div>
+
+    <div class="flex items-center gap-4 mb-4">
+      <label for="stationaryAddress" class="font-semibold w-36">Stationary Address</label>
+      <input pInputText id="stationaryAddress" class="flex-auto" type="number" formControlName="stationaryAddress" [ngClass]="{'p-invalid': profileForm.get('stationaryAddress')?.invalid}" autocomplete="off" />
+    </div>
+
+    <div class="flex items-center gap-4 mb-4">
+      <label for="objectAddress" class="font-semibold w-36">Object Address</label>
+      <input pInputText id="objectAddress" class="flex-auto" type="number" formControlName="objectAddress" [ngClass]="{'p-invalid': profileForm.get('objectAddress')?.invalid}" autocomplete="off" />
+    </div>
+
+    <div class="flex items-center gap-4 mb-4">
+      <label for="iec104DataType" class="font-semibold w-36">IEC104 Data Type</label>
+      <p-select id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-select>
+    </div>
+
+    <div class="flex items-center gap-4 mb-8">
+      <label for="mode" class="font-semibold w-36">Mode</label>
+      <p-select id="mode" class="flex-auto" [options]="simulationModes" formControlName="mode" [ngClass]="{'ng-dirty': true}" [styleClass]="profileForm.get('mode')?.invalid ? 'ng-dirty' : ''" ></p-select>
+    </div>
+
+    <div class="flex items-center gap-4 mb-4">
+      <label for="value" class="font-semibold w-36">Value</label>
+      <input pInputText id="value" class="flex-auto" formControlName="value" [ngClass]="{'p-invalid': profileForm.get('value')?.invalid}" autocomplete="off" />
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="closeDialog()" />
+      <p-button label="Save" type="submit" [disabled]="profileForm.invalid" />
+    </div>
+  </form>
+</p-dialog>
