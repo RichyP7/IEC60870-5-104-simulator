@@ -54,20 +54,10 @@ export class DataService {
     return this.http.post<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs`, datapoint);
   }
 
-  fetchSimulationEngineState(): SimulationState | null {
-    let result: SimulationState | null = null;
-
-    this.http.get<SimulationState>(environment.API_ENDPOINT + 'SimulationEngineState')
-      .subscribe({
-        next: (data) => result = data,
-        error: (err) => {
-          console.error('Error fetching SimulationState', err);
-          result = null;
-        }
-      });
-
-    return result;
+  fetchSimulationEngineState(): Observable<SimulationState> {
+    return this.http.get<SimulationState>(environment.API_ENDPOINT + 'SimulationEngineState');
   }
+
 
   updateDataPointValue(dataPoint: DataPoint) {
 

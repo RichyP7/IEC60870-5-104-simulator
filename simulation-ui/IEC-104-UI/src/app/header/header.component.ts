@@ -5,6 +5,7 @@ import {ToggleButton} from "primeng/togglebutton";
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {DataService, SimulationState} from '../list-view/DataService/data.service';
+import {tap} from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -31,9 +32,17 @@ export class HeaderComponent implements OnInit{
   }
 
   fetchCurrentSimulationEngineState() {
-    let simulationState: SimulationState | null;
-    simulationState = this.dataService.fetchSimulationEngineState();
-    this.isSimulating = simulationState != null && simulationState === SimulationState.Running;
+    let simulationState: SimulationState | null = null;
+    this.dataService.fetchSimulationEngineState()
+      .subscribe({
+        next: (data) => {
+          simulationState = data;
+          this.isSimulating = simulationState != null && simulationState === SimulationState.Running;
+        },
+        error: (err) => {
+          console.error('Error fetching Simulation Engine State', err);
+        }
+      });
   }
 
 
