@@ -10,7 +10,7 @@
       <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
       <p-accordion-content *ngFor="let item of tab.items" >
         <div
-          [ngClass]="{'selected-item': item === selectedItem}"
+          [ngClass]="{'selected-item': item.objectAddress === selectedItem?.objectAddress && item.stationaryAddress === selectedItem?.stationaryAddress}"
           class="item-details p-2 border-round cursor-pointer"
           (click)="clickOnDataPoint(item)"
         >

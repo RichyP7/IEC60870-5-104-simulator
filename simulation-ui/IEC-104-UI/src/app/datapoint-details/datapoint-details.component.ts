@@ -10,6 +10,7 @@ import {Card} from 'primeng/card';
 import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -20,7 +21,8 @@ import {FormsModule} from '@angular/forms';
     Card,
     TableModule,
     DropdownModule,
-    FormsModule
+    FormsModule,
+    Toast
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
@@ -28,6 +30,8 @@ import {FormsModule} from '@angular/forms';
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
   item: DataPoint | null = null;
+
+  isEditing = false;
 
   simulationModes = [
     { label: 'Cyclic Random', value: SimulationMode.Cyclic, icon: 'pi pi-sort-alt' },
@@ -68,5 +72,18 @@ export class DatapointDetailsComponent implements OnChanges{
     if (changes['item'] && changes['item'].currentValue) {
       this.syncWithUpdatedData();
     }
+  }
+
+  dataPointCanBeToggled(item: DataPoint) : boolean {
+    return (item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1')
+  }
+
+  editItem(item: DataPoint) {
+    this.isEditing = true;
+  }
+
+  updateValue(item: DataPoint) {
+    this.isEditing = false;
+    this.dataService.updateDataPointValue(item);
   }
 }

@@ -1,7 +1,6 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Accordion, AccordionContent, AccordionHeader, AccordionPanel} from 'primeng/accordion';
 import {NgClass, NgForOf} from '@angular/common';
-import {HttpClient} from '@angular/common/http';
 import {Button} from 'primeng/button';
 import {Router} from '@angular/router';
 import {DataService} from './DataService/data.service';
@@ -33,9 +32,8 @@ export class ListViewComponent implements OnInit {
   showDialog: boolean = false;
 
   constructor(
-    private http: HttpClient,
     private router: Router,
-    private dataService: DataService
+    private dataService: DataService,
   ) {}
 
   ngOnInit() {

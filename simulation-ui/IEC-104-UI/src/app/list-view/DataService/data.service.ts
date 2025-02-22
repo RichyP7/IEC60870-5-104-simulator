@@ -1,17 +1,21 @@
 ﻿import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {DataPoint} from '../list-view.component';
 import {environment} from '../../../environments/environment.development';
+import {MessageService} from 'primeng/api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService {
   private dataSubject = new BehaviorSubject<DataPoint[]>([]);
   data$ : Observable<DataPoint[]> = this.dataSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  private errorSubject = new BehaviorSubject<string | null>(null);
+  public error$ = this.errorSubject.asObservable();
+
+  constructor(private http: HttpClient, private messageService: MessageService) {}
 
   fetchData(): void {
     this.http.get<DataPoint[]>(environment.API_ENDPOINT + 'DataPointConfigs').subscribe((data) => {
@@ -65,8 +69,36 @@ export class DataService {
     return result;
   }
 
+  updateDataPointValue(dataPoint: DataPoint) {
 
-
+    this.http.put<DataPoint>(`${environment.API_ENDPOINT}DataPointValue/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, JSON.stringify(dataPoint.value)
+      ,
+      {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .pipe(
+        catchError(error => {
+          console.log(error.error.exceptionMessage)
+          const errorMessage = 'Failed to update data point';
+          this.errorSubject.next(errorMessage);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error - Bad Request',
+            detail: error.error.exceptionMessage,
+          });
+          this.fetchData();
+          return of(null);
+        })
+      ).subscribe((data) => {
+      if (data) {
+        const currentData = this.dataSubject.getValue();
+        const updatedDataList = currentData.map((dp) =>
+          dp.objectAddress === data.objectAddress && dp.stationaryAddress === data.stationaryAddress ? data : dp
+        );
+        this.dataSubject.next(updatedDataList);
+      }
+    });
+  }
 
 }
 

@@ -16,7 +16,12 @@
     </div>
 
     <div class="flex items-center gap-4 mb-4">
-      <label for="iec104DataType" class="font-semibold w-36">IEC104 Data Type</label>
+      <label for="iec104DataType" class="font-semibold w-36 flex items-center gap-2">
+        IEC104 Data Type
+        <a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tf6500_tc3_iec60870_5_10x/984447883.html&id=" target="_blank" class="text-primary-emphasis text-xl ">
+          <i class="pi pi-info-circle"></i>
+        </a>
+      </label>
       <p-select id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-select>
     </div>
 
