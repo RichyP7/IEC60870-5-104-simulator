@@ -116,4 +116,49 @@ public sealed class TestSinglePoint: BaseWebApplication
         
 	    await Task.Run(() => con.Close());
     }
+    
+    [Fact]
+    public async Task Test_Receive_Command()
+    {
+	    var client = _factory.CreateClient();
+        
+
+	    Connection con = new Connection(HostName);
+	    con.DebugOutput = true;
+
+	    var tcs = new TaskCompletionSource();
+	    con.SetASDUReceivedHandler((parameter, asdu) =>
+	    {
+		    try
+		    {
+			    if (asdu.TypeId != TypeID.C_SC_NA_1)
+			    {
+				    con.SendControlCommand(CauseOfTransmission.REQUEST, 100, new SingleCommand(26, true, false, 0));
+				    return false;
+			    }
+			    asdu.TypeId.Should().Be(TypeID.C_SC_NA_1);
+			    for (int i = 0; i < asdu.NumberOfElements; i++) {
+
+				    var val = (SingleCommand) asdu.GetElement (i);
+
+				    val.ObjectAddress.Should().Be(26);
+			    }
+
+			    tcs.SetResult();
+		    }
+		    catch (Exception ex)
+		    {
+			    tcs.SetException(ex);
+		    }
+		    return true;
+	    }, null);
+
+	    con.SetConnectionHandler(ConnectionHandler, null);
+	    con.Connect();
+	    con.SendControlCommand(CauseOfTransmission.REQUEST, 100, new SingleCommand(26, true, false, 0));
+	    
+	    await tcs.Task.WaitAsync(TimeSpan.FromSeconds(35));
+        
+	    await Task.Run(() => con.Close());
+    }
 }
