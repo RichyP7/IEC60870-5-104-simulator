@@ -131,17 +131,13 @@ public sealed class TestSinglePoint: BaseWebApplication
 	    {
 		    try
 		    {
-			    if (asdu.TypeId != TypeID.C_SC_NA_1)
-			    {
-				    con.SendControlCommand(CauseOfTransmission.REQUEST, 100, new SingleCommand(26, true, false, 0));
-				    return false;
-			    }
+
 			    asdu.TypeId.Should().Be(TypeID.C_SC_NA_1);
 			    for (int i = 0; i < asdu.NumberOfElements; i++) {
 
 				    var val = (SingleCommand) asdu.GetElement (i);
 
-				    val.ObjectAddress.Should().Be(26);
+				    val.ObjectAddress.Should().Be(28);
 			    }
 
 			    tcs.SetResult();
@@ -155,7 +151,7 @@ public sealed class TestSinglePoint: BaseWebApplication
 
 	    con.SetConnectionHandler(ConnectionHandler, null);
 	    con.Connect();
-	    con.SendControlCommand(CauseOfTransmission.REQUEST, 100, new SingleCommand(26, true, false, 0));
+	    con.SendControlCommand(CauseOfTransmission.ACTIVATION, 100, new SingleCommand(28, true, false, 0));
 	    
 	    await tcs.Task.WaitAsync(TimeSpan.FromSeconds(35));
         

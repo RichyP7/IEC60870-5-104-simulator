@@ -1,5 +1,6 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
+using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.Dto;
 using IEC60870_5_104_simulator.Infrastructure.DTO.Mapper;
@@ -9,11 +10,13 @@ namespace IEC60870_5_104_simulator.Infrastructure.DataPointsService;
 public class DataPointService
 {
     private IIecValueRepository _iecValueRepository;
-    private Iec104DataPointDtoMapper mapper = new Iec104DataPointDtoMapper();
+    private Iec104DataPointDtoMapper mapper = new();
+    private IIec104ConfigurationService _configurationService;
 
-    public DataPointService(IIecValueRepository iecValueRepository)
+    public DataPointService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService)
     {
         _iecValueRepository = iecValueRepository;
+        _configurationService = configurationService;
     }
 
     public List<Iec104DataPointDto> GetAllDataPoints()
@@ -28,8 +31,8 @@ public class DataPointService
     {
         var dataPoint = mapper.MapFromDto(dataPointDto);
         _iecValueRepository.AddDataPoint(dataPoint.Address, dataPoint);
+        var added = _configurationService.AddConfiguredDataPoint(dataPoint);
         return dataPoint;
-
     }
 
     public Iec104DataPointDto UpdateSimulationMode(IecAddress address, SimulationMode mode)

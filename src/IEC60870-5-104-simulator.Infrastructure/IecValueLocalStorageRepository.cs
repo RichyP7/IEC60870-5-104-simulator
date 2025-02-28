@@ -119,8 +119,10 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint)
         {
+            var hasExistingValue = newdatapoint.Value != null!;
             if(StoredDataPoints.TryAdd(address, newdatapoint))
             {
+                if (hasExistingValue) return;
                 switch (newdatapoint.Iec104DataType)
                 {
                     case Iec104DataTypes.M_ST_NA_1:

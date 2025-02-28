@@ -1,0 +1,13 @@
+{
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+
+      "Measures": [
+      ],
+      "Commands":[
+      ]
+    }
+  }
+
+}
