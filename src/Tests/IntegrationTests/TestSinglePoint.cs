@@ -131,7 +131,7 @@ public sealed class TestSinglePoint: BaseWebApplication
 	    {
 		    try
 		    {
-
+			    if (asdu.TypeId != TypeID.C_SC_NA_1) throw new Exception("Unexpected ASDU type");
 			    asdu.TypeId.Should().Be(TypeID.C_SC_NA_1);
 			    for (int i = 0; i < asdu.NumberOfElements; i++) {
 
