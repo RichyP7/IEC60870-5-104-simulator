@@ -21,4 +21,12 @@
     <ProjectReference Include="..\IEC60870-5-104-simulator.Infrastructure\IEC60870-5-104-simulator.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="IntegrationTests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
 </Project>

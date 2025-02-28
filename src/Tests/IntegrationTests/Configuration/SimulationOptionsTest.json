@@ -1,0 +1,27 @@
+﻿{
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+
+      "Measures": [
+        {
+          "Id": "Point1",
+          "Ca": "20",
+          "Oa": "25",
+          "TypeId": 11,
+          "Mode": "Cyclic"
+        }
+      ],
+      "Commands":[
+        {
+          "Id": "Command1",
+          "Ca": "20",
+          "Oa": "2",
+          "TypeId": 47,
+          "ResponseId": "Point1"
+        }
+      ]
+    }
+  }
+
+}

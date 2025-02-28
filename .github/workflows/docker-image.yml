@@ -26,8 +26,14 @@ jobs:
     - name: Build  the test Docker image
       run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulatortest:${{ github.run_id }} .
 
+    - name: Build the service test Docker image
+      run: DOCKER_BUILDKIT=1 docker build --pull --target test-service -t iec60870-5-104-simulator-servicetest:${{ github.run_id }} .
+      
     - name: Run tests in Docker image
       run: docker run -t iec60870-5-104-simulatortest:${{ github.run_id }}
+      
+    - name: Run service tests in Docker image
+      run: docker run -t iec60870-5-104-simulator-servicetest:${{ github.run_id }}
     
     - name: Log in to the Container registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1

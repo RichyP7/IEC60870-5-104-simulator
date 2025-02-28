@@ -1,0 +1,8 @@
+<div class="container">
+  <app-list-view
+    (itemSelected)="onItemSelected($event)"
+  ></app-list-view>
+  <app-datapoint-details
+    [item]="selectedItem">
+  </app-datapoint-details>
+</div>
