@@ -17,6 +17,7 @@
       - "4300:80"
     environment:
       - ENV_API_ENDPOINT=http://localhost:8080/api/
+      - ENV_API_HEALTH_ENDPOINT=http://localhost:8080/health/
     depends_on:
       - backend
         

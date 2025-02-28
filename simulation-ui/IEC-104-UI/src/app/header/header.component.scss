@@ -3,6 +3,18 @@
   font-weight: bold;
 }
 
+.datapoint-config {
+  margin-left: 20px;
+  font-size: 1.1rem;
+}
+
+.separator {
+  border-left: 2px solid #ccc;
+  margin-left: 20px;
+  height: 24px;
+  display: inline-block;
+}
+
 .status-chip {
   margin-right: 1rem;
 }

@@ -58,6 +58,14 @@ export class DataService {
     return this.http.get<SimulationState>(environment.API_ENDPOINT + 'SimulationEngineState');
   }
 
+  fetchHealthState(): Observable<String> {
+    return this.http.get<String>(environment.HEALTH_ENDPOINT + 'live', { responseType: 'text' as 'json' });
+  }
+
+  fetchConnectionState(): Observable<String> {
+    return this.http.get<String>(environment.HEALTH_ENDPOINT + 'ready', { responseType: 'text' as 'json' });
+  }
+
 
   updateDataPointValue(dataPoint: DataPoint) {
 

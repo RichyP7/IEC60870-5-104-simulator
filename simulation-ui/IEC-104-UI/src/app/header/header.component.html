@@ -1,9 +1,25 @@
 <p-menubar>
   <ng-template pTemplate="start">
-    <span class="project-name">IEC60870-5-104 Simulator</span>
+    <span class="project-name">IEC 60870-5-104 Simulator</span>
+    <span class="separator"></span>
+    <span class="datapoint-config">Datapoint Configuration</span>
   </ng-template>
 
   <ng-template pTemplate="end">
+
+    <p-toggleButton [ngModel]="isConnected"
+                    class="mr-3"
+                    [ngStyle]="{ 'pointer-events': 'none'}"
+                    onLabel="Connected" offLabel="No Connection"
+                    onIcon="pi pi-wifi" offIcon="pi pi-times">
+    </p-toggleButton>
+
+    <p-toggleButton [ngModel]="isHealthy"
+                    class="mr-10"
+                    [ngStyle]="{ 'pointer-events': 'none'}"
+                    onLabel="Healthy" offLabel="Unhealthy"
+                    onIcon="pi pi-heart" offIcon="pi pi-times">
+    </p-toggleButton>
 
     <p-toggleButton [(ngModel)]="isSimulating"
                     (ngModelChange)="updateSimulationState($event)"

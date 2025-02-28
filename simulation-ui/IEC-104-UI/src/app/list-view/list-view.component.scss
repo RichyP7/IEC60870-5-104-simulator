@@ -1,5 +1,4 @@
 p-accordion {
-  width: 90%;
   display: block;
   min-width: 200px;
 
@@ -16,7 +15,12 @@ p-accordion {
 
 .accordion-container {
   display: flex;
-  padding-top: 1.5rem;
   justify-content: space-between;
   width: 90%;
+}
+
+.card {
+  width: 90%;
+  margin-top: 2rem;
+  margin-left: 1rem;
 }
