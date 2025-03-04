@@ -4,6 +4,8 @@ using IEC60870_5_104_simulator.Infrastructure;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using IEC60870_5_104_simulator.Infrastructure.DataPointsService;
+using ObjectFactory = IEC60870_5_104_simulator.Infrastructure.ObjectFactory;
+
 namespace ServiceExtensionMethods
 {
     public static class ServiceExtensions
@@ -23,7 +25,7 @@ namespace ServiceExtensionMethods
                 server.SetLocalPort(2404);
                 return server;
             });
-            services.AddSingleton<IInformationObjectFactory, RandomObjectFactory>();
+            services.AddSingleton<IInformationObjectFactory, ObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
             services.AddSingleton<IInformationObjectTemplate, InformationObjectTemplateMethod>();
             services.AddSingleton<IIecValueRepository, IecValueLocalStorageRepository>();

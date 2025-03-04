@@ -114,11 +114,27 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 myASDU.Value.AddInformationObject(ioa);
             }
             Send(asdus.Select(v => v.Value));
+            
+            // Simulate Static Values
+            var staticDataPoints = GetCyclicStaticDataPoints(datapoints);
+            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> staticAsdus = CreateDistinctAsdus(staticDataPoints);
+            foreach (Iec104DataPoint dataPoint in staticDataPoints)
+            {
+                var ioa = factory.GetInformationObjectWithStaticValue(dataPoint);
+                var myASDU = staticAsdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
+                myASDU.Value.AddInformationObject(ioa);
+            }
+            Send(staticAsdus.Select(v => v.Value));
         }
 
         private static IEnumerable<Iec104DataPoint> GetCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
         {
             return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic));
+        }
+        
+        private static IEnumerable<Iec104DataPoint> GetCyclicStaticDataPoints(IEnumerable<Iec104DataPoint> datapoints)
+        {
+            return datapoints.Where(v => v.Mode.Equals(SimulationMode.CyclicStatic));
         }
 
         private IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)
@@ -141,7 +157,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                                    select toSend)
             {
                 server.EnqueueASDU(toSend);
-                logger.LogInformation("Enqeued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
+                logger.LogInformation("Enqueued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
             }
         }
 

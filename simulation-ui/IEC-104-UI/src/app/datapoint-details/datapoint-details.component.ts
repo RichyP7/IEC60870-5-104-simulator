@@ -1,19 +1,28 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {DataPoint} from '../list-view/list-view.component';
+import {DataPoint, SimulationMode} from '../list-view/list-view.component';
 import {NgIf} from '@angular/common';
 import {environment} from '../../environments/environment.development';
 import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {subscribe} from 'node:diagnostics_channel';
 import {DataService} from '../list-view/DataService/data.service';
 import {Button} from 'primeng/button';
+import {Card} from 'primeng/card';
+import {TableModule} from 'primeng/table';
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-datapoint-details',
   standalone: true,
   imports: [
     NgIf,
-    Button
+    Button,
+    Card,
+    TableModule,
+    DropdownModule,
+    FormsModule,
+    Toast
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
@@ -21,6 +30,14 @@ import {Button} from 'primeng/button';
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
   item: DataPoint | null = null;
+
+  isEditing = false;
+
+  simulationModes = [
+    { label: 'Cyclic Random', value: SimulationMode.Cyclic, icon: 'pi pi-sort-alt' },
+    { label: 'Cyclic Static', value: SimulationMode.CyclicStatic, icon: 'pi pi-lock' },
+    { label: 'None', value: SimulationMode.None, icon: 'pi pi-play-circle' }
+  ];
 
   constructor(
     private http: HttpClient,
@@ -39,6 +56,10 @@ export class DatapointDetailsComponent implements OnChanges{
       .subscribe();
   }
 
+  toggleSimulationMode(point: DataPoint) {
+    this.dataService.toggleSimulationMode(point);
+  }
+
   private syncWithUpdatedData(): void {
     if (this.item) {
       this.dataService.data$.subscribe((data) => {
@@ -51,5 +72,18 @@ export class DatapointDetailsComponent implements OnChanges{
     if (changes['item'] && changes['item'].currentValue) {
       this.syncWithUpdatedData();
     }
+  }
+
+  dataPointCanBeToggled(item: DataPoint) : boolean {
+    return (item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1')
+  }
+
+  editItem(item: DataPoint) {
+    this.isEditing = true;
+  }
+
+  updateValue(item: DataPoint) {
+    this.isEditing = false;
+    this.dataService.updateDataPointValue(item);
   }
 }

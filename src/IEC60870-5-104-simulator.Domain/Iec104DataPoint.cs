@@ -33,6 +33,7 @@ namespace IEC60870_5_104_simulator.Domain
     {
         None,
         Cyclic,
+        CyclicStatic,
         Response
     }
 }

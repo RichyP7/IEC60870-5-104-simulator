@@ -1,6 +1,6 @@
 ﻿{
   "Iec104Simulation": {
-    "CycleTimeMs": 10000,
+    "CycleTimeMs": 5000,
     "DataPointConfiguration": {
 
       "Measures": [

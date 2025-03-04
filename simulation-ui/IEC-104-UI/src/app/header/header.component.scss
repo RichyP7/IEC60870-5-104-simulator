@@ -1,0 +1,34 @@
+.project-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.datapoint-config {
+  margin-left: 20px;
+  font-size: 1.1rem;
+}
+
+.separator {
+  border-left: 2px solid #ccc;
+  margin-left: 20px;
+  height: 24px;
+  display: inline-block;
+}
+
+.status-chip {
+  margin-right: 1rem;
+}
+
+.github-link {
+  margin-left: 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.github-link i {
+  font-size: 1.5rem;
+  vertical-align: sub;
+}
+.github-link:hover {
+  color: #c9c9c9;
+}

@@ -34,6 +34,11 @@ namespace IEC60870_5_104_simulator.Domain.Service
             InitStorage();
 
         }
+
+        public bool AddConfiguredDataPoint(Iec104DataPoint dataPoint)
+        {
+            return DataPoints.TryAdd(dataPoint.Address, dataPoint);
+        }
         private void InitStorage()
         {
 

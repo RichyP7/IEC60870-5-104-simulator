@@ -30,7 +30,7 @@ The project is still in early development and there are a lot of feature missing
 | Custom Simulation profiles  | Allow users to add custom simulation profiles                                                         | Not started |
 | Secure Authentication       | Implement secure authentication mechanisms.                                                       | Not started  |
 | Performance Optimization    | Optimize performance for large-scale simulations.                                                | Not started  |
-| Configuration UI            | Add UI for configuration of simulator          .                                                | Not started  |
+| Configuration UI            | Add UI for configuration of simulator          .                                                | ✅ Implemented  |
 | Real-time Monitoring        | Real-time visualization of communication exchanges.                                               |  Not started  |
 | Error Handling              | Robust error handling for unexpected scenarios.                                                  |  Not started   |
 | Documentation               | Detailed documentation for setup, usage, and customization.                                       |  Not started   |

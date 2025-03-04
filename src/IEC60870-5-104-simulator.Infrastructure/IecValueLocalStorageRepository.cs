@@ -66,6 +66,17 @@ namespace IEC60870_5_104_simulator.Infrastructure
             if (!found || value == null) throw new KeyNotFoundException("DataPoint not found for id" + address);
             return value;
         }
+
+        public void SetSimulationMode(IecAddress address, SimulationMode mode)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
+            {
+                test.Mode = mode;
+            }
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+        }
+        
         public void SetSinglePoint(IecAddress address,bool value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
@@ -95,11 +106,23 @@ namespace IEC60870_5_104_simulator.Infrastructure
             else
                 throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
+        
+        public void SetObjectValue(IecAddress address, IecValueObject value)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            {
+                test.Value = value;
+            }
+            else
+                throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
+        }
 
         public void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint)
         {
+            var hasExistingValue = newdatapoint.Value != null!;
             if(StoredDataPoints.TryAdd(address, newdatapoint))
             {
+                if (hasExistingValue) return;
                 switch (newdatapoint.Iec104DataType)
                 {
                     case Iec104DataTypes.M_ST_NA_1:

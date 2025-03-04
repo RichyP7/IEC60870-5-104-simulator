@@ -7,14 +7,16 @@ using Moq;
 
 namespace IEC60870_5_104_simulator.Infrastructure.Tests
 {
-    public class RandomObjectFactoryTest
+    public class ObjectFactoryTest
     {
-        private RandomObjectFactory factory;
+        private ObjectFactory factory;
         private Mock<IInformationObjectTemplate> templateMock;
-        public RandomObjectFactoryTest()
+        private Mock<IIecValueRepository> templateRepository;
+        public ObjectFactoryTest()
         {
             templateMock = new Mock<IInformationObjectTemplate>();
-            factory = new RandomObjectFactory( templateMock.Object);
+            templateRepository = new Mock<IIecValueRepository>();
+            factory = new ObjectFactory( templateMock.Object, templateRepository.Object);
         }
         [Fact]
         public void GetInformationObjectTest_GetStepposition_Verify()

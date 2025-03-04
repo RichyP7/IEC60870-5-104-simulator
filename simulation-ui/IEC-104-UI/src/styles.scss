@@ -1,4 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
-.justify-center {
-  padding-top: 1.5rem;
+@import "primeicons/primeicons.css";
+
+@layer tailwind-base, primeng, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* highlight selected item */
+div.p-accordioncontent-content:has(div.selected-item){
+  background-color: var(--p-highlight-background) !important;
+  transition: background-color 0.5s ease, border 0.5s ease !important;
 }

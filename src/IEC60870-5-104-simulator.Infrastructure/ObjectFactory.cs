@@ -1,21 +1,21 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;
-using lib60870;
 using lib60870.CS101;
-using System;
-using System.Diagnostics;
+using IEC60870_5_104_simulator.Domain.Interfaces;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
-    public class RandomObjectFactory : IInformationObjectFactory
+    public class ObjectFactory : IInformationObjectFactory
     {
         private readonly IInformationObjectTemplate template;
+        private readonly IIecValueRepository repository;
         private readonly Random random;
 
-        public RandomObjectFactory(IInformationObjectTemplate template)
+        public ObjectFactory(IInformationObjectTemplate template, IIecValueRepository valueRepository)
         {
             this.template = template;
+            this.repository = valueRepository;
             random = new();
         }
 
@@ -54,6 +54,45 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 case Iec104DataTypes.M_ME_ND_1:
                     float valueNormalized = CreateRandomFloat();
                     return template.GetMeasuredValueNormalized(responseDataPoint.Address.ObjectAddress, new IecValueFloatObject(valueNormalized), responseDataPoint.Iec104DataType);
+                default:
+                    throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
+            }
+        }
+        
+        public InformationObject GetInformationObjectWithStaticValue(Iec104DataPoint responseDataPoint)
+        {
+            int oa = responseDataPoint.Address.ObjectAddress;
+            int sa = responseDataPoint.Address.StationaryAddress;
+            IecAddress address = new IecAddress(sa, oa);
+
+            var existingDataPoint = repository.GetDataPoint(address);
+            
+            switch (responseDataPoint.Iec104DataType)
+            {
+                case Iec104DataTypes.M_ST_NA_1:
+                case Iec104DataTypes.M_ST_TA_1:
+                case Iec104DataTypes.M_ST_TB_1:
+                    return template.GetStepposition(responseDataPoint.Address.ObjectAddress, existingDataPoint.Value, responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_SP_NA_1:
+                case Iec104DataTypes.M_SP_TA_1:
+                case Iec104DataTypes.M_SP_TB_1:
+                    return template.GetSinglePoint(responseDataPoint.Address.ObjectAddress, existingDataPoint.Value, responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_DP_NA_1:
+                case Iec104DataTypes.M_DP_TA_1:
+                case Iec104DataTypes.M_DP_TB_1:
+                    return template.GetDoublePoint(responseDataPoint.Address.ObjectAddress, (IecDoublePointValueObject) existingDataPoint.Value, responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_ME_NB_1:
+                case Iec104DataTypes.M_ME_TB_1:
+                case Iec104DataTypes.M_ME_TE_1:
+                    return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress,(IecIntValueObject) existingDataPoint.Value, responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_ME_NC_1:
+                case Iec104DataTypes.M_ME_TC_1:
+                case Iec104DataTypes.M_ME_TF_1:
+                    return template.GetMeasuredValueShort(responseDataPoint.Address.ObjectAddress, (IecValueFloatObject) existingDataPoint.Value, responseDataPoint.Iec104DataType);
+                case Iec104DataTypes.M_ME_NA_1:
+                case Iec104DataTypes.M_ME_TA_1:
+                case Iec104DataTypes.M_ME_ND_1:
+                    return template.GetMeasuredValueNormalized(responseDataPoint.Address.ObjectAddress, (IecValueFloatObject) existingDataPoint.Value, responseDataPoint.Iec104DataType);
                 default:
                     throw new NotImplementedException($"{responseDataPoint.Iec104DataType} is not implemented");
             }
