@@ -1,5 +1,4 @@
 name: Docker Image CI
-
 on:
   push:
     branches: [ "main" ]
@@ -13,6 +12,7 @@ env:
   
 jobs:
   containerized-tests:
+    name: Run containerized tests
     runs-on: ubuntu-latest  
     steps:
     - uses: actions/checkout@v3
@@ -29,16 +29,18 @@ jobs:
       run: docker run -t iec60870-5-104-simulator-servicetest:${{ github.run_id }}  
 
   build:
+    needs: containerized-tests
+    name: Build and publish image ${{ matrix.image }} 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         include:
           - dockerfile: ./Dockerfile
-            image: IEC60870-5-104-simulator
+            image: iec60870-5-104-simulator
             context: .
           - dockerfile: ./simulation-ui/IEC-104-UI/ui.Dockerfile
-            image: IEC60870-5-104-simulator-ui
+            image: iec60870-5-104-simulator-ui
             context: ./simulation-ui/IEC-104-UI
     steps:
     - uses: actions/checkout@v3
