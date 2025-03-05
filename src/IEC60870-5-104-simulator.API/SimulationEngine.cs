@@ -73,8 +73,6 @@ namespace IEC60870_5_104_simulator.Service
             _logger.LogInformation("Started worker at: {time}", DateTimeOffset.Now);
             await base.StartAsync(cancellationToken);
             SimulationStatus = SimulationState.Running;
-            return;
-
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
@@ -83,7 +81,6 @@ namespace IEC60870_5_104_simulator.Service
             await base.StopAsync(cancellationToken);
             await this.iecService.Stop();
             SimulationStatus = SimulationState.Stopped;
-            return;
         }
         private void Configure()
         {
@@ -91,13 +88,13 @@ namespace IEC60870_5_104_simulator.Service
             var measures = options.DataPointConfiguration.Measures;
             var commandDataPoints = this.mapper.Map<List<Iec104CommandDataPointConfig>>(commands);
             var resultMeasures = this.mapper.Map<List<Iec104DataPoint>>(measures);
-            if(commands!= null)
+            if (commands != null)
                 AssignResponses(commands, commandDataPoints, resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
-            
-            _logger.LogInformation("{numbercommands} commands and {numbermeasures} measurements got configured", commands?.Count, measures?.Count);
-            resultMeasures.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType));
-            commandDataPoints.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type:{type}, Resp: {response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress,v.Iec104DataType,v.SimulatedDataPoint?.Id));
+
+            _logger.LogInformation("{NumberCommands} commands and {NumberMeasures} measurements got configured", commands?.Count, measures?.Count);
+            resultMeasures.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType));
+            commandDataPoints.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type:{type}, Resp: {response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType, v.SimulatedDataPoint?.Id));
             dataConfigurationDone = true;
         }
 
@@ -105,7 +102,7 @@ namespace IEC60870_5_104_simulator.Service
         {
             foreach (var item in commands)
             {
-                if (!String.IsNullOrEmpty(item?.ResponseId))
+                if (!String.IsNullOrEmpty(item.ResponseId))
                 {
                     var responseDataPoint = resultMeasures.SingleOrDefault(v => v.Id.Equals(item.ResponseId));
                     if (responseDataPoint == null)
@@ -117,7 +114,7 @@ namespace IEC60870_5_104_simulator.Service
                 }
             }
         }
-        
+
         public enum SimulationState
         {
             Stopped,

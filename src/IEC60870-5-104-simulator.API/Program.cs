@@ -47,8 +47,9 @@ Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
 builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
-builder.Services.Configure<Iec104SimulationOptions>(
-    builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation));
+builder.Services.AddOptions<Iec104SimulationOptions>().Bind(
+    builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation))
+    .ValidateDataAnnotations().ValidateOnStart();
 
 
 
