@@ -12,17 +12,9 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
+  containerized-tests:
+    runs-on: ubuntu-latest  
     steps:
-    - uses: actions/checkout@v3
-  
-    - name: Build the Docker image
-      run: DOCKER_BUILDKIT=1 docker build --target final --tag iec60870-5-104-simulator:$(date +%s) .
-
     - name: Build  the test Docker image
       run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulatortest:${{ github.run_id }} .
 
@@ -33,8 +25,25 @@ jobs:
       run: docker run -t iec60870-5-104-simulatortest:${{ github.run_id }}
       
     - name: Run service tests in Docker image
-      run: docker run -t iec60870-5-104-simulator-servicetest:${{ github.run_id }}
-    
+      run: docker run -t iec60870-5-104-simulator-servicetest:${{ github.run_id }}  
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - dockerfile: ./Dockerfile
+            image: IEC60870-5-104-simulator
+            context: .
+          - dockerfile: ./simulation-ui/IEC-104-UI/ui.Dockerfile
+            image: IEC60870-5-104-simulator-ui
+            context: ./simulation-ui/IEC-104-UI
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: DOCKER_BUILDKIT=1 docker build --target final --tag ${{ matrix.image }}:$(date +%s) .
+
     - name: Log in to the Container registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
@@ -46,12 +55,13 @@ jobs:
       id: meta
       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
       with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        images: ${{ env.REGISTRY }}/RichyP7/${{ matrix.image }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
       with:
-        context: .
+        context: ${{ matrix.context }}
+        file: ${{ matrix.dockerfile }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
