@@ -11,7 +11,7 @@ namespace IEC60870_5_104_simulator.Service
 {
     public class SimulationEngine : BackgroundService
     {
-        private readonly ILogger<SimulationEngine> _logger;
+        private readonly ILogger<SimulationEngine> logger;
         private readonly Iec104SimulationOptions options;
         private readonly IIec104ConfigurationService datapointConfigService;
         private readonly IMapper mapper;
@@ -20,12 +20,12 @@ namespace IEC60870_5_104_simulator.Service
         public SimulationState SimulationStatus { get; set; } = SimulationState.Stopped;
 
         private IIec104Service iecService { get; }
-        private int cycleTimeMs;
+        private readonly int cycleTimeMs;
 
         public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options, IIec104ConfigurationService datapointconfig, IMapper mapper,
             ServerStartedHealthCheck healthCheck)
         {
-            _logger = logger;
+            this.logger = logger;
             this.iecService = iecservice;
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
@@ -46,18 +46,18 @@ namespace IEC60870_5_104_simulator.Service
             {
                 try
                 {
-                    _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
+                    logger.LogDebug("Worker running at: {Time}", DateTimeOffset.Now);
                     await Task.Delay(cycleTimeMs);
                     await this.iecService.Simulate(datapointConfigService.DataPoints.Values);
                 }
                 catch (TaskCanceledException ex)
                 {
-                    _logger.LogWarning("Task was cancelled");
-                    throw ex;
+                    logger.LogWarning(ex, "Task was cancelled");
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Simulation failed", ex.Message);
+                    logger.LogError(ex, "Simulation failed {Message}", ex.Message);
                 }
             }
         }
@@ -70,20 +70,21 @@ namespace IEC60870_5_104_simulator.Service
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             if (SimulationStatus == SimulationState.Running) throw new BadRequestException("Simulation is already running.");
-            _logger.LogInformation("Started worker at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Started worker at: {Time}", DateTimeOffset.Now);
             await base.StartAsync(cancellationToken);
             SimulationStatus = SimulationState.Running;
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             if (SimulationStatus == SimulationState.Stopped) throw new BadRequestException("Simulation is already stopped.");
-            _logger.LogInformation("Stopped worker at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Stopped worker at: {Time}", DateTimeOffset.Now);
             await base.StopAsync(cancellationToken);
             await this.iecService.Stop();
             SimulationStatus = SimulationState.Stopped;
         }
         private void Configure()
         {
+
             var commands = options.DataPointConfiguration.Commands;
             var measures = options.DataPointConfiguration.Measures;
             var commandDataPoints = this.mapper.Map<List<Iec104CommandDataPointConfig>>(commands);
@@ -92,9 +93,9 @@ namespace IEC60870_5_104_simulator.Service
                 AssignResponses(commands, commandDataPoints, resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
 
-            _logger.LogInformation("{NumberCommands} commands and {NumberMeasures} measurements got configured", commands?.Count, measures?.Count);
-            resultMeasures.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType));
-            commandDataPoints.ForEach(v => _logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type:{type}, Resp: {response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType, v.SimulatedDataPoint?.Id));
+            logger.LogInformation("{NumberCommands} commands and {NumberMeasures} measurements got configured", commands?.Count, measures?.Count);
+            resultMeasures.ForEach(v => logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {Type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType));
+            commandDataPoints.ForEach(v => logger.LogInformation("Id: {Id} Ca {Ca} Oa {Oa} Type:{Type}, Resp: {Response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType, v.SimulatedDataPoint?.Id));
             dataConfigurationDone = true;
         }
 
@@ -107,7 +108,7 @@ namespace IEC60870_5_104_simulator.Service
                     var responseDataPoint = resultMeasures.SingleOrDefault(v => v.Id.Equals(item.ResponseId));
                     if (responseDataPoint == null)
                     {
-                        throw new InvalidOperationException($"Invalid config for command: {item.Id}, ResponseId{item.ResponseId}");
+                        throw new InvalidOperationException($"Invalid config for command: {item.Id}, ResponseId: {item.ResponseId}");
                     }
                     var commandDataPoint = commandDataPoints.Single(v => v.Id.Equals(item.Id));
                     commandDataPoint.AssignResponseDataPoint(responseDataPoint);
