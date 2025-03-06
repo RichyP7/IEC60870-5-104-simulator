@@ -11,7 +11,7 @@ namespace IEC60870_5_104_simulator.Domain
     {
         public string Id { get; set; }
         public IecAddress Address { get; set; }
-        public Iec104DataTypes Iec104DataType { get; }
+        public Iec104DataTypes Iec104DataType { get; set; }
         public Iec104DataPoint SimulatedDataPoint { get; set; }
 
 
