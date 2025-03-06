@@ -10,7 +10,7 @@ namespace IEC60870_5_104_simulator.API
         [Range(0, 100000, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int CycleTimeMs { get; set; }
         [ValidateObjectMembers]
-        public IecConfiguration DataPointConfiguration { get; set; }
+        public IecConfiguration DataPointConfiguration { get; set; } = new IecConfiguration();
 
 
         public class IecConfiguration
