@@ -5,6 +5,9 @@ import {Button} from 'primeng/button';
 import {Router} from '@angular/router';
 import {DataService} from './DataService/data.service';
 import {CreateDialogComponent} from './create-dialog/create-dialog.component';
+import {Toast} from 'primeng/toast';
+import {catchError, of} from 'rxjs';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'app-list-view',
@@ -18,6 +21,7 @@ import {CreateDialogComponent} from './create-dialog/create-dialog.component';
     Button,
     NgClass,
     CreateDialogComponent,
+    Toast,
   ],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss'
@@ -34,6 +38,7 @@ export class ListViewComponent implements OnInit {
   constructor(
     private router: Router,
     private dataService: DataService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -72,11 +77,21 @@ export class ListViewComponent implements OnInit {
   }
 
   createDataPoint(datapoint: DataPoint) {
-    this.dataService.createDataPoint(datapoint).subscribe(
+    this.dataService.createDataPoint(datapoint)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.exceptionMessage)
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error - Bad Request',
+            detail: error.error.exceptionMessage,
+          });
+          return of(null);
+        })
+      )
+      .subscribe(
       response => {
-        console.log(response);
         this.reloadData();
-
       }
     );
   }
