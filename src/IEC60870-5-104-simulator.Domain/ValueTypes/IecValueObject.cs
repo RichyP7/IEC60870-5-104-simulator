@@ -1,4 +1,6 @@
-﻿namespace IEC60870_5_104_simulator.Domain.ValueTypes
+﻿using System.Globalization;
+
+namespace IEC60870_5_104_simulator.Domain.ValueTypes
 {
     public abstract record IecValueObject
     {
@@ -91,7 +93,7 @@
         
         public override string ToString()
         {
-            return Value.ToString();
+            return Value.ToString(CultureInfo.InvariantCulture);
         }
     }
     public record ScaledValueRecord
