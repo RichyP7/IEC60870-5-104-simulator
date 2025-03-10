@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import {DataPoint, Iec104DataTypes, SimulationMode} from '../list-view.component';
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Select} from 'primeng/select';
 
 @Component({
@@ -41,7 +41,7 @@ export class CreateDialogComponent implements OnInit {
       objectAddress: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       iec104DataType: ['', Validators.required],
       mode: ['', Validators.required],
-      value: ['', Validators.required]
+      value: [null]
     });
 
     this.profileForm.get('mode')?.markAsDirty();

@@ -31,15 +31,16 @@ public class Iec104DataPointDtoMapper
             Id = iec104DataPointDto.Id,
             Address = new IecAddress(iec104DataPointDto.stationaryAddress, iec104DataPointDto.objectAddress),
             Iec104DataType = iec104DataPointDto.Iec104DataType,
-            Value = MapStringToValueObject(iec104DataPointDto.Value, iec104DataPointDto.Iec104DataType),
+            Value = MapStringToValueObject(iec104DataPointDto.Value, iec104DataPointDto.Iec104DataType)!,
             Mode = iec104DataPointDto.Mode,
         };
 
         return dataPoint;
     }
 
-    public IecValueObject MapStringToValueObject(String value, Iec104DataTypes dataType)
+    public IecValueObject? MapStringToValueObject(String? value, Iec104DataTypes dataType)
     {
+        if (value == null) return null;
         if (DataTypeIsInteger(dataType))
         {
             if (!IsInteger(value)) throw new BadRequestException("Value must be integer");

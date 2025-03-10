@@ -10,7 +10,8 @@ public class Iec104DataPointDto
     public int stationaryAddress { get; set; }
     [Required]
     public int objectAddress { get; set; }
-    public Iec104DataTypes Iec104DataType { get; set; }
-    public String Value { get; set; }
+    [Required]
+    public required Iec104DataTypes Iec104DataType { get; set; }
+    public string? Value { get; set; }
     public SimulationMode Mode { get; set; }
 }
