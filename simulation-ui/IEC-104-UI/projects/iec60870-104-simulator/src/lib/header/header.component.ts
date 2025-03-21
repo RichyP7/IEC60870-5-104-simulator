@@ -5,9 +5,9 @@ import {
   OnInit,
   PLATFORM_ID
 } from '@angular/core';
-import {Menubar} from "primeng/menubar";
+import {Menubar, MenubarModule} from "primeng/menubar";
 import {PrimeTemplate} from "primeng/api";
-import {ToggleButton} from "primeng/togglebutton";
+import {ToggleButton, ToggleButtonModule} from "primeng/togglebutton";
 import {FormsModule} from '@angular/forms';
 import {DataService, SimulationState} from '../list-view/DataService/data.service';
 import {NgStyle} from '@angular/common';
@@ -17,9 +17,9 @@ import {interval, of, startWith, Subject, tap} from 'rxjs';
   selector: 'app-header',
   standalone: true,
   imports: [
-    Menubar,
+    MenubarModule,
     PrimeTemplate,
-    ToggleButton,
+    ToggleButtonModule,
     FormsModule,
     NgStyle,
   ],

@@ -22,12 +22,12 @@
           <i class="pi pi-info-circle"></i>
         </a>
       </label>
-      <p-select id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-select>
+      <p-dropdown id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-dropdown>
     </div>
 
     <div class="flex items-center gap-4 mb-8">
       <label for="mode" class="font-semibold w-36">Mode</label>
-      <p-select id="mode" class="flex-auto" [options]="simulationModes" formControlName="mode" [ngClass]="{'ng-dirty': true}" [styleClass]="profileForm.get('mode')?.invalid ? 'ng-dirty' : ''" ></p-select>
+      <p-dropdown id="mode" class="flex-auto" [options]="simulationModes" formControlName="mode" [ngClass]="{'ng-dirty': true}" [styleClass]="profileForm.get('mode')?.invalid ? 'ng-dirty' : ''" ></p-dropdown>
     </div>
 
     <div class="flex items-center gap-4 mb-4">

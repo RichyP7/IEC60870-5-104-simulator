@@ -1,16 +1,15 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {DataPoint, SimulationMode} from '../list-view/list-view.component';
 import {NgIf} from '@angular/common';
-import {environment} from '../../../../../src/environments/environment.development';
 import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {DataService} from '../list-view/DataService/data.service';
 import {Button} from 'primeng/button';
-import {Card} from 'primeng/card';
+import {Card, CardModule} from 'primeng/card';
 import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
-import {Toast} from 'primeng/toast';
+import {Toast, ToastModule} from 'primeng/toast';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -18,11 +17,11 @@ import {Toast} from 'primeng/toast';
   imports: [
     NgIf,
     Button,
-    Card,
+    CardModule,
     TableModule,
     DropdownModule,
     FormsModule,
-    Toast
+    ToastModule
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
@@ -47,7 +46,7 @@ export class DatapointDetailsComponent implements OnChanges{
   toggleDoublePointValue(doublePoint: DataPoint) {
     console.log("action");
     this.http
-      .get<DataPoint[]>(environment.API_ENDPOINT + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
+      .get<DataPoint[]>("http://localhost:8080/health/" + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
       .pipe(
         tap(() => {
           this.dataService.fetchData();

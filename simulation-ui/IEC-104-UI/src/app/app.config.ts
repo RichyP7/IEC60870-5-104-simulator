@@ -3,7 +3,6 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { providePrimeNG } from 'primeng/config';
 import Lara from '@primeng/themes/lara';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient, withFetch} from '@angular/common/http';
@@ -16,18 +15,18 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideAnimations(),
-    provideHttpClient(withFetch()),
-    providePrimeNG({
-      theme: {
-        preset: Lara,
-        options: {
-          darkModeSelector: 'system',
-          cssLayer: {
-            name: 'primeng',
-            order: 'tailwind-base, primeng, tailwind-utilities'
-          }
-        }
-      }
-    })
-  ]
+    provideHttpClient(withFetch())
+  //   providePrimeNG({
+  //     theme: {
+  //       preset: Lara,
+  //       options: {
+  //         darkModeSelector: 'system',
+  //         cssLayer: {
+  //           name: 'primeng',
+  //           order: 'tailwind-base, primeng, tailwind-utilities'
+  //         }
+  //       }
+  //     }
+
+   ]
 };

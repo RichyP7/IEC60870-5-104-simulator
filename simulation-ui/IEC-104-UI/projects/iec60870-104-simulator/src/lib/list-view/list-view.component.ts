@@ -1,11 +1,12 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {Accordion, AccordionContent, AccordionHeader, AccordionPanel} from 'primeng/accordion';
+
+import { TreeTableModule } from 'primeng/treetable';
 import {NgClass, NgForOf} from '@angular/common';
 import {Button} from 'primeng/button';
 import {Router} from '@angular/router';
 import {DataService} from './DataService/data.service';
 import {CreateDialogComponent} from './create-dialog/create-dialog.component';
-import {Toast} from 'primeng/toast';
+import {Toast, ToastModule} from 'primeng/toast';
 import {catchError, of} from 'rxjs';
 import {MessageService} from 'primeng/api';
 
@@ -13,15 +14,12 @@ import {MessageService} from 'primeng/api';
   selector: 'app-list-view',
   standalone: true,
   imports: [
-    Accordion,
-    AccordionPanel,
+    TreeTableModule,
     NgForOf,
-    AccordionHeader,
-    AccordionContent,
     Button,
     NgClass,
     CreateDialogComponent,
-    Toast,
+    ToastModule,
   ],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss'

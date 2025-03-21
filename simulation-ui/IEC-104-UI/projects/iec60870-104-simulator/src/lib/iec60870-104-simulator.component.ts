@@ -4,10 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
 import { HeaderComponent } from './header/header.component';
 
+
 @Component({
   selector: 'lib-iec60870-104-simulator',
   standalone: true,
-  imports: [ListViewComponent, DatapointDetailsComponent, FormsModule, HeaderComponent],
+  imports: [
+    ListViewComponent, 
+    DatapointDetailsComponent,
+    FormsModule,
+    HeaderComponent
+    ],
   templateUrl: './iec60870-104-simulator.component.html',
   styles: ``
 })

@@ -1,25 +1,25 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {InputText} from 'primeng/inputtext';
-import {Dialog} from 'primeng/dialog';
+import {InputText, InputTextModule} from 'primeng/inputtext';
+import {Dialog, DialogModule} from 'primeng/dialog';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import {DataPoint, Iec104DataTypes, SimulationMode} from '../list-view.component';
 import {NgClass} from '@angular/common';
-import {Select} from 'primeng/select';
+import {Dropdown} from 'primeng/dropdown';
 
 @Component({
   selector: 'app-create-dialog',
   standalone: true,
   imports: [
-    InputText,
-    Dialog,
+    InputTextModule,
+    DialogModule,
     FormsModule,
     DropdownModule,
     Button,
     ReactiveFormsModule,
     NgClass,
-    Select
+    DropdownModule
   ],
   templateUrl: './create-dialog.component.html',
   styleUrl: './create-dialog.component.scss'
