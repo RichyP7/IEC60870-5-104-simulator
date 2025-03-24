@@ -80,6 +80,5 @@ docker build --target test .
 ```
 
 
-
 <a name="myfootnote1">1</a>: Supported by DALL·E 3
 
