@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AccordionModule } from 'primeng/accordion';
 
 import { ListViewComponent } from './list-view.component';
 

@@ -1,25 +1,25 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
-import { TreeTableModule } from 'primeng/treetable';
-import {NgClass, NgForOf} from '@angular/common';
-import {Button} from 'primeng/button';
-import {Router} from '@angular/router';
-import {DataService} from './DataService/data.service';
-import {CreateDialogComponent} from './create-dialog/create-dialog.component';
-import {Toast, ToastModule} from 'primeng/toast';
-import {catchError, of} from 'rxjs';
-import {MessageService} from 'primeng/api';
+import { NgClass, NgForOf } from '@angular/common';
+import { Button } from 'primeng/button';
+import { Router } from '@angular/router';
+import { DataService } from './DataService/data.service';
+import { CreateDialogComponent } from './create-dialog/create-dialog.component';
+import { Toast, ToastModule } from 'primeng/toast';
+import { catchError, of } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { AccordionModule } from 'primeng/accordion';
 
 @Component({
   selector: 'app-list-view',
   standalone: true,
   imports: [
-    TreeTableModule,
     NgForOf,
     Button,
     NgClass,
     CreateDialogComponent,
     ToastModule,
+    AccordionModule
   ],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss'
@@ -37,13 +37,31 @@ export class ListViewComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.dataService.data$.subscribe((data) => {
       this.groupedData = this.groupDataByStationaryAddress(data);
     });
-
+    this.groupedData = [{
+      stationaryAddress: 5,
+      items: [{
+        id:"test",
+        stationaryAddress : 5,
+        objectAddress:10,
+        iec104DataType: Iec104DataTypes.M_DP_NA_1,
+        value :"1",
+        mode :SimulationMode.Cyclic
+      },
+      {
+        id:"test2",
+        stationaryAddress : 5,
+        objectAddress:120,
+        iec104DataType: Iec104DataTypes.M_DP_NA_1,
+        value :"0",
+        mode :SimulationMode.Cyclic
+      }]
+    }];
     // Fetch initial data
     this.dataService.fetchData();
   }
@@ -88,10 +106,10 @@ export class ListViewComponent implements OnInit {
         })
       )
       .subscribe(
-      response => {
-        this.reloadData();
-      }
-    );
+        response => {
+          this.reloadData();
+        }
+      );
   }
 }
 

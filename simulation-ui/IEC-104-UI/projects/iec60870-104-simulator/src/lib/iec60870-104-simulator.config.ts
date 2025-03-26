@@ -1,9 +1,7 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
+import { routes } from './iec60870-104--simulator.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import Lara from '@primeng/themes/lara';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {MessageService} from 'primeng/api';

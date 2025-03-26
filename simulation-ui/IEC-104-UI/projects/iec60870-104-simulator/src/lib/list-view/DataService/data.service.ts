@@ -8,7 +8,7 @@ import {MessageService} from 'primeng/api';
   providedIn: 'root',
 })
 export class DataService {
-  private baseUrl = "http://localhost:8080/health/";
+  private baseUrl = "http://localhost:8080/";
   private dataSubject = new BehaviorSubject<DataPoint[]>([]);
   data$ : Observable<DataPoint[]> = this.dataSubject.asObservable();
 
@@ -59,11 +59,11 @@ export class DataService {
   }
 
   fetchHealthState(): Observable<String> {
-    return this.http.get<String>(this.baseUrl + 'live', { responseType: 'text' as 'json' });
+    return this.http.get<String>(this.baseUrl + '/health/live', { responseType: 'text' as 'json' });
   }
 
   fetchConnectionState(): Observable<String> {
-    return this.http.get<String>(this.baseUrl + 'ready', { responseType: 'text' as 'json' });
+    return this.http.get<String>(this.baseUrl + 'health/ready', { responseType: 'text' as 'json' });
   }
 
 
