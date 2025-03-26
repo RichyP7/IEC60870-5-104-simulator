@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IEC60870_5_104_simulator.Domain.ValueTypes;
+﻿using IEC60870_5_104_simulator.Domain.ValueTypes;
 
 namespace IEC60870_5_104_simulator.Domain
 {
@@ -14,6 +9,7 @@ namespace IEC60870_5_104_simulator.Domain
         public Iec104DataTypes Iec104DataType { get; set; }
         public IecValueObject Value { get; set; }
         public SimulationMode Mode { get; set; }
+        public string InitString { get; set; }
 
 
         public Iec104DataPoint(IecAddress address, Iec104DataTypes iec104DataType)
@@ -23,9 +19,6 @@ namespace IEC60870_5_104_simulator.Domain
         }
 
         public Iec104DataPoint()
-        {
-        }
-        public void InitValue()
         {
         }
     }

@@ -1,14 +1,8 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
-using lib60870.CS101;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
@@ -49,7 +43,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             }
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
-        
+
         public void DeleteDataPoint(IecAddress address)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint foundValue))
@@ -76,8 +70,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
             else
                 throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
-        
-        public void SetSinglePoint(IecAddress address,bool value)
+
+        public void SetSinglePoint(IecAddress address, bool value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
             {
@@ -106,7 +100,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             else
                 throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
-        
+
         public void SetObjectValue(IecAddress address, IecValueObject value)
         {
             if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
@@ -116,11 +110,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
             else
                 throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
-
+        //Todo: InitValues for non dp,sp
         public void AddDataPoint(IecAddress address, Iec104DataPoint newdatapoint)
         {
             var hasExistingValue = newdatapoint.Value != null!;
-            if(StoredDataPoints.TryAdd(address, newdatapoint))
+            if (StoredDataPoints.TryAdd(address, newdatapoint))
             {
                 if (hasExistingValue) return;
                 switch (newdatapoint.Iec104DataType)
@@ -133,12 +127,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     case Iec104DataTypes.M_SP_NA_1:
                     case Iec104DataTypes.M_SP_TA_1:
                     case Iec104DataTypes.M_SP_TB_1:
-                        newdatapoint.Value = new IecSinglePointValueObject(false);
+                        newdatapoint.Value = SetSinglePoint(newdatapoint.InitString);
                         break;
                     case Iec104DataTypes.M_DP_NA_1:
                     case Iec104DataTypes.M_DP_TA_1:
                     case Iec104DataTypes.M_DP_TB_1:
-                        newdatapoint.Value = new IecDoublePointValueObject( IecDoublePointValue.OFF);
+                        newdatapoint.Value = SetDoublePoint(newdatapoint.InitString);
                         break;
                     case Iec104DataTypes.M_ME_NB_1:
                     case Iec104DataTypes.M_ME_TB_1:
@@ -161,10 +155,24 @@ namespace IEC60870_5_104_simulator.Infrastructure
             }
         }
 
+        private static IecSinglePointValueObject SetSinglePoint(string initString)
+        {
+            return !String.IsNullOrEmpty(initString) && (Boolean.TryParse(initString, out bool booleanValue))
+                ? new IecSinglePointValueObject(booleanValue)
+                : new IecSinglePointValueObject(false);
+        }
+
+        private static IecDoublePointValueObject SetDoublePoint(string initstring)
+        {
+            return !String.IsNullOrEmpty(initstring) && (Enum.TryParse(initstring, out IecDoublePointValue doubleValue))
+                ? new IecDoublePointValueObject(doubleValue)
+                : new IecDoublePointValueObject(IecDoublePointValue.OFF);
+        }
+
         public IEnumerable<Iec104DataPoint> GetAllDataPoints()
         {
             return StoredDataPoints.Values.AsEnumerable();
         }
     }
-    
+
 }

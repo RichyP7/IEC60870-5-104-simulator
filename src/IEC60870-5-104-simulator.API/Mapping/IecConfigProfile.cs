@@ -15,7 +15,7 @@ namespace IEC60870_5_104_simulator.API.Mapping
             CreateMap<DataPointConfig, Iec104DataPoint>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new IecAddress(src.Ca, src.Oa)))
                 .ForMember(dest => dest.Iec104DataType, opt => opt.MapFrom(src => src.TypeId))
-                .ForMember(dest => dest.Mode, opt => opt.MapFrom(src => src.Mode));
+                .ForMember(dest => dest.InitString, opt => opt.MapFrom(src => src.InitValue));
             CreateMap<SimulationMode, SimulationModeConfig>();
 
         }

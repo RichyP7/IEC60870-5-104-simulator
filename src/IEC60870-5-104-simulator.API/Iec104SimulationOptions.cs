@@ -31,12 +31,14 @@ namespace IEC60870_5_104_simulator.API
             [Required(AllowEmptyStrings = false)]
             public string Id { get; set; }
             public SimulationModeConfig Mode { get; set; }
+            public string InitValue{ get; set; }
 
         }
         public enum SimulationModeConfig
         {
             None,
             Cyclic,
+            CyclicStatic,
             Random
         }
         public class CommandPointConfig
