@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DataPointsService } from './data/datapoints.service';
+import NewserviceService from './newservice.service';
 
-describe('Iec60870104SimulatorService', () => {
-  let service: DataPointsService;
+describe('NewserviceService', () => {
+  let service: NewserviceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DataPointsService);
+    service = TestBed.inject(NewserviceService);
   });
 
   it('should be created', () => {

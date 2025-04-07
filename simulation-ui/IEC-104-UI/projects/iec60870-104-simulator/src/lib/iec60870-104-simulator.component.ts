@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
-import { DataPoint, ListViewComponent } from './list-view/list-view.component';
+import { ListViewComponent } from './list-view/list-view.component';
 import { FormsModule } from '@angular/forms';
 import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
 import { HeaderComponent } from './header/header.component';
+import { DataPoint } from './data/datapoints.interface';
+import { DataPointsService } from '../public-api';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 
 @Component({
   selector: 'lib-iec60870-104-simulator',
   standalone: true,
   imports: [
-    ListViewComponent, 
+    ListViewComponent,
     DatapointDetailsComponent,
     FormsModule,
-    HeaderComponent
-    ],
+    HeaderComponent,
+  ],
   templateUrl: './iec60870-104-simulator.component.html',
   styles: ``
 })

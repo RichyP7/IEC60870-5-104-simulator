@@ -21,7 +21,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
+              "src/public/favicon.ico",
               "src/assets"
             ],
             "styles": [
@@ -86,7 +86,7 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
-              "src/favicon.ico",
+              "src/public/favicon.ico",
               "src/assets"
             ],
             "styles": [
@@ -122,6 +122,39 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/iec60870-104-simulator/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "iec60870-104-simulator-openapi": {
+      "projectType": "library",
+      "root": "projects/iec60870-104-simulator-openapi",
+      "sourceRoot": "projects/iec60870-104-simulator-openapi/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/iec60870-104-simulator-openapi/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/iec60870-104-simulator-openapi/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/iec60870-104-simulator-openapi/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/iec60870-104-simulator-openapi/tsconfig.spec.json",
             "polyfills": [
               "zone.js",
               "zone.js/testing"

@@ -1,15 +1,15 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {DataPoint, SimulationMode} from '../list-view/list-view.component';
+import {Component, inject, Inject, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {DataService} from '../list-view/DataService/data.service';
 import {Button} from 'primeng/button';
 import {Card, CardModule} from 'primeng/card';
 import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
+import { DataPoint,   SimulationMode } from '../data/datapoints.interface';
+import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -29,7 +29,7 @@ import {Toast, ToastModule} from 'primeng/toast';
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
   item: DataPoint | null = null;
-
+  private dataService = inject(DataPointsService);
   isEditing = false;
 
   simulationModes = [
@@ -40,7 +40,6 @@ export class DatapointDetailsComponent implements OnChanges{
 
   constructor(
     private http: HttpClient,
-    private dataService: DataService
   ) {}
 
   toggleDoublePointValue(doublePoint: DataPoint) {
@@ -49,7 +48,7 @@ export class DatapointDetailsComponent implements OnChanges{
       .get<DataPoint[]>("http://localhost:8080/health/" + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
       .pipe(
         tap(() => {
-          this.dataService.fetchData();
+          //this.dataService.fetchData();
         })
       )
       .subscribe();
@@ -61,9 +60,9 @@ export class DatapointDetailsComponent implements OnChanges{
 
   private syncWithUpdatedData(): void {
     if (this.item) {
-      this.dataService.data$.subscribe((data) => {
-        this.item = data.find((dp) => dp.id === this.item?.id) || null;
-      });
+      // this.dataService.data$.subscribe((data) => {
+      //   this.item = data.find((dp) => dp.id === this.item?.id) || null;
+     // });
     }
   }
 

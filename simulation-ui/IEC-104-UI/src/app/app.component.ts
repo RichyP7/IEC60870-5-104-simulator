@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import {DataPoint, ListViewComponent} from '../../projects/iec60870-104-simulator/src/lib/list-view/list-view.component';
 import {FormsModule} from '@angular/forms';
 
-import { Iec60870104SimulatorComponent } from "../../projects/iec60870-104-simulator/src/lib/iec60870-104-simulator.component";
+import { DataPointsService, Iec60870104SimulatorComponent } from 'iec60870-104-simulator';
+import { NewserviceService } from './newservice.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ FormsModule,  Iec60870104SimulatorComponent],
+  imports: [ FormsModule, Iec60870104SimulatorComponent],
+  providers:[{ provide: DataPointsService, useClass: NewserviceService }],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

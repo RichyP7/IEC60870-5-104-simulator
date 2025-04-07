@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, Inject,
+  Component, inject,
   OnDestroy,
   OnInit,
   PLATFORM_ID
@@ -9,9 +9,10 @@ import {Menubar, MenubarModule} from "primeng/menubar";
 import {PrimeTemplate} from "primeng/api";
 import {ToggleButton, ToggleButtonModule} from "primeng/togglebutton";
 import {FormsModule} from '@angular/forms';
-import {DataService, SimulationState} from '../list-view/DataService/data.service';
 import {NgStyle} from '@angular/common';
 import {interval, of, startWith, Subject, tap} from 'rxjs';
+import { SimulationState } from '../data/datapoints.interface';
+import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
   selector: 'app-header',
@@ -21,7 +22,7 @@ import {interval, of, startWith, Subject, tap} from 'rxjs';
     PrimeTemplate,
     ToggleButtonModule,
     FormsModule,
-    NgStyle,
+    NgStyle
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -33,11 +34,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   INTERVAL: number = 5000;
   closeTimer$ = new Subject<any>();
+  private dataService= inject( DataPointsService);
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private dataService: DataService,
-  ) {}
+  ) {
+
+  }
 
 
   ngOnInit(): void {

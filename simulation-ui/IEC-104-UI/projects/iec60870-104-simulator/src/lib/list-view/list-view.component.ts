@@ -1,14 +1,15 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 
 import { NgClass, NgForOf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Router } from '@angular/router';
-import { DataService } from './DataService/data.service';
 import { CreateDialogComponent } from './create-dialog/create-dialog.component';
 import { Toast, ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { AccordionModule } from 'primeng/accordion';
+import { DataPoint, SimulationMode } from '../data/datapoints.interface';
+import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
   selector: 'app-list-view',
@@ -19,11 +20,12 @@ import { AccordionModule } from 'primeng/accordion';
     NgClass,
     CreateDialogComponent,
     ToastModule,
-    AccordionModule
+    AccordionModule,
   ],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss'
 })
+
 export class ListViewComponent implements OnInit {
 
   @Output()
@@ -32,39 +34,14 @@ export class ListViewComponent implements OnInit {
 
   groupedData: GroupedData[] = [];
   showDialog: boolean = false;
-
-  constructor(
-    private router: Router,
-    private dataService: DataService,
-    private messageService: MessageService
-  ) { }
+  private dataService = inject(DataPointsService);
 
   ngOnInit() {
-    this.dataService.data$.subscribe((data) => {
-      this.groupedData = this.groupDataByStationaryAddress(data);
-    });
-    this.groupedData = [{
-      stationaryAddress: 5,
-      items: [{
-        id:"test",
-        stationaryAddress : 5,
-        objectAddress:10,
-        iec104DataType: Iec104DataTypes.M_DP_NA_1,
-        value :"1",
-        mode :SimulationMode.Cyclic
-      },
-      {
-        id:"test2",
-        stationaryAddress : 5,
-        objectAddress:120,
-        iec104DataType: Iec104DataTypes.M_DP_NA_1,
-        value :"0",
-        mode :SimulationMode.Cyclic
-      }]
-    }];
     // Fetch initial data
-    this.dataService.fetchData();
-  }
+     this.dataService.fetchData().subscribe((data) => {
+       this.groupedData = this.groupDataByStationaryAddress(data);
+     });;
+  };
 
   groupDataByStationaryAddress(data: DataPoint[]): GroupedData[] {
     const grouped = data.reduce<Record<number, GroupedData>>((acc, item) => {
@@ -78,7 +55,7 @@ export class ListViewComponent implements OnInit {
 
   clickOnDataPoint(item: DataPoint) {
     console.log(item);
-    this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
+    //this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
     this.selectedItem = item;
     this.itemSelected.emit(item)
   }
@@ -97,11 +74,11 @@ export class ListViewComponent implements OnInit {
       .pipe(
         catchError(error => {
           console.log(error.error.exceptionMessage)
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error - Bad Request',
-            detail: error.error.exceptionMessage,
-          });
+          // this.messageService.add({
+          //   severity: 'error',
+          //   summary: 'Error - Bad Request',
+          //   detail: error.error.exceptionMessage,
+          // });
           return of(null);
         })
       )
@@ -113,25 +90,10 @@ export class ListViewComponent implements OnInit {
   }
 }
 
-export interface DataPoint {
-  id: string;
-  stationaryAddress: number;
-  objectAddress: number;
-  iec104DataType: string;
-  value: string;
-  mode: SimulationMode;
-}
 
 export interface GroupedData {
   stationaryAddress: number;
   items: DataPoint[];
-}
-
-export enum SimulationMode {
-  None = 'None',
-  Cyclic = 'Cyclic',
-  CyclicStatic = 'CyclicStatic',
-  Response = 'Response'
 }
 
 export enum Iec104DataTypes {
@@ -211,5 +173,4 @@ export enum Iec104DataTypes {
   F_DR_TA_1 = "F_DR_TA_1",
   ASDU_TYPE_127_255 = "ASDU_TYPE_127_255"
 }
-
 
