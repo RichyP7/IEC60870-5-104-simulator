@@ -7,6 +7,7 @@ import {MessageService} from 'primeng/api';
 import { routes } from './app.routes';
 import { DataPointsService } from 'iec60870-104-simulator';
 import { NewserviceService } from './newservice.service';
+import { BASE_PATH } from '../../projects/iec60870-104-simulator/src/lib/openapi';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,7 +17,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideAnimations(),
     provideHttpClient(withFetch()), 
-    { provide: DataPointsService, useClass: NewserviceService }
+    { provide: DataPointsService, useClass: NewserviceService },
+    { provide: BASE_PATH, useValue: environment.API_BASE_PATH }],
   //   providePrimeNG({
   //     theme: {
   //       preset: Lara,

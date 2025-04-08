@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:IEC-104-UI": "node dist/iec-104-ui/server/server.mjs",
-    "build-library": "ng build iec60870-104-simulator"
+    "build-library": "ng build iec60870-104-simulator",
+    "generate:api": "openapi-generator-cli generate -i ./projects/iec60870-104-simulator/openapi.yaml -g typescript-angular -o ./projects/iec60870-104-simulator/src/lib/api/v1"
   },
   "private": true,
   "dependencies": {
