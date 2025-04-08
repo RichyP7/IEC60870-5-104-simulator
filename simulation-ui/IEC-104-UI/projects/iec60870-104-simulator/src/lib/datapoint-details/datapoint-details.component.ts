@@ -8,7 +8,7 @@ import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
-import { DataPoint,   SimulationMode } from '../data/datapoints.interface';
+import { SelfDataPoint,   SelfSimulationMode } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
@@ -28,24 +28,24 @@ import { DataPointsService } from '../data/datapoints.service';
 })
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
-  item: DataPoint | null = null;
+  item: SelfDataPoint | null = null;
   private dataService = inject(DataPointsService);
   isEditing = false;
 
   simulationModes = [
-    { label: 'Cyclic Random', value: SimulationMode.Cyclic, icon: 'pi pi-sort-alt' },
-    { label: 'Cyclic Static', value: SimulationMode.CyclicStatic, icon: 'pi pi-lock' },
-    { label: 'None', value: SimulationMode.None, icon: 'pi pi-play-circle' }
+    { label: 'Cyclic Random', value: SelfSimulationMode.Cyclic, icon: 'pi pi-sort-alt' },
+    { label: 'Cyclic Static', value: SelfSimulationMode.CyclicStatic, icon: 'pi pi-lock' },
+    { label: 'None', value: SelfSimulationMode.None, icon: 'pi pi-play-circle' }
   ];
 
   constructor(
     private http: HttpClient,
   ) {}
 
-  toggleDoublePointValue(doublePoint: DataPoint) {
+  toggleDoublePointValue(doublePoint: SelfDataPoint) {
     console.log("action");
     this.http
-      .get<DataPoint[]>("http://localhost:8080/health/" + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
+      .get<SelfDataPoint[]>("http://localhost:8080/health/" + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
       .pipe(
         tap(() => {
           //this.dataService.fetchData();
@@ -54,7 +54,7 @@ export class DatapointDetailsComponent implements OnChanges{
       .subscribe();
   }
 
-  toggleSimulationMode(point: DataPoint) {
+  toggleSimulationMode(point: SelfDataPoint) {
     this.dataService.toggleSimulationMode(point);
   }
 
@@ -72,15 +72,15 @@ export class DatapointDetailsComponent implements OnChanges{
     }
   }
 
-  dataPointCanBeToggled(item: DataPoint) : boolean {
+  dataPointCanBeToggled(item: SelfDataPoint) : boolean {
     return (item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1')
   }
 
-  editItem(item: DataPoint) {
+  editItem(item: SelfDataPoint) {
     this.isEditing = true;
   }
 
-  updateValue(item: DataPoint) {
+  updateValue(item: SelfDataPoint) {
     this.isEditing = false;
     this.dataService.updateDataPointValue(item);
   }

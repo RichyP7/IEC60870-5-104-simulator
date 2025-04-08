@@ -1,0 +1,398 @@
+openapi: 3.0.1
+info:
+  title: IEC60870-5-104-simulator.API
+  version: '1.0'
+paths:
+  /api/DataPointConfigs:
+    get:
+      tags:
+        - DataPointConfigs
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Iec104DataPointDto'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Iec104DataPointDto'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Iec104DataPointDto'
+    post:
+      tags:
+        - DataPointConfigs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Iec104DataPointDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Iec104DataPointDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Iec104DataPointDto'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPoint'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPoint'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPoint'
+  '/api/DataPointConfigs/{idStationary}/{idObject}':
+    get:
+      tags:
+        - DataPointConfigs
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+    delete:
+      tags:
+        - DataPointConfigs
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+  '/api/DataPointConfigs/{idStationary}/{idObject}/simulation-mode':
+    put:
+      tags:
+        - DataPointConfigs
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulationMode'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/SimulationMode'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SimulationMode'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+  '/api/DataPointValue/{idStationary}/{idObject}':
+    put:
+      tags:
+        - DataPointValue
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/json:
+            schema:
+              type: string
+          application/*+json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+  /api/SimulationEngineState:
+    get:
+      tags:
+        - SimulationEngineState
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SimulationState'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationState'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SimulationState'
+    post:
+      tags:
+        - SimulationEngineState
+      operationId: commands
+      parameters:
+        - name: command
+          in: query
+          style: form
+          schema:
+            $ref: '#/components/schemas/ENGINE_COMMAND'
+      responses:
+        '200':
+          description: Success
+  '/api/ValueConfig/{idStationary}/{idObject}':
+    get:
+      tags:
+        - ValueConfig
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+components:
+  schemas:
+    ENGINE_COMMAND:
+      enum:
+        - Start
+        - Stop
+      type: string
+    Iec104DataPoint:
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+        address:
+          $ref: '#/components/schemas/IecAddress'
+        iec104DataType:
+          $ref: '#/components/schemas/Iec104DataTypes'
+        value:
+          $ref: '#/components/schemas/IecValueObject'
+        mode:
+          $ref: '#/components/schemas/SimulationMode'
+        initString:
+          type: string
+          nullable: true
+      additionalProperties: false
+    Iec104DataPointDto:
+      required:
+        - iec104DataType
+        - objectAddress
+        - stationaryAddress
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+        stationaryAddress:
+          type: integer
+          format: int32
+        objectAddress:
+          type: integer
+          format: int32
+        iec104DataType:
+          $ref: '#/components/schemas/Iec104DataTypes'
+        value:
+          type: string
+          nullable: true
+        mode:
+          $ref: '#/components/schemas/SimulationMode'
+      additionalProperties: false
+    Iec104DataTypes:
+      enum:
+        - ASDU_TYPEUNDEF
+        - M_SP_NA_1
+        - M_SP_TA_1
+        - M_DP_NA_1
+        - M_DP_TA_1
+        - M_ST_NA_1
+        - M_ST_TA_1
+        - M_BO_NA_1
+        - M_BO_TA_1
+        - M_ME_NA_1
+        - M_ME_TA_1
+        - M_ME_NB_1
+        - M_ME_TB_1
+        - M_ME_NC_1
+        - M_ME_TC_1
+        - M_IT_NA_1
+        - M_IT_TA_1
+        - M_EP_TA_1
+        - M_EP_TB_1
+        - M_EP_TC_1
+        - M_PS_NA_1
+        - M_ME_ND_1
+        - ASDU_TYPE_22_29
+        - M_SP_TB_1
+        - M_DP_TB_1
+        - M_ST_TB_1
+        - M_BO_TB_1
+        - M_ME_TD_1
+        - M_ME_TE_1
+        - M_ME_TF_1
+        - M_IT_TB_1
+        - M_EP_TD_1
+        - M_EP_TE_1
+        - M_EP_TF_1
+        - ASDU_TYPE_41_44
+        - C_SC_NA_1
+        - C_DC_NA_1
+        - C_RC_NA_1
+        - C_SE_NA_1
+        - C_SE_NB_1
+        - C_SE_NC_1
+        - C_BO_NA_1
+        - ASDU_TYPE_52_57
+        - C_SC_TA_1
+        - C_DC_TA_1
+        - C_RC_TA_1
+        - C_SE_TA_1
+        - C_SE_TB_1
+        - C_SE_TC_1
+        - C_BO_TA_1
+        - ASDU_TYPE_65_69
+        - M_EI_NA_1
+        - ASDU_TYPE_71_99
+        - C_IC_NA_1
+        - C_CI_NA_1
+        - C_RD_NA_1
+        - C_CS_NA_1
+        - C_TS_NA_1
+        - C_RP_NA_1
+        - C_CD_NA_1
+        - C_TS_TA_1
+        - ASDU_TYPE_108_109
+        - P_ME_NA_1
+        - P_ME_NB_1
+        - P_ME_NC_1
+        - P_AC_NA_1
+        - ASDU_TYPE_114_119
+        - F_FR_NA_1
+        - F_SR_NA_1
+        - F_SC_NA_1
+        - F_LS_NA_1
+        - F_FA_NA_1
+        - F_SG_NA_1
+        - F_DR_TA_1
+        - ASDU_TYPE_127_255
+      type: string
+    IecAddress:
+      type: object
+      properties:
+        stationaryAddress:
+          type: integer
+          format: int32
+        objectAddress:
+          type: integer
+          format: int32
+      additionalProperties: false
+    IecValueObject:
+      type: object
+      additionalProperties: false
+    SimulationMode:
+      enum:
+        - None
+        - Cyclic
+        - CyclicStatic
+        - Response
+      type: string
+    SimulationState:
+      enum:
+        - Stopped
+        - Running
+      type: string

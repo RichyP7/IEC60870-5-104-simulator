@@ -1,27 +1,27 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DataPoint, DataPointInterface, SimulationState } from './datapoints.interface';
+import { SelfDataPoint, DataPointInterface, SelfSimulationState } from './datapoints.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataPointsService implements DataPointInterface {
   private http = inject(HttpClient);
-  private dataSubject = new BehaviorSubject<DataPoint[]>([]);
+  private dataSubject = new BehaviorSubject<SelfDataPoint[]>([]);
   apiEndpoint : String = "http://localhost:8080/api/";
   healthEndpoint : String = "http://localhost:8080/health/";
 
   private errorSubject = new BehaviorSubject<string | null>(null);
   public error$ = this.errorSubject.asObservable();
 
-  fetchData(): Observable<DataPoint[]> {
-    return this.http.get<DataPoint[]>(this.apiEndpoint + 'DataPointConfigs');
+  fetchData(): Observable<SelfDataPoint[]> {
+    return this.http.get<SelfDataPoint[]>(this.apiEndpoint + 'DataPointConfigs');
   }
 
-  toggleSimulationMode(dataPoint: DataPoint) {
+  toggleSimulationMode(dataPoint: SelfDataPoint) {
     let simulationMode = dataPoint.mode
-    return this.http.put<DataPoint>(`${this.apiEndpoint}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
+    return this.http.put<SelfDataPoint>(`${this.apiEndpoint}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
       ,
       {
         headers: { 'Content-Type': 'application/json' },
@@ -35,9 +35,9 @@ export class DataPointsService implements DataPointInterface {
       });
   }
 
-  updateSimulationEngineState(simulationState: SimulationState) {
-    let command = (simulationState === SimulationState.Stopped) ? 'Stop' : 'Start';
-    this.http.post<SimulationState>(`${this.apiEndpoint}SimulationEngineState?command=${command}`, null)
+  updateSimulationEngineState(simulationState: SelfSimulationState) {
+    let command = (simulationState === SelfSimulationState.Stopped) ? 'Stop' : 'Start';
+    this.http.post<SelfSimulationState>(`${this.apiEndpoint}SimulationEngineState?command=${command}`, null)
       .subscribe({
         next: () => { },
         error: (err) => {
@@ -46,12 +46,12 @@ export class DataPointsService implements DataPointInterface {
       });
   }
 
-  createDataPoint(datapoint: DataPoint): Observable<DataPoint> {
-    return this.http.post<DataPoint>(`${this.apiEndpoint}DataPointConfigs`, datapoint);
+  createDataPoint(datapoint: SelfDataPoint): Observable<SelfDataPoint> {
+    return this.http.post<SelfDataPoint>(`${this.apiEndpoint}DataPointConfigs`, datapoint);
   }
 
-  fetchSimulationEngineState(): Observable<SimulationState> {
-    return this.http.get<SimulationState>(this.apiEndpoint + 'SimulationEngineState');
+  fetchSimulationEngineState(): Observable<SelfSimulationState> {
+    return this.http.get<SelfSimulationState>(this.apiEndpoint + 'SimulationEngineState');
   }
 
   fetchHealthState(): Observable<String> {
@@ -63,9 +63,9 @@ export class DataPointsService implements DataPointInterface {
    }
 
 
-  updateDataPointValue(dataPoint: DataPoint): Observable<DataPoint> {
+  updateDataPointValue(dataPoint: SelfDataPoint): Observable<SelfDataPoint> {
 
-    return this.http.put<DataPoint>(`${this.apiEndpoint}DataPointValue/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, JSON.stringify(dataPoint.value));
+    return this.http.put<SelfDataPoint>(`${this.apiEndpoint}DataPointValue/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, JSON.stringify(dataPoint.value));
   }
   //     ,
   //     {

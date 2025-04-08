@@ -8,7 +8,7 @@ import { Toast, ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { AccordionModule } from 'primeng/accordion';
-import { DataPoint, SimulationMode } from '../data/datapoints.interface';
+import { SelfDataPoint, SelfSimulationMode } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
@@ -29,8 +29,8 @@ import { DataPointsService } from '../data/datapoints.service';
 export class ListViewComponent implements OnInit {
 
   @Output()
-  itemSelected = new EventEmitter<DataPoint>();
-  selectedItem: DataPoint | null = null; // Track the selected item
+  itemSelected = new EventEmitter<SelfDataPoint>();
+  selectedItem: SelfDataPoint | null = null; // Track the selected item
 
   groupedData: GroupedData[] = [];
   showDialog: boolean = false;
@@ -43,7 +43,7 @@ export class ListViewComponent implements OnInit {
      });;
   };
 
-  groupDataByStationaryAddress(data: DataPoint[]): GroupedData[] {
+  groupDataByStationaryAddress(data: SelfDataPoint[]): GroupedData[] {
     const grouped = data.reduce<Record<number, GroupedData>>((acc, item) => {
       const key = item.stationaryAddress;
       acc[key] = acc[key] || { stationaryAddress: key, items: [] };
@@ -53,7 +53,7 @@ export class ListViewComponent implements OnInit {
     return Object.values(grouped);
   }
 
-  clickOnDataPoint(item: DataPoint) {
+  clickOnDataPoint(item: SelfDataPoint) {
     console.log(item);
     //this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
     this.selectedItem = item;
@@ -69,7 +69,7 @@ export class ListViewComponent implements OnInit {
     this.showDialog = false;
   }
 
-  createDataPoint(datapoint: DataPoint) {
+  createDataPoint(datapoint: SelfDataPoint) {
     this.dataService.createDataPoint(datapoint)
       .pipe(
         catchError(error => {
@@ -93,7 +93,7 @@ export class ListViewComponent implements OnInit {
 
 export interface GroupedData {
   stationaryAddress: number;
-  items: DataPoint[];
+  items: SelfDataPoint[];
 }
 
 export enum Iec104DataTypes {

@@ -3,30 +3,30 @@ import { Observable } from "rxjs";
 //export const DP_INTERFACE_TOKEN = new InjectionToken<DataPointInterface>('DataPoint_Interface');
 
 export interface DataPointInterface {
-    fetchData(): Observable<DataPoint[]>;
-    toggleSimulationMode(dataPoint: DataPoint):void;
-    createDataPoint(datapoint: DataPoint): Observable<DataPoint>;
-    updateSimulationEngineState(simulationState: SimulationState):void;
-    fetchSimulationEngineState(): Observable<SimulationState>;
+    fetchData(): Observable<SelfDataPoint[]>;
+    toggleSimulationMode(dataPoint: SelfDataPoint):void;
+    createDataPoint(datapoint: SelfDataPoint): Observable<SelfDataPoint>;
+    updateSimulationEngineState(simulationState: SelfSimulationState):void;
+    fetchSimulationEngineState(): Observable<SelfSimulationState>;
     fetchHealthState(): Observable<String>;
     fetchConnectionState(): Observable<String>;
-    updateDataPointValue(dataPoint: DataPoint):Observable<DataPoint>
+    updateDataPointValue(dataPoint: SelfDataPoint):Observable<SelfDataPoint>
   }
-  export interface DataPoint {
+  export interface SelfDataPoint {
     id: string;
     stationaryAddress: number;
     objectAddress: number;
     iec104DataType: string;
     value: string;
-    mode: SimulationMode;
+    mode: SelfSimulationMode;
   }
-  export enum SimulationMode {
+  export enum SelfSimulationMode {
     None = 'None',
     Cyclic = 'Cyclic',
     CyclicStatic = 'CyclicStatic',
     Response = 'Response'
   }
-  export enum SimulationState {
+  export enum SelfSimulationState {
     Running = 'Running',
     Stopped = 'Stopped'
   }

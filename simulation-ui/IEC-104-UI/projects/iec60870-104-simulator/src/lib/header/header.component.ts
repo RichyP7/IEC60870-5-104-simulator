@@ -11,7 +11,7 @@ import {ToggleButton, ToggleButtonModule} from "primeng/togglebutton";
 import {FormsModule} from '@angular/forms';
 import {NgStyle} from '@angular/common';
 import {interval, of, startWith, Subject, tap} from 'rxjs';
-import { SimulationState } from '../data/datapoints.interface';
+import { SelfSimulationState } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
@@ -49,12 +49,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchCurrentSimulationEngineState() {
-    let simulationState: SimulationState | null = null;
+    let simulationState: SelfSimulationState | null = null;
     this.dataService.fetchSimulationEngineState()
       .subscribe({
         next: (data) => {
           simulationState = data;
-          this.isSimulating = simulationState != null && simulationState === SimulationState.Running;
+          this.isSimulating = simulationState != null && simulationState === SelfSimulationState.Running;
         },
         error: (err) => {
           console.error('Error fetching Simulation Engine State', err);
@@ -94,7 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   updateSimulationState(state: boolean) {
-    const wantedSimulationState: SimulationState = state ? SimulationState.Running : SimulationState.Stopped;
+    const wantedSimulationState: SelfSimulationState = state ? SelfSimulationState.Running : SelfSimulationState.Stopped;
     this.dataService.updateSimulationEngineState(wantedSimulationState);
 
   }

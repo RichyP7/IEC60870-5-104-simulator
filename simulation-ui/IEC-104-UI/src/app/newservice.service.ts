@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { DataPoint, DataPointsService } from 'iec60870-104-simulator';
+import { SelfDataPoint, DataPointsService } from 'iec60870-104-simulator';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,7 +16,7 @@ constructor(){
     super();
   }
 
-  override fetchData(): Observable<DataPoint[]> {
+  override fetchData(): Observable<SelfDataPoint[]> {
     console.log(`test overload +${this.apiEndpoint}`);
     return super.fetchData();
   }

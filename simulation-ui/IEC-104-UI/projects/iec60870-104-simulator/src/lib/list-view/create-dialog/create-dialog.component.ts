@@ -6,7 +6,7 @@ import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import { Iec104DataTypes} from '../list-view.component';
 import {NgClass} from '@angular/common';
-import { DataPoint, SimulationMode } from '../../data/datapoints.interface';
+import { SelfDataPoint, SelfSimulationMode } from '../../data/datapoints.interface';
 
 @Component({
   selector: 'app-create-dialog',
@@ -27,12 +27,12 @@ import { DataPoint, SimulationMode } from '../../data/datapoints.interface';
 export class CreateDialogComponent implements OnInit {
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() dataPointCreated = new EventEmitter<DataPoint>();
+  @Output() dataPointCreated = new EventEmitter<SelfDataPoint>();
 
   profileForm: FormGroup ;
 
   iec104DataTypes: string[] = Object.values(Iec104DataTypes);
-  simulationModes: string[] = Object.values(SimulationMode);
+  simulationModes: string[] = Object.values(SelfSimulationMode);
 
   constructor(private fb: FormBuilder) {
     this.profileForm = this.fb.group({
@@ -61,7 +61,7 @@ export class CreateDialogComponent implements OnInit {
     if (this.profileForm.valid) {
       const profileData = this.profileForm.value;
 
-      let dataPoint: DataPoint = {
+      let dataPoint: SelfDataPoint = {
         id : profileData.id,
         mode: profileData.mode,
         value: profileData.value,
@@ -77,5 +77,5 @@ export class CreateDialogComponent implements OnInit {
     }
   }
 
-  protected readonly SimulationMode = SimulationMode;
+  protected readonly SelfSimulationMode = SelfSimulationMode;
 }
