@@ -3,7 +3,7 @@ import { ListViewComponent } from './list-view/list-view.component';
 import { FormsModule } from '@angular/forms';
 import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
 import { HeaderComponent } from './header/header.component';
-import { SelfDataPoint } from './data/datapoints.interface';
+import { DataPoint } from './data/datapoints.interface';
 import { DataPointsService } from '../public-api';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 
@@ -22,10 +22,10 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 })
 export class Iec60870104SimulatorComponent {
 
-  selectedItem: SelfDataPoint | null = null;
+  selectedItem: DataPoint | null = null;
   title = 'IEC-104-UI';
 
-  onItemSelected(item: SelfDataPoint) {
+  onItemSelected(item: DataPoint) {
     this.selectedItem = item
   }
 }
