@@ -1,43 +1,35 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DataPoint, DataPointInterface, SimulationState } from './datapoints.interface';
+import { DataPoint, DataPointInterface } from './datapoints.interface';
+import { DataPointConfigsService, DataPointValueService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../api/v1';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataPointsService implements DataPointInterface {
-  private http = inject(HttpClient);
-  private dataSubject = new BehaviorSubject<DataPoint[]>([]);
-  apiEndpoint : String = "http://localhost:8080/api/";
-  healthEndpoint : String = "http://localhost:8080/health/";
+
+  public dpService = inject(DataPointConfigsService);
+  protected dpValueService = inject(DataPointValueService);
+  protected simEngineStateService = inject(SimulationEngineStateService);
+  protected http = inject(HttpClient);
 
   private errorSubject = new BehaviorSubject<string | null>(null);
   public error$ = this.errorSubject.asObservable();
 
-  fetchData(): Observable<DataPoint[]> {
-    return this.http.get<DataPoint[]>(this.apiEndpoint + 'DataPointConfigs');
+  fetchData(): Observable<Iec104DataPointDto[]> {
+    console.log("DataPointServiceInject"+ this.dpService.configuration.basePath);
+    return this.dpService.apiDataPointConfigsGet();
   }
 
-  toggleSimulationMode(dataPoint: DataPoint) {
+  toggleSimulationMode(dataPoint: Iec104DataPointDto) {
     let simulationMode = dataPoint.mode
-    return this.http.put<DataPoint>(`${this.apiEndpoint}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
-      ,
-      {
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .subscribe((data) => {
-        const currentData = this.dataSubject.getValue();
-        const updatedDataList = currentData.map((dp) =>
-          dp.objectAddress === data.objectAddress && dp.stationaryAddress === data.stationaryAddress ? data : dp
-        );
-        this.dataSubject.next(updatedDataList);
-      });
+    return this.dpService.apiDataPointConfigsIdStationaryIdObjectSimulationModePut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(simulationMode));
   }
 
   updateSimulationEngineState(simulationState: SimulationState) {
-    let command = (simulationState === SimulationState.Stopped) ? 'Stop' : 'Start';
-    this.http.post<SimulationState>(`${this.apiEndpoint}SimulationEngineState?command=${command}`, null)
+    const command = (simulationState === SimulationState.Stopped) ? 'Stop' : 'Start';
+    this.simEngineStateService.commands(command)
       .subscribe({
         next: () => { },
         error: (err) => {
@@ -46,50 +38,25 @@ export class DataPointsService implements DataPointInterface {
       });
   }
 
-  createDataPoint(datapoint: DataPoint): Observable<DataPoint> {
-    return this.http.post<DataPoint>(`${this.apiEndpoint}DataPointConfigs`, datapoint);
+  createDataPoint(datapoint: Iec104DataPointDto): Observable<Iec104DataPoint> {
+    return this.dpService.apiDataPointConfigsPost(datapoint);
   }
 
   fetchSimulationEngineState(): Observable<SimulationState> {
-    return this.http.get<SimulationState>(this.apiEndpoint + 'SimulationEngineState');
+    return this.simEngineStateService.apiSimulationEngineStateGet();
   }
 
   fetchHealthState(): Observable<String> {
-    return this.http.get<String>(this.healthEndpoint + 'live', { responseType: 'text' as 'json' });
+    return this.http.get<String>(this.dpService.configuration.basePath + 'live', { responseType: 'text' as 'json' });
   }
 
    fetchConnectionState(): Observable<String> {
-     return this.http.get<String>(this.healthEndpoint + 'ready', { responseType: 'text' as 'json' });
+     return this.http.get<String>(this.dpService.configuration.basePath  + 'ready', { responseType: 'text' as 'json' });
    }
 
 
-  updateDataPointValue(dataPoint: DataPoint): Observable<DataPoint> {
-
-    return this.http.put<DataPoint>(`${this.apiEndpoint}DataPointValue/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, JSON.stringify(dataPoint.value));
+  updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
+    return this.dpValueService.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
   }
-  //     ,
-  //     {
-  //       headers: { 'Content-Type': 'application/json' },
-  //     })
-  //     .pipe(
-  //       catchError(error => {
-  //         console.log(error.error.exceptionMessage)
-  //         const errorMessage = 'Failed to update data point';
-  //         this.errorSubject.next(errorMessage);
-  //         console.log(errorMessage);
-  //         this.fetchData();
-  //         return of(null);
-  //       })
-  //     ).subscribe((data) => {
-  //     if (data) {
-  //       const currentData = this.dataSubject.getValue();
-  //       const updatedDataList = currentData.map((dp) =>
-  //         dp.objectAddress === data.objectAddress && dp.stationaryAddress === data.stationaryAddress ? data : dp
-  //       );
-  //       this.dataSubject.next(updatedDataList);
-  //     }
-  //   });
-  // }
-
 }
 

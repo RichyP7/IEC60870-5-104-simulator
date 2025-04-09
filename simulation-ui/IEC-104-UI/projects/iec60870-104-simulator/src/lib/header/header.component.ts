@@ -11,8 +11,8 @@ import {ToggleButton, ToggleButtonModule} from "primeng/togglebutton";
 import {FormsModule} from '@angular/forms';
 import {NgStyle} from '@angular/common';
 import {interval, of, startWith, Subject, tap} from 'rxjs';
-import { SimulationState } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
+import { SimulationState } from '../api/v1';
 
 @Component({
   selector: 'app-header',

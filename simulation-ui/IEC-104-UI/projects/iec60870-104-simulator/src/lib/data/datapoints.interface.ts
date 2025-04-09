@@ -1,33 +1,38 @@
-import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-//export const DP_INTERFACE_TOKEN = new InjectionToken<DataPointInterface>('DataPoint_Interface');
+import { Iec104DataPoint, Iec104DataPointDto, SimulationState } from "../api/v1";
 
 export interface DataPointInterface {
-    fetchData(): Observable<DataPoint[]>;
-    toggleSimulationMode(dataPoint: DataPoint):void;
-    createDataPoint(datapoint: DataPoint): Observable<DataPoint>;
-    updateSimulationEngineState(simulationState: SimulationState):void;
-    fetchSimulationEngineState(): Observable<SimulationState>;
-    fetchHealthState(): Observable<String>;
-    fetchConnectionState(): Observable<String>;
-    updateDataPointValue(dataPoint: DataPoint):Observable<DataPoint>
-  }
-  export interface DataPoint {
-    id: string;
-    stationaryAddress: number;
-    objectAddress: number;
-    iec104DataType: string;
-    value: string;
-    mode: SimulationMode;
-  }
-  export enum SimulationMode {
-    None = 'None',
-    Cyclic = 'Cyclic',
-    CyclicStatic = 'CyclicStatic',
-    Response = 'Response'
-  }
-  export enum SimulationState {
-    Running = 'Running',
-    Stopped = 'Stopped'
-  }
-  
+  fetchData(): Observable<Iec104DataPointDto[]>;
+  toggleSimulationMode(dataPoint: Iec104DataPointDto): void;
+  createDataPoint(datapoint: Iec104DataPointDto): Observable<Iec104DataPoint>;
+  updateSimulationEngineState(simulationState: SimulationState): void;
+  fetchSimulationEngineState(): Observable<SimulationState>;
+  fetchHealthState(): Observable<String>;
+  fetchConnectionState(): Observable<String>;
+  updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto>
+}
+export interface DataPoint {
+  id: string;
+  stationaryAddress: number;
+  objectAddress: number;
+  iec104DataType: string;
+  value: string;
+  mode: SimulationMode;
+}
+export class DataPointVis {
+  constructor(
+    public id: string,
+    public stationaryAddress: number,
+    public objectAddress: number,
+    public iec104DataType: string,
+    public value: string,
+    public mode: SimulationMode,
+  ) { }
+}
+
+export enum SimulationMode {
+  None = 'None',
+  Cyclic = 'Cyclic',
+  CyclicStatic = 'CyclicStatic',
+  Response = 'Response'
+}

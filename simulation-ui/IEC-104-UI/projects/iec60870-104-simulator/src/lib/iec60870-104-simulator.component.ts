@@ -4,9 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
 import { HeaderComponent } from './header/header.component';
 import { DataPoint } from './data/datapoints.interface';
-import { DataPointsService } from '../public-api';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-
 
 @Component({
   selector: 'lib-iec60870-104-simulator',
@@ -15,13 +12,12 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
     ListViewComponent,
     DatapointDetailsComponent,
     FormsModule,
-    HeaderComponent,
+    HeaderComponent
   ],
   templateUrl: './iec60870-104-simulator.component.html',
   styles: ``
 })
 export class Iec60870104SimulatorComponent {
-
   selectedItem: DataPoint | null = null;
   title = 'IEC-104-UI';
 

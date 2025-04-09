@@ -2,13 +2,12 @@ import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 
 import { NgClass, NgForOf } from '@angular/common';
 import { Button } from 'primeng/button';
-import { Router } from '@angular/router';
 import { CreateDialogComponent } from './create-dialog/create-dialog.component';
 import { Toast, ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
-import { MessageService } from 'primeng/api';
 import { AccordionModule } from 'primeng/accordion';
-import { DataPoint, SimulationMode } from '../data/datapoints.interface';
+import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes } from '../api/v1';
+import { DataPoint, DataPointVis, SimulationMode } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 
 @Component({
@@ -21,6 +20,7 @@ import { DataPointsService } from '../data/datapoints.service';
     CreateDialogComponent,
     ToastModule,
     AccordionModule,
+    ApiModule
   ],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss'
@@ -29,22 +29,23 @@ import { DataPointsService } from '../data/datapoints.service';
 export class ListViewComponent implements OnInit {
 
   @Output()
-  itemSelected = new EventEmitter<DataPoint>();
-  selectedItem: DataPoint | null = null; // Track the selected item
+  itemSelected = new EventEmitter<DataPointVis>();
+  selectedItem: DataPointVis | null = null; // Track the selected item
 
   groupedData: GroupedData[] = [];
   showDialog: boolean = false;
-  private dataService = inject(DataPointsService);
-
+  private dpservice = inject(DataPointsService);
+  //private openAPIService = inject(DataPointConfigsService);
   ngOnInit() {
     // Fetch initial data
-     this.dataService.fetchData().subscribe((data) => {
+    //console.log('initial'+ this.openAPIService.configuration.basePath+"base");
+     this.dpservice.fetchData().subscribe((data) => {
        this.groupedData = this.groupDataByStationaryAddress(data);
      });;
   };
-
-  groupDataByStationaryAddress(data: DataPoint[]): GroupedData[] {
-    const grouped = data.reduce<Record<number, GroupedData>>((acc, item) => {
+  groupDataByStationaryAddress(data: Iec104DataPointDto[]): GroupedData[] {
+    const internalItems: DataPointVis[] = data.map(mapDtoToInternal);
+    const grouped = internalItems.reduce<Record<number, GroupedData>>((acc, item) => {
       const key = item.stationaryAddress;
       acc[key] = acc[key] || { stationaryAddress: key, items: [] };
       acc[key].items.push(item);
@@ -53,11 +54,22 @@ export class ListViewComponent implements OnInit {
     return Object.values(grouped);
   }
 
-  clickOnDataPoint(item: DataPoint) {
+
+  clickOnDataPoint(item: DataPointVis) {
     console.log(item);
+    if(!item.id || !item.mode)
+      return;
+    let localDataPoint = 
     //this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
-    this.selectedItem = item;
-    this.itemSelected.emit(item)
+    this.selectedItem = {
+      id:item.id, 
+      stationaryAddress : item.stationaryAddress ,
+      objectAddress : item.objectAddress,
+      iec104DataType : item.iec104DataType.toString(),
+      value : item.value ? item.value : "0",
+      mode : item.mode ? item.mode as SimulationMode : SimulationMode.None
+     }
+    this.itemSelected.emit(this.selectedItem)
   }
 
   reloadData() {
@@ -69,8 +81,16 @@ export class ListViewComponent implements OnInit {
     this.showDialog = false;
   }
 
-  createDataPoint(datapoint: DataPoint) {
-    this.dataService.createDataPoint(datapoint)
+  createDataPoint(datapoint: DataPointVis) {
+    const dto : Iec104DataPointDto= {
+        id : datapoint.id,
+       stationaryAddress : datapoint.stationaryAddress,
+       objectAddress: datapoint.objectAddress,
+       iec104DataType : Iec104DataTypes.MSpNa1, 
+       value : datapoint.value,
+       mode : datapoint.mode
+      };
+    return this.dpservice.createDataPoint(dto)
       .pipe(
         catchError(error => {
           console.log(error.error.exceptionMessage)
@@ -90,87 +110,12 @@ export class ListViewComponent implements OnInit {
   }
 }
 
-
+function mapDtoToInternal(itemDto: Iec104DataPointDto): DataPointVis {
+  return new DataPointVis(itemDto.id ? itemDto.id:"unknown",itemDto.stationaryAddress,
+    itemDto.objectAddress,itemDto.iec104DataType,
+    itemDto.value? itemDto.value: "empty", SimulationMode.Cyclic);
+}
 export interface GroupedData {
   stationaryAddress: number;
-  items: DataPoint[];
+  items: DataPointVis[];
 }
-
-export enum Iec104DataTypes {
-  ASDU_TYPEUNDEF = "ASDU_TYPEUNDEF",
-  M_SP_NA_1 = "M_SP_NA_1",
-  M_SP_TA_1 = "M_SP_TA_1",
-  M_DP_NA_1 = "M_DP_NA_1",
-  M_DP_TA_1 = "M_DP_TA_1",
-  M_ST_NA_1 = "M_ST_NA_1",
-  M_ST_TA_1 = "M_ST_TA_1",
-  M_BO_NA_1 = "M_BO_NA_1",
-  M_BO_TA_1 = "M_BO_TA_1",
-  M_ME_NA_1 = "M_ME_NA_1",
-  M_ME_TA_1 = "M_ME_TA_1",
-  M_ME_NB_1 = "M_ME_NB_1",
-  M_ME_TB_1 = "M_ME_TB_1",
-  M_ME_NC_1 = "M_ME_NC_1",
-  M_ME_TC_1 = "M_ME_TC_1",
-  M_IT_NA_1 = "M_IT_NA_1",
-  M_IT_TA_1 = "M_IT_TA_1",
-  M_EP_TA_1 = "M_EP_TA_1",
-  M_EP_TB_1 = "M_EP_TB_1",
-  M_EP_TC_1 = "M_EP_TC_1",
-  M_PS_NA_1 = "M_PS_NA_1",
-  M_ME_ND_1 = "M_ME_ND_1",
-  ASDU_TYPE_22_29 = "ASDU_TYPE_22_29",
-  M_SP_TB_1 = "M_SP_TB_1",
-  M_DP_TB_1 = "M_DP_TB_1",
-  M_ST_TB_1 = "M_ST_TB_1",
-  M_BO_TB_1 = "M_BO_TB_1",
-  M_ME_TD_1 = "M_ME_TD_1",
-  M_ME_TE_1 = "M_ME_TE_1",
-  M_ME_TF_1 = "M_ME_TF_1",
-  M_IT_TB_1 = "M_IT_TB_1",
-  M_EP_TD_1 = "M_EP_TD_1",
-  M_EP_TE_1 = "M_EP_TE_1",
-  M_EP_TF_1 = "M_EP_TF_1",
-  ASDU_TYPE_41_44 = "ASDU_TYPE_41_44",
-  C_SC_NA_1 = "C_SC_NA_1",
-  C_DC_NA_1 = "C_DC_NA_1",
-  C_RC_NA_1 = "C_RC_NA_1",
-  C_SE_NA_1 = "C_SE_NA_1",
-  C_SE_NB_1 = "C_SE_NB_1",
-  C_SE_NC_1 = "C_SE_NC_1",
-  C_BO_NA_1 = "C_BO_NA_1",
-  ASDU_TYPE_52_57 = "ASDU_TYPE_52_57",
-  C_SC_TA_1 = "C_SC_TA_1",
-  C_DC_TA_1 = "C_DC_TA_1",
-  C_RC_TA_1 = "C_RC_TA_1",
-  C_SE_TA_1 = "C_SE_TA_1",
-  C_SE_TB_1 = "C_SE_TB_1",
-  C_SE_TC_1 = "C_SE_TC_1",
-  C_BO_TA_1 = "C_BO_TA_1",
-  ASDU_TYPE_65_69 = "ASDU_TYPE_65_69",
-  M_EI_NA_1 = "M_EI_NA_1",
-  ASDU_TYPE_71_99 = "ASDU_TYPE_71_99",
-  C_IC_NA_1 = "C_IC_NA_1",
-  C_CI_NA_1 = "C_CI_NA_1",
-  C_RD_NA_1 = "C_RD_NA_1",
-  C_CS_NA_1 = "C_CS_NA_1",
-  C_TS_NA_1 = "C_TS_NA_1",
-  C_RP_NA_1 = "C_RP_NA_1",
-  C_CD_NA_1 = "C_CD_NA_1",
-  C_TS_TA_1 = "C_TS_TA_1",
-  ASDU_TYPE_108_109 = "ASDU_TYPE_108_109",
-  P_ME_NA_1 = "P_ME_NA_1",
-  P_ME_NB_1 = "P_ME_NB_1",
-  P_ME_NC_1 = "P_ME_NC_1",
-  P_AC_NA_1 = "P_AC_NA_1",
-  ASDU_TYPE_114_119 = "ASDU_TYPE_114_119",
-  F_FR_NA_1 = "F_FR_NA_1",
-  F_SR_NA_1 = "F_SR_NA_1",
-  F_SC_NA_1 = "F_SC_NA_1",
-  F_LS_NA_1 = "F_LS_NA_1",
-  F_FA_NA_1 = "F_FA_NA_1",
-  F_SG_NA_1 = "F_SG_NA_1",
-  F_DR_TA_1 = "F_DR_TA_1",
-  ASDU_TYPE_127_255 = "ASDU_TYPE_127_255"
-}
-

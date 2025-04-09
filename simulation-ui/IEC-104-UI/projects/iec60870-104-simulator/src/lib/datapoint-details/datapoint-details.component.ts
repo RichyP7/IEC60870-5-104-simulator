@@ -1,7 +1,5 @@
 import {Component, inject, Inject, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NgIf} from '@angular/common';
-import {tap} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
 import {Button} from 'primeng/button';
 import {Card, CardModule} from 'primeng/card';
 import {TableModule} from 'primeng/table';
@@ -10,6 +8,7 @@ import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
 import { DataPoint,   SimulationMode } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
+import { Iec104DataPointDto, Iec104DataTypes } from '../api/v1';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -38,24 +37,19 @@ export class DatapointDetailsComponent implements OnChanges{
     { label: 'None', value: SimulationMode.None, icon: 'pi pi-play-circle' }
   ];
 
-  constructor(
-    private http: HttpClient,
-  ) {}
-
   toggleDoublePointValue(doublePoint: DataPoint) {
-    console.log("action");
-    this.http
-      .get<DataPoint[]>("http://localhost:8080/health/" + 'ValueConfig/' + doublePoint.stationaryAddress + "/" + doublePoint.objectAddress)
-      .pipe(
-        tap(() => {
-          //this.dataService.fetchData();
-        })
-      )
-      .subscribe();
   }
 
   toggleSimulationMode(point: DataPoint) {
-    this.dataService.toggleSimulationMode(point);
+    this.dataService.toggleSimulationMode(this.GetDto(point));
+  }
+
+  private GetDto(point: DataPoint): Iec104DataPointDto {
+    return {
+      objectAddress: point.objectAddress,
+      stationaryAddress: point.stationaryAddress,
+      iec104DataType: point.iec104DataType as Iec104DataTypes
+    };
   }
 
   private syncWithUpdatedData(): void {
@@ -82,6 +76,6 @@ export class DatapointDetailsComponent implements OnChanges{
 
   updateValue(item: DataPoint) {
     this.isEditing = false;
-    this.dataService.updateDataPointValue(item);
+    this.dataService.updateDataPointValue(this.GetDto(item));
   }
 }
