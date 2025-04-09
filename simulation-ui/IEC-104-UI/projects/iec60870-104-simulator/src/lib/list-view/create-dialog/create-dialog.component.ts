@@ -5,8 +5,8 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import {NgClass} from '@angular/common';
-import { DataPoint, SimulationMode } from '../../data/datapoints.interface';
-import { Iec104DataTypes } from '../../api/v1';
+import { DataPoint } from '../../data/datapoints.interface';
+import { Iec104DataTypes, SimulationMode } from '../../api/v1';
 
 @Component({
   selector: 'app-create-dialog',

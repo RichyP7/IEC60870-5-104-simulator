@@ -6,9 +6,9 @@ import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
-import { DataPoint,   SimulationMode } from '../data/datapoints.interface';
+import { DataPoint } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
-import { Iec104DataPointDto, Iec104DataTypes } from '../api/v1';
+import { Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
 
 @Component({
   selector: 'app-datapoint-details',

@@ -7,3 +7,5 @@ export * from './lib/data/datapoints.interface';
 export * from './lib/iec60870-104-simulator.component';
 export * from './lib/api/v1/api.module';
 export * from './lib/api/v1/variables';
+export * from './lib/api/v1/api/api';
+export * from './lib/api/v1/model/models';

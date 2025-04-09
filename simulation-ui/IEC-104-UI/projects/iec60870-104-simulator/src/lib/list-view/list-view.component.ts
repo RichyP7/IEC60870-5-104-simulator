@@ -6,8 +6,8 @@ import { CreateDialogComponent } from './create-dialog/create-dialog.component';
 import { Toast, ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
-import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes } from '../api/v1';
-import { DataPoint, DataPointVis, SimulationMode } from '../data/datapoints.interface';
+import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
+import { DataPoint, DataPointVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 
 @Component({

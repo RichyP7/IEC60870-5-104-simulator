@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Iec104DataPoint, Iec104DataPointDto, SimulationState } from "../api/v1";
+import { Iec104DataPoint, Iec104DataPointDto, SimulationMode, SimulationState } from "../api/v1";
 
 export interface DataPointInterface {
   fetchData(): Observable<Iec104DataPointDto[]>;
@@ -28,11 +28,4 @@ export class DataPointVis {
     public value: string,
     public mode: SimulationMode,
   ) { }
-}
-
-export enum SimulationMode {
-  None = 'None',
-  Cyclic = 'Cyclic',
-  CyclicStatic = 'CyclicStatic',
-  Response = 'Response'
 }

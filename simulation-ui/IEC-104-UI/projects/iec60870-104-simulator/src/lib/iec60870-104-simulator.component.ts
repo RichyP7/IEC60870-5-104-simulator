@@ -15,7 +15,7 @@ import { DataPoint } from './data/datapoints.interface';
     HeaderComponent
   ],
   templateUrl: './iec60870-104-simulator.component.html',
-  styles: ``
+  styles: ``,
 })
 export class Iec60870104SimulatorComponent {
   selectedItem: DataPoint | null = null;
