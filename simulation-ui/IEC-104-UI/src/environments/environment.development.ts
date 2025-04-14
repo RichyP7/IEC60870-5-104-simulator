@@ -1,9 +1,8 @@
 export const environment = {
   production: false,
   development: true,
-  baseURL:"http://localhost:8090/api",
-  basePath:"http://localhost:8090/api",
-  API_BASE_PATH: "http://localhost:8090",
+
+  API_BASE_PATH: "http://localhost:8080",
   BASE_PATH: "http://localhost:8090",
   environmentName:"DEV",
   API_ENDPOINT:

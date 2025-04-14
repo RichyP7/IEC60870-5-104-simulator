@@ -8,14 +8,14 @@ import { routes } from './app.routes';
 import { DataPointsService } from 'iec60870-104-simulator';
 import { WrapperWorkAroundService } from './wrapperworkaround.service';
 import { environment } from '../environments/environment';
-import { ApiModule, BASE_PATH, Configuration, ConfigurationParameters } from '../../projects/iec60870-104-simulator/src/lib/api/v1';
+import { ApiModule, BASE_PATH} from '../../projects/iec60870-104-simulator/src/lib/api/v1';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    //provideClientHydration(),
+    provideClientHydration(),
     provideAnimations(),
     provideHttpClient(withFetch()), 
     { provide: BASE_PATH, useFactory:apiConfigFactory },
