@@ -1,10 +1,8 @@
 ﻿using System.Globalization;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
-using IEC60870_5_104_simulator.Infrastructure.Dto;
-using IEC60870_5_104_simulator.Infrastructure.Exceptions;
 
-namespace IEC60870_5_104_simulator.Infrastructure.DTO.Mapper;
+namespace IEC60870_5_104_simulator.API.Mapping;
 
 public class Iec104DataPointDtoMapper
 {
@@ -20,7 +18,6 @@ public class Iec104DataPointDtoMapper
             Value = iec104DataPoint.Value.ToString(),
             Mode = iec104DataPoint.Mode,
         };
-
         return dto;
     }
     
@@ -43,13 +40,13 @@ public class Iec104DataPointDtoMapper
         if (value == null) return null;
         if (DataTypeIsInteger(dataType))
         {
-            if (!IsInteger(value)) throw new BadRequestException("Value must be integer");
+            if (!IsInteger(value)) throw new FormatException("Value must be integer");
             return new IecIntValueObject(int.Parse(value));
         }
 
         if (DataTypeIsSinglePoint(dataType))
         {
-            if (!IsBoolean(value)) throw new BadRequestException("Value must be bool");
+            if (!IsBoolean(value)) throw new FormatException("Value must be bool");
             return new IecSinglePointValueObject(bool.Parse(value));
         }
 
@@ -57,14 +54,14 @@ public class Iec104DataPointDtoMapper
         {
             if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
             {
-                throw new BadRequestException("Value must be Floating Point");
+                throw new FormatException("Value must be Floating Point");
             }
             return new IecValueFloatObject(floatValue);
         }
 
         if (DataTypeIsDoublePoint(dataType))
         {
-            if (!IsDoublePointValue(value, out IecDoublePointValue parsedValue)) throw new BadRequestException("Value must be Double Point");
+            if (!IsDoublePointValue(value, out IecDoublePointValue parsedValue)) throw new FormatException("Value must be Double Point");
             return new IecDoublePointValueObject(parsedValue);
         }
 

@@ -93,7 +93,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
             this.server.Stop();
             return Task.CompletedTask;
         }
-
+        public Task Simulate(Iec104DataPoint dataPoint)
+        {
+            var ioa = factory.GetInformationObjectWithStaticValue(dataPoint);
+            var asdu = CreateAsdu(dataPoint.Address.StationaryAddress, CauseOfTransmission.SPONTANEOUS);
+            asdu.AddInformationObject(ioa);
+            Send(asdu);
+            return Task.CompletedTask;
+        }
         public Task Simulate(IEnumerable<Iec104DataPoint> datapoints)
         {
             if (this._connected)
@@ -156,11 +163,15 @@ namespace IEC60870_5_104_simulator.Infrastructure
                                    where toSend.NumberOfElements > 0
                                    select toSend)
             {
-                server.EnqueueASDU(toSend);
-                logger.LogInformation("Enqueued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
+                Send(toSend);
             }
         }
 
+        private void Send(ASDU toSend)
+        {
+            server.EnqueueASDU(toSend);
+            logger.LogInformation("Enqueued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
+        }
 
         /// <summary>
         /// Send ack and response message from the same stationary address
@@ -195,7 +206,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
             }
 
         }
-
         private void AcknowledgeConfiguredCommands(ASDU asdu)
         {
             for (int i = 0; i < asdu.NumberOfElements; i++)

@@ -1,7 +1,7 @@
-﻿using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.API.Mapping;
+using IEC60870_5_104_simulator.API.Services;
+using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
-using IEC60870_5_104_simulator.Infrastructure.DataPointsService;
-using IEC60870_5_104_simulator.Infrastructure.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,8 +12,8 @@ namespace IEC60870_5_104_simulator.API.Controllers
     [ApiController]
     public class DataPointConfigsController : ControllerBase
     {
-        private DataPointService _dataPointService;
-        public DataPointConfigsController(DataPointService dataPointService)
+        private DataPointConfigService _dataPointService;
+        public DataPointConfigsController(DataPointConfigService dataPointService)
         {
             _dataPointService = dataPointService;
         }

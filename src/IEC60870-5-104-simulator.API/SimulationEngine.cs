@@ -4,7 +4,6 @@ using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
-using IEC60870_5_104_simulator.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace IEC60870_5_104_simulator.Service
@@ -69,14 +68,14 @@ namespace IEC60870_5_104_simulator.Service
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (SimulationStatus == SimulationState.Running) throw new BadRequestException("Simulation is already running.");
+            if (SimulationStatus == SimulationState.Running) throw new InvalidOperationException("Simulation is already running.");
             logger.LogInformation("Started worker at: {Time}", DateTimeOffset.Now);
             await base.StartAsync(cancellationToken);
             SimulationStatus = SimulationState.Running;
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            if (SimulationStatus == SimulationState.Stopped) throw new BadRequestException("Simulation is already stopped.");
+            if (SimulationStatus == SimulationState.Stopped) throw new InvalidOperationException("Simulation is already stopped.");
             logger.LogInformation("Stopped worker at: {Time}", DateTimeOffset.Now);
             await base.StopAsync(cancellationToken);
             await this.iecService.Stop();

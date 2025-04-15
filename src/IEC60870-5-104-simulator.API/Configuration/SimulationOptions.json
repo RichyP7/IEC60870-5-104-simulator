@@ -9,14 +9,14 @@
           "Ca": "20",
           "Oa": "25",
           "TypeId": 5,
-          "Mode": "Cyclic"
+          "InitValue": "true"
         },
         {
           "Id": "DPM1",
           "Ca": "20",
           "Oa": "27",
           "TypeId": 3,
-          "Mode": "Cyclic"
+          "InitValue": "INDETERMINATE"
         },
         {
           "Id": "SPM1",
@@ -29,7 +29,6 @@
           "Ca": "20",
           "Oa": "57",
           "TypeId": 1,
-          "Mode": "Cyclic"
         },
         {
           "Id": "SCALEDM1",
@@ -48,21 +47,19 @@
           "Ca": "20",
           "Oa": "31",
           "TypeId": 9,
-          "Mode": "Cyclic"
+          "Mode": "CyclicStatic"
         },
         {
           "Id": "NORMM2",
           "Ca": "21",
           "Oa": "31",
           "TypeId": 9,
-          "Mode": "Cyclic"
         },
         {
           "Id": "NORMM3",
           "Ca": "21",
           "Oa": "32",
           "TypeId": 9,
-          "Mode": "Cyclic"
         }
       ],
       "Commands":[

@@ -1,19 +1,17 @@
-﻿using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.API.Mapping;
+using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
-using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
-using IEC60870_5_104_simulator.Infrastructure.Dto;
-using IEC60870_5_104_simulator.Infrastructure.DTO.Mapper;
 
-namespace IEC60870_5_104_simulator.Infrastructure.DataPointsService;
+namespace IEC60870_5_104_simulator.API.Services;
 
-public class DataPointService
+public class DataPointConfigService
 {
-    private IIecValueRepository _iecValueRepository;
+    private readonly IIecValueRepository _iecValueRepository;
     private Iec104DataPointDtoMapper mapper = new();
     private IIec104ConfigurationService _configurationService;
 
-    public DataPointService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService)
+    public DataPointConfigService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService)
     {
         _iecValueRepository = iecValueRepository;
         _configurationService = configurationService;
