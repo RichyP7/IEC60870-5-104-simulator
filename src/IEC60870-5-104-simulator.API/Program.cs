@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Mapping;
-using IEC60870_5_104_simulator.Infrastructure.ExceptionHandler;
+using IEC60870_5_104_simulator.API.Services;
 using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -22,6 +22,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SimulationEngine>();
 builder.Services.AddHostedService(provider => provider.GetService<SimulationEngine>() ?? throw new InvalidProgramException("Register Simulation Engine "));
 builder.Services.AddServices();
+builder.Services.AddTransient<DataPointConfigService>();
+builder.Services.AddTransient<DataPointValueService>();
 builder.Services.AddHealthChecks()
     .AddCheck<ConnectionEstablishedHealthCheck>("readiness",HealthStatus.Healthy, new List<string> { "ready"})
     .AddCheck<ServerStartedHealthCheck>("liveness");
@@ -40,9 +42,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
-builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
-builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
-builder.Services.AddExceptionHandler<InternalErrorExceptionHandler>();
 Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
@@ -63,8 +62,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAngularApp");
-app.UseExceptionHandler(_ => { });
+app.UseCors("AllowAngularApp");;
+app.UseExceptionHandler(new ExceptionHandlerOptions()
+{
+    AllowStatusCode404Response = true,
+    ExceptionHandlingPath = "/error"
+});
 app.UseAuthorization();
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = healthCheck => healthCheck.Tags.Contains("ready") });
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = healthCheck => !healthCheck.Tags.Contains("ready") }); //all but ready
