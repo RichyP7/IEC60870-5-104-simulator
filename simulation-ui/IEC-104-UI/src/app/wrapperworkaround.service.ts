@@ -26,7 +26,7 @@ private dpService1 = inject(DataPointConfigsService);
 
   override updateSimulationEngineState(simulationState: SimulationState) {
     const command = (simulationState === SimulationState.Stopped) ? 'Stop' : 'Start';
-    this.simEngineStateService.commands(command)
+    this.simEngineStateServicewrapper.commands(command)
       .subscribe({
         next: () => { },
         error: (err) => {
@@ -53,7 +53,7 @@ private dpService1 = inject(DataPointConfigsService);
 
 
   override updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
-    return this.dpValueService.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
+    return this.dpValueServicewrapper.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
   }
 
 

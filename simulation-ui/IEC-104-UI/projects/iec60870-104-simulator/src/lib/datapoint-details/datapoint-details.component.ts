@@ -9,6 +9,8 @@ import {Toast, ToastModule} from 'primeng/toast';
 import { DataPoint } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 import { Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
+import { catchError, of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -28,7 +30,8 @@ import { Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
   item: DataPoint | null = null;
-  private dataService = inject(DataPointsService);
+  private dpservice = inject(DataPointsService);
+  private messageService = inject(MessageService)
   isEditing = false;
 
   simulationModes = [
@@ -41,14 +44,17 @@ export class DatapointDetailsComponent implements OnChanges{
   }
 
   toggleSimulationMode(point: DataPoint) {
-    this.dataService.toggleSimulationMode(this.GetDto(point));
+    this.dpservice.toggleSimulationMode(this.GetDto(point));
   }
 
   private GetDto(point: DataPoint): Iec104DataPointDto {
     return {
       objectAddress: point.objectAddress,
       stationaryAddress: point.stationaryAddress,
-      iec104DataType: point.iec104DataType as Iec104DataTypes
+      iec104DataType: point.iec104DataType as Iec104DataTypes,
+      mode :point.mode,
+      value: point.value,
+      id: point.id
     };
   }
 
@@ -76,6 +82,18 @@ export class DatapointDetailsComponent implements OnChanges{
 
   updateValue(item: DataPoint) {
     this.isEditing = false;
-    this.dataService.updateDataPointValue(this.GetDto(item));
+    this.dpservice.updateDataPointValue(this.GetDto(item))
+    .pipe(
+      catchError(error => {
+        console.log(error.error.exceptionMessage)
+        this.messageService.add({
+         severity: 'error',
+         summary: 'Error',
+         detail: error.error.exceptionMessage,
+       });
+        return of(null);
+      })
+    )
+    .subscribe();
   }
 }

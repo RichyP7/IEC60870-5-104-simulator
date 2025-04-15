@@ -18,7 +18,6 @@ export class DataPointsService implements DataPointInterface {
   public error$ = this.errorSubject.asObservable();
 
   fetchData(): Observable<Iec104DataPointDto[]> {
-    console.log("DataPointServiceInject"+ this.dpService.configuration.basePath);
     return this.dpService.apiDataPointConfigsGet();
   }
 
@@ -56,6 +55,7 @@ export class DataPointsService implements DataPointInterface {
 
 
   updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
+    console.log("here"+ dataPoint.value)
     return this.dpValueService.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
   }
 }

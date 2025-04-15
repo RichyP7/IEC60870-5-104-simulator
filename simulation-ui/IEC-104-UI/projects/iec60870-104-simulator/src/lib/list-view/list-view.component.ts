@@ -9,6 +9,7 @@ import { AccordionModule } from 'primeng/accordion';
 import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
 import { DataPoint, DataPointVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-list-view',
@@ -35,7 +36,7 @@ export class ListViewComponent implements OnInit {
   groupedData: GroupedData[] = [];
   showDialog: boolean = false;
   private dpservice = inject(DataPointsService);
-  //private openAPIService = inject(DataPointConfigsService);
+  private messageService = inject(MessageService);
   ngOnInit() {
     // Fetch initial data
     //console.log('initial'+ this.openAPIService.configuration.basePath+"base");
@@ -94,11 +95,11 @@ export class ListViewComponent implements OnInit {
       .pipe(
         catchError(error => {
           console.log(error.error.exceptionMessage)
-          // this.messageService.add({
-          //   severity: 'error',
-          //   summary: 'Error - Bad Request',
-          //   detail: error.error.exceptionMessage,
-          // });
+         this.messageService.add({
+           severity: 'error',
+           summary: 'Error - Bad Request',
+           detail: error.error.exceptionMessage,
+         });
           return of(null);
         })
       )
