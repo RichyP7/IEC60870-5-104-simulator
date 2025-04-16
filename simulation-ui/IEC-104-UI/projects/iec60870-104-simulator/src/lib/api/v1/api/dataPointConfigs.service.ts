@@ -21,7 +21,7 @@ import { Iec104DataPoint } from '../model/iec104DataPoint';
 // @ts-ignore
 import { Iec104DataPointDto } from '../model/iec104DataPointDto';
 // @ts-ignore
-import { SimulationMode } from '../model/simulationMode';
+import { SimulationModeDto } from '../model/simulationModeDto';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';

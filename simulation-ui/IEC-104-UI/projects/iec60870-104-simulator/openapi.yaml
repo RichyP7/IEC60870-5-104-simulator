@@ -129,13 +129,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SimulationMode'
+              $ref: '#/components/schemas/SimulationModeDto'
           text/json:
             schema:
-              $ref: '#/components/schemas/SimulationMode'
+              $ref: '#/components/schemas/SimulationModeDto'
           application/*+json:
             schema:
-              $ref: '#/components/schemas/SimulationMode'
+              $ref: '#/components/schemas/SimulationModeDto'
       responses:
         '200':
           description: Success
@@ -149,10 +149,10 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/Iec104DataPointDto'
-  '/api/DataPointValue/{idStationary}/{idObject}':
-    put:
+  '/api/DataPointValues/{idStationary}/{idObject}':
+    post:
       tags:
-        - DataPointValue
+        - DataPointValues
       parameters:
         - name: idStationary
           in: path
@@ -172,26 +172,16 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              $ref: '#/components/schemas/Iec104DataPointDto'
           text/json:
             schema:
-              type: string
+              $ref: '#/components/schemas/Iec104DataPointDto'
           application/*+json:
             schema:
-              type: string
+              $ref: '#/components/schemas/Iec104DataPointDto'
       responses:
         '200':
           description: Success
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/Iec104DataPointDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Iec104DataPointDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/Iec104DataPointDto'
   /api/SimulationEngineState:
     get:
       tags:
@@ -222,35 +212,26 @@ paths:
       responses:
         '200':
           description: Success
-  '/api/ValueConfig/{idStationary}/{idObject}':
-    get:
-      tags:
-        - ValueConfig
-      parameters:
-        - name: idStationary
-          in: path
-          required: true
-          style: simple
-          schema:
-            type: integer
-            format: int32
-        - name: idObject
-          in: path
-          required: true
-          style: simple
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Success
 components:
   schemas:
+    DoublePointValueDto:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/IecDoublePointValueEnumDto'
+      additionalProperties: false
     ENGINE_COMMAND:
       enum:
         - Start
         - Stop
       type: string
+    FloatValueDto:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+      additionalProperties: false
     Iec104DataPoint:
       type: object
       properties:
@@ -288,10 +269,9 @@ components:
         iec104DataType:
           $ref: '#/components/schemas/Iec104DataTypes'
         value:
-          type: string
-          nullable: true
+          $ref: '#/components/schemas/IecValueDto'
         mode:
-          $ref: '#/components/schemas/SimulationMode'
+          $ref: '#/components/schemas/SimulationModeDto'
       additionalProperties: false
     Iec104DataTypes:
       enum:
@@ -381,10 +361,55 @@ components:
           type: integer
           format: int32
       additionalProperties: false
+    IecDoublePointValueEnumDto:
+      enum:
+        - INTERMEDIATE
+        - OFF
+        - ON
+        - INDETERMINATE
+      type: string
+    IecValueDto:
+      type: object
+      properties:
+        numericValue:
+          $ref: '#/components/schemas/IntValueDto'
+        singlePointValue:
+          $ref: '#/components/schemas/SinglePointValueDto'
+        doublePointValue:
+          $ref: '#/components/schemas/DoublePointValueDto'
+        floatValue:
+          $ref: '#/components/schemas/FloatValueDto'
+        scaledValue:
+          $ref: '#/components/schemas/ScaledValueDto'
+      additionalProperties: false
     IecValueObject:
       type: object
       additionalProperties: false
+    IntValueDto:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+      additionalProperties: false
+    ScaledValueDto:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+        shortValue:
+          type: integer
+          format: int32
+      additionalProperties: false
     SimulationMode:
+      enum:
+        - None
+        - Cyclic
+        - CyclicStatic
+        - Response
+      type: string
+    SimulationModeDto:
       enum:
         - None
         - Cyclic
@@ -396,3 +421,9 @@ components:
         - Stopped
         - Running
       type: string
+    SinglePointValueDto:
+      type: object
+      properties:
+        value:
+          type: boolean
+      additionalProperties: false

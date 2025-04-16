@@ -7,8 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SimulationMode } from './simulationMode';
+import { IecValueDto } from './iecValueDto';
 import { Iec104DataTypes } from './iec104DataTypes';
+import { SimulationModeDto } from './simulationModeDto';
 
 
 export interface Iec104DataPointDto { 
@@ -16,8 +17,8 @@ export interface Iec104DataPointDto {
     stationaryAddress: number;
     objectAddress: number;
     iec104DataType: Iec104DataTypes;
-    value?: string | null;
-    mode?: SimulationMode;
+    value?: IecValueDto;
+    mode?: SimulationModeDto;
 }
 export namespace Iec104DataPointDto {
 }
