@@ -12,12 +12,16 @@ public class Iec104DataPointDto
     public int objectAddress { get; set; }
     [Required]
     public required Iec104DataTypes Iec104DataType { get; set; }
-    public string? Value { get; set; }
+    public IecValueDto Value { get; set; } = new IecValueDto();
+
+    public SimulationMode Mode { get; set; }
+}
+public class IecValueDto
+{
     public IntValueDto? NumericValue { get; set; }
     public SinglePointValueDto? SinglePointValue { get; set; }
     public DoublePointValueDto? DoublePointValue { get; set; }
-    public IecValueFloatValueDto? FloatValueDto { get; set; }
-    public SimulationMode Mode { get; set; }
+    public FloatValueDto? FloatValue { get; set; }
 }
 public class IntValueDto
 {
@@ -39,7 +43,7 @@ public enum IecDoublePointValueEnumDto
     INDETERMINATE
 }
 
-public class IecValueFloatValueDto
+public class FloatValueDto
 {
     public float Value { get; set; }
 }

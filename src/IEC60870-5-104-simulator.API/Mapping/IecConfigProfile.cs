@@ -20,7 +20,7 @@ namespace IEC60870_5_104_simulator.API.Mapping
             CreateMap<Iec104DataPointDto, Iec104DataPoint>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new IecAddress(src.stationaryAddress, src.objectAddress)))
                 .ForMember(dest => dest.Iec104DataType, opt => opt.MapFrom(src => src.Iec104DataType));
-                //.ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Iec104DataType));
+            CreateMap<IecValueDto, IecValueObject>().ConvertUsing<DtoValueMapper>();
 
         }
     }

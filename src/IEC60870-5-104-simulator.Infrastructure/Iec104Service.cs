@@ -101,7 +101,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             Send(asdu);
             return Task.CompletedTask;
         }
-        public Task Simulate(IEnumerable<Iec104DataPoint> datapoints)
+        public Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints)
         {
             if (this._connected)
             {
