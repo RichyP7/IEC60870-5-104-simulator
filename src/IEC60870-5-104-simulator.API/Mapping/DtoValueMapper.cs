@@ -15,6 +15,8 @@ namespace IEC60870_5_104_simulator.API.Mapping
                 return new IecDoublePointValueObject((IecDoublePointValue)source.DoublePointValue.Value);
             else if (source.FloatValue != null)
                 return new IecValueFloatObject(source.FloatValue.Value);
+            else if (source.ScaledValue != null)
+                return new IecValueScaledObject(new ScaledValueRecord(source.ScaledValue.Value));
             else
                 throw new InvalidCastException("Invalid dto cast");
         }

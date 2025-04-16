@@ -7,14 +7,14 @@ public class Iec104DataPointDto
 {
     public string Id { get; set; }
     [Required]
-    public int stationaryAddress { get; set; }
+    public int StationaryAddress { get; set; }
     [Required]
-    public int objectAddress { get; set; }
+    public int ObjectAddress { get; set; }
     [Required]
     public required Iec104DataTypes Iec104DataType { get; set; }
     public IecValueDto Value { get; set; } = new IecValueDto();
 
-    public SimulationMode Mode { get; set; }
+    public SimulationModeDto Mode { get; set; }
 }
 public class IecValueDto
 {
@@ -22,6 +22,7 @@ public class IecValueDto
     public SinglePointValueDto? SinglePointValue { get; set; }
     public DoublePointValueDto? DoublePointValue { get; set; }
     public FloatValueDto? FloatValue { get; set; }
+    public ScaledValueDto? ScaledValue { get; set; }
 }
 public class IntValueDto
 {
@@ -46,4 +47,16 @@ public enum IecDoublePointValueEnumDto
 public class FloatValueDto
 {
     public float Value { get; set; }
+}
+public record ScaledValueDto
+{
+    public int Value { get; set; }
+    public short ShortValue { get; set; }
+}
+public enum SimulationModeDto
+{
+    None,
+    Cyclic,
+    CyclicStatic,
+    Response
 }
