@@ -1,4 +1,5 @@
-﻿using IEC60870_5_104_simulator.API.Mapping;
+﻿using AutoMapper;
+using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.API.Services;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using Microsoft.AspNetCore.Mvc;
@@ -24,28 +25,20 @@ public class DataPointValuesController : ControllerBase
         return new Iec104DataPointDto() { Iec104DataType = Domain.Iec104DataTypes.ASDU_TYPE_114_119};
     }
 
-    [HttpGet("{idStationary}/{idObject}/toggle")]
-    public IActionResult ToggleDigitalPoint([FromRoute] int idStationary, [FromRoute] int idObject)
-    {
-        try
-        {
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-        return StatusCode(200);
-    }
     [HttpPost("{idStationary}/{idObject}")]
-    public IActionResult CreateNewIecValue([FromRoute] int idStationary, [FromRoute] int idObject, Iec104DataPointDto dto)
+    public async Task<IActionResult> CreateNewIecValue([FromRoute] int idStationary, [FromRoute] int idObject, Iec104DataPointDto dto)
     {
         try
         {
-            dpService.SendNewIecValue(dto);
+            await dpService.SendNewIecValue(dto);
         }
         catch (KeyNotFoundException)
         {
             return NotFound();
+        }
+        catch (Exception ex) when (ex is AutoMapperMappingException || ex is InvalidCastException)
+        {
+            return BadRequest("Supplied value to send is invalid");
         }
         return Ok();
     }

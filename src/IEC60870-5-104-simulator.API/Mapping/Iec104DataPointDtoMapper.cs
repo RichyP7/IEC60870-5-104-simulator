@@ -15,7 +15,7 @@ public class Iec104DataPointDtoMapper
             stationaryAddress = iec104DataPoint.Address.StationaryAddress,
             objectAddress = iec104DataPoint.Address.ObjectAddress,
             Iec104DataType = iec104DataPoint.Iec104DataType,
-            Value = iec104DataPoint.Value.ToString(),
+            //Value = iec104DataPoint.Value.ToString(),
             Mode = iec104DataPoint.Mode,
         };
         return dto;
@@ -28,7 +28,7 @@ public class Iec104DataPointDtoMapper
             Id = iec104DataPointDto.Id,
             Address = new IecAddress(iec104DataPointDto.stationaryAddress, iec104DataPointDto.objectAddress),
             Iec104DataType = iec104DataPointDto.Iec104DataType,
-            Value = MapStringToValueObject(iec104DataPointDto.Value, iec104DataPointDto.Iec104DataType)!,
+            //Value = MapStringToValueObject(iec104DataPointDto.Value, iec104DataPointDto.Iec104DataType)!,
             Mode = iec104DataPointDto.Mode,
         };
 
