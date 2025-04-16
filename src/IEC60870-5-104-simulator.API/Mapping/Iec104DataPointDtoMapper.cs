@@ -7,33 +7,6 @@ namespace IEC60870_5_104_simulator.API.Mapping;
 public class Iec104DataPointDtoMapper
 {
 
-    public Iec104DataPointDto MapToDto(Iec104DataPoint iec104DataPoint)
-    {
-        var dto = new Iec104DataPointDto()
-        {
-            Id = iec104DataPoint.Id,
-            stationaryAddress = iec104DataPoint.Address.StationaryAddress,
-            objectAddress = iec104DataPoint.Address.ObjectAddress,
-            Iec104DataType = iec104DataPoint.Iec104DataType,
-            //Value = iec104DataPoint.Value.ToString(),
-            Mode = iec104DataPoint.Mode,
-        };
-        return dto;
-    }
-    
-    public Iec104DataPoint MapFromDto(Iec104DataPointDto iec104DataPointDto)
-    {
-        var dataPoint = new Iec104DataPoint()
-        {
-            Id = iec104DataPointDto.Id,
-            Address = new IecAddress(iec104DataPointDto.stationaryAddress, iec104DataPointDto.objectAddress),
-            Iec104DataType = iec104DataPointDto.Iec104DataType,
-            //Value = MapStringToValueObject(iec104DataPointDto.Value, iec104DataPointDto.Iec104DataType)!,
-            Mode = iec104DataPointDto.Mode,
-        };
-
-        return dataPoint;
-    }
 
     public IecValueObject? MapStringToValueObject(String? value, Iec104DataTypes dataType)
     {

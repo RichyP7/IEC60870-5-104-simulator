@@ -17,14 +17,6 @@ public class DataPointValuesController : ControllerBase
         this.dpService = service;
     }
 
-    [HttpPut("{idStationary}/{idObject}/mode")]
-    public Iec104DataPointDto SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] String newValue)
-    {
-        IecAddress address = new IecAddress(idStationary, idObject);
-        //var dataPoint = valueService.UpdateDataPointValue(address, newValue);
-        return new Iec104DataPointDto() { Iec104DataType = Domain.Iec104DataTypes.ASDU_TYPE_114_119};
-    }
-
     [HttpPost("{idStationary}/{idObject}")]
     public async Task<IActionResult> CreateNewIecValue([FromRoute] int idStationary, [FromRoute] int idObject, Iec104DataPointDto dto)
     {

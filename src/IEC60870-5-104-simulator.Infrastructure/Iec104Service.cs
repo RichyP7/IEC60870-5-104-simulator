@@ -95,7 +95,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
         public Task Simulate(Iec104DataPoint dataPoint)
         {
-            var ioa = factory.GetInformationObjectWithStaticValue(dataPoint);
+            var ioa = factory.CreateInformationObjectWithValue(dataPoint,dataPoint.Value);
             var asdu = CreateAsdu(dataPoint.Address.StationaryAddress, CauseOfTransmission.SPONTANEOUS);
             asdu.AddInformationObject(ioa);
             Send(asdu);
@@ -105,43 +105,36 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             if (this._connected)
             {
-                SimulateValues(datapoints);
+                SimulateCyclicValues(datapoints);
             }
             return Task.CompletedTask;
         }
 
-        internal void SimulateValues(IEnumerable<Iec104DataPoint> datapoints)
+        internal void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints)
         {
-            var cyclicDataPoints = GetCyclicDataPoints(datapoints);
+            var cyclicDataPoints = GetAllCyclicDataPoints(datapoints);
             IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(cyclicDataPoints);
             foreach (Iec104DataPoint dataPoint in cyclicDataPoints)
             {
-                var ioa = factory.GetInformationObject(dataPoint);
-                var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
-                myASDU.Value.AddInformationObject(ioa);
+                var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType));
+                if (dataPoint.Mode == SimulationMode.Cyclic)
+                {
+                    InformationObject ioa = factory.CreateRandomInformationObject(dataPoint);
+                    myASDU.Value.AddInformationObject(ioa);
+                }
+                else if (dataPoint.Mode == SimulationMode.CyclicStatic)
+                {
+                    Iec104DataPoint existingValue = repository.GetDataPointValue(dataPoint.Address);
+                    InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, existingValue.Value);
+                    myASDU.Value.AddInformationObject(ioa);
+                }
             }
             Send(asdus.Select(v => v.Value));
-            
-            // Simulate Static Values
-            var staticDataPoints = GetCyclicStaticDataPoints(datapoints);
-            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> staticAsdus = CreateDistinctAsdus(staticDataPoints);
-            foreach (Iec104DataPoint dataPoint in staticDataPoints)
-            {
-                var ioa = factory.GetInformationObjectWithStaticValue(dataPoint);
-                var myASDU = staticAsdus.First(v => v.Key.Equals(dataPoint.Iec104DataType) && v.Value.Ca.Equals(dataPoint.Address.StationaryAddress));
-                myASDU.Value.AddInformationObject(ioa);
-            }
-            Send(staticAsdus.Select(v => v.Value));
         }
 
-        private static IEnumerable<Iec104DataPoint> GetCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
+        private static IEnumerable<Iec104DataPoint> GetAllCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
         {
-            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic));
-        }
-        
-        private static IEnumerable<Iec104DataPoint> GetCyclicStaticDataPoints(IEnumerable<Iec104DataPoint> datapoints)
-        {
-            return datapoints.Where(v => v.Mode.Equals(SimulationMode.CyclicStatic));
+            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic)|| v.Mode.Equals(SimulationMode.CyclicStatic) );
         }
 
         private IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)
