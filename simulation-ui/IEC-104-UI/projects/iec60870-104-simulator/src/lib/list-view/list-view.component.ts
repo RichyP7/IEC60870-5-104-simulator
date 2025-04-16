@@ -6,7 +6,7 @@ import { CreateDialogComponent } from './create-dialog/create-dialog.component';
 import { Toast, ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
-import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
+import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes, IecValueDto, IntValueDto, SimulationMode } from '../api/v1';
 import { DataPoint, DataPointVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 import { MessageService } from 'primeng/api';
@@ -83,12 +83,14 @@ export class ListViewComponent implements OnInit {
   }
 
   createDataPoint(datapoint: DataPointVis) {
+    const dtoint : IntValueDto = {value: 5};
+    const test :IecValueDto ={ numericValue : dtoint }
     const dto : Iec104DataPointDto= {
         id : datapoint.id,
        stationaryAddress : datapoint.stationaryAddress,
        objectAddress: datapoint.objectAddress,
-       iec104DataType : Iec104DataTypes.MSpNa1, 
-       value : datapoint.value,
+       iec104DataType : Iec104DataTypes.MMeTb1,//Iec104DataTypes[datapoint.iec104DataType as keyof typeof Iec104DataTypes], 
+       value : test,
        mode : datapoint.mode
       };
     return this.dpservice.createDataPoint(dto)
@@ -112,9 +114,10 @@ export class ListViewComponent implements OnInit {
 }
 
 function mapDtoToInternal(itemDto: Iec104DataPointDto): DataPointVis {
+  let item = itemDto.value?.numericValue?.value?.toString();
   return new DataPointVis(itemDto.id ? itemDto.id:"unknown",itemDto.stationaryAddress,
     itemDto.objectAddress,itemDto.iec104DataType,
-    itemDto.value? itemDto.value: "empty", SimulationMode.Cyclic);
+    item ? item: "empty", SimulationMode.Cyclic);
 }
 export interface GroupedData {
   stationaryAddress: number;

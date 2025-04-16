@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DataPoint, DataPointInterface } from './datapoints.interface';
-import { DataPointConfigsService, DataPointValueService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../api/v1';
+import { DataPointConfigsService, DataPointValuesService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../api/v1';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class DataPointsService implements DataPointInterface {
 
   public dpService = inject(DataPointConfigsService);
-  protected dpValueService = inject(DataPointValueService);
+  protected dpValueService = inject(DataPointValuesService);
   protected simEngineStateService = inject(SimulationEngineStateService);
   protected http = inject(HttpClient);
 
@@ -56,7 +56,7 @@ export class DataPointsService implements DataPointInterface {
 
   updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
     console.log("here"+ dataPoint.value)
-    return this.dpValueService.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
+    return this.dpValueService.apiDataPointValuesIdStationaryIdObjectPost(dataPoint.stationaryAddress,dataPoint.objectAddress,dataPoint)
   }
 }
 

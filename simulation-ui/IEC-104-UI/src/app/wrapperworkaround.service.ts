@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { DataPoint, DataPointsService } from 'iec60870-104-simulator';
 import { Observable } from 'rxjs';
 import { DataPointConfigsService } from '../../projects/iec60870-104-simulator/src/lib/api/v1/api/dataPointConfigs.service';
-import { DataPointValueService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../../projects/iec60870-104-simulator/src/lib/api/v1';
+import { DataPointValuesService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../../projects/iec60870-104-simulator/src/lib/api/v1';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { DataPointValueService, Iec104DataPoint, Iec104DataPointDto, SimulationE
 //This is just a wrapper class for a workaround. The BASE_PATH for wasn't set otherwise
 export class WrapperWorkAroundService extends DataPointsService {
 private dpService1 = inject(DataPointConfigsService);
-  protected dpValueServicewrapper = inject(DataPointValueService);
+  protected dpValueServicewrapper = inject(DataPointValuesService);
   protected simEngineStateServicewrapper = inject(SimulationEngineStateService);
 
 
@@ -53,7 +53,7 @@ private dpService1 = inject(DataPointConfigsService);
 
 
   override updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
-    return this.dpValueServicewrapper.apiDataPointValueIdStationaryIdObjectPut(dataPoint.stationaryAddress,dataPoint.objectAddress,JSON.stringify(dataPoint.value))
+    return this.dpValueServicewrapper.apiDataPointValuesIdStationaryIdObjectPost(dataPoint.stationaryAddress,dataPoint.objectAddress,dataPoint)
   }
 
 

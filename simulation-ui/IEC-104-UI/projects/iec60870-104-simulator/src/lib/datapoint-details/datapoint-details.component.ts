@@ -8,7 +8,7 @@ import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
 import { DataPoint } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
-import { Iec104DataPointDto, Iec104DataTypes, SimulationMode } from '../api/v1';
+import { Iec104DataPointDto, Iec104DataTypes, IecDoublePointValueEnumDto, SimulationMode } from '../api/v1';
 import { catchError, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
@@ -48,12 +48,13 @@ export class DatapointDetailsComponent implements OnChanges{
   }
 
   private GetDto(point: DataPoint): Iec104DataPointDto {
+    //const IecValueDto 
     return {
       objectAddress: point.objectAddress,
       stationaryAddress: point.stationaryAddress,
       iec104DataType: point.iec104DataType as Iec104DataTypes,
       mode :point.mode,
-      value: point.value,
+      //value
       id: point.id
     };
   }
