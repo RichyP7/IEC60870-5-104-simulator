@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using FluentAssertions;
+using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Domain;
-using IEC60870_5_104_simulator.Infrastructure.Dto;
 using IntegrationTests.TestPreparation;
 using lib60870.CS101;
 using lib60870.CS104;
@@ -28,11 +28,18 @@ public class TestCreateDoublePoint : BaseWebApplication
         var toCreate = new Iec104DataPointDto
         {
             Id = "TestCreateDoublePoint",
-            Mode = SimulationMode.CyclicStatic,
-            objectAddress = 20,
-            stationaryAddress = 21,
+            Mode = SimulationModeDto.CyclicStatic,
+            ObjectAddress = 20,
+            StationaryAddress = 21,
             Iec104DataType = Iec104DataTypes.M_DP_NA_1,
-            Value = DoublePointValue.INTERMEDIATE.ToString()
+            Value = new IecValueDto
+            {
+                DoublePointValue =
+                    new DoublePointValueDto()
+                    {
+                        Value = IecDoublePointValueEnumDto.INTERMEDIATE
+                    }
+            }
         };
         
         var response = await client.PostAsJsonAsync($"/api/DataPointConfigs",

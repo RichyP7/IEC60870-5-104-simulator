@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
+using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Domain;
 using IntegrationTests.TestPreparation;
 using lib60870.CS101;
@@ -69,10 +71,20 @@ public sealed class TestSinglePoint: BaseWebApplication
     public async Task Test_Simulate_Static_Single_Point_Value()
     {
 	    var client = _factory.CreateClient();
-	    var response = await client.PutAsJsonAsync($"/api/DataPointConfigs/{Sa}/{Oa}/simulation-mode", SimulationMode.CyclicStatic.ToString());
-	    response.EnsureSuccessStatusCode();
-	    
-	    var valueResponse = await client.PutAsJsonAsync($"/api/DataPointValue/{Sa}/{Oa}", "true");
+
+        Iec104DataPointDto dto = new()
+		{
+			Id = "test",
+			StationaryAddress = Sa,
+			ObjectAddress = Oa,
+			Iec104DataType = Iec104DataTypes.M_SP_NA_1,
+			Value = new IecValueDto()
+			{
+				SinglePointValue = new SinglePointValueDto() { Value = true}
+			},
+			Mode = SimulationModeDto.None
+		};
+        var valueResponse = await client.PostAsJsonAsync($"/api/DataPointValues/{Sa}/{Oa}", dto);
 	    valueResponse.EnsureSuccessStatusCode();
         
 
@@ -80,17 +92,10 @@ public sealed class TestSinglePoint: BaseWebApplication
 	    con.DebugOutput = true;
 
 	    var tcs = new TaskCompletionSource();
-	    bool firstTry = true;
 	    con.SetASDUReceivedHandler((parameter, asdu) =>
 	    {
 		    try
 		    {
-			    // Clear old sent values
-			    if (firstTry)
-			    {
-				    firstTry = false;
-				    return false;
-			    }
 			    asdu.TypeId.Should().Be(TypeID.M_SP_NA_1);
 			    for (int i = 0; i < asdu.NumberOfElements; i++) {
 
@@ -99,7 +104,6 @@ public sealed class TestSinglePoint: BaseWebApplication
 				    val.ObjectAddress.Should().Be(Oa);
 				    val.Value.Should().Be(true);
 			    }
-
 			    tcs.SetResult();
 		    }
 		    catch (Exception ex)
