@@ -18,8 +18,17 @@ public sealed class BaseTest: BaseWebApplication
 	    _factory = factory;
 	    _testOutputHelper = testOutputHelper;
     }
+	[Fact]
+	// Starts Simulator and Client in parallel and waits for periodic measurement
+	public async Task GetDatapoints()
+	{
+        HttpClient client =_factory.CreateClient();
+        var response = await client.GetAsync($"/api/DataPointConfigs");
 
-    [Fact]
+		Assert.True(response.IsSuccessStatusCode);
+    }
+
+        [Fact]
     public async Task Test_Simulator_Starts_Correctly()
     {
 	    _factory.CreateClient();
