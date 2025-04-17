@@ -15,6 +15,16 @@ Or use docker compose in root directory.
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+## Deployment of library
+
+```bash
+ng build iec60870-104-simulator
+cd dist/iec60870-104-simulator/
+npm pack
+```
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+

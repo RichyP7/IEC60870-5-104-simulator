@@ -1,0 +1,27 @@
+<p-toast></p-toast>
+<div class="card">
+  <p-accordion>
+    <p-accordionTab *ngFor="let tab of groupedData" header="Stationary Address: {{ tab.stationaryAddress }}">
+      <div *ngFor="let item of tab.items">
+        <div
+          [ngClass]="{'selected-item': item.objectAddress === selectedItem?.objectAddress && item.stationaryAddress === selectedItem?.stationaryAddress}"
+          class="item-details p-2 border-round cursor-pointer" (click)="clickOnDataPoint(item)">
+          <div>
+            <p class="m-0">ID: {{ item.id }}</p>
+            <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>
+            <p class="m-0">Object Address: {{ item.objectAddress }}</p>
+            <p class="m-0">IEC104 Data Type: {{ item.iec104DataType }}</p>
+            <p class="m-0">Mode: {{ item.mode }}</p>
+          </div>
+        </div>
+      </div>
+
+    </p-accordionTab>
+  </p-accordion>
+
+  <div class="card accordion-container">
+    <p-button label="Reload DataPoints" (onClick)="reloadData()" />
+    <p-button label="Create DataPoint" (click)="showDialog = true" />
+  </div>
+  <app-create-dialog [visible]="showDialog" (visibleChange)="processDialogChange($event)"
+    (dataPointCreated)="createDataPoint($event)"></app-create-dialog>

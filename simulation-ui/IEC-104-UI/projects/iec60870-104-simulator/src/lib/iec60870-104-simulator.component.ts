@@ -1,0 +1,28 @@
+import { Component } from '@angular/core';
+import { ListViewComponent } from './list-view/list-view.component';
+import { FormsModule } from '@angular/forms';
+import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
+import { HeaderComponent } from './header/header.component';
+import { DataPointVis } from './data/datapoints.interface';
+
+@Component({
+  selector: 'lib-iec60870-104-simulator',
+  standalone: true,
+  imports: [
+    ListViewComponent,
+    DatapointDetailsComponent,
+    FormsModule,
+    HeaderComponent
+  ],
+  templateUrl: './iec60870-104-simulator.component.html',
+  styles: ``,
+})
+export class Iec60870104SimulatorComponent {
+  selectedItem: DataPointVis | null = null;
+  title = 'IEC-104-UI';
+
+  onItemSelected(item: DataPointVis) {
+    this.selectedItem = item
+  }
+}
+

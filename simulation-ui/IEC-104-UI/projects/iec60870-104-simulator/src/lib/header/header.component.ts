@@ -1,0 +1,117 @@
+import {
+  AfterViewInit,
+  Component, inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID
+} from '@angular/core';
+import {Menubar, MenubarModule} from "primeng/menubar";
+import {PrimeTemplate} from "primeng/api";
+import {ToggleButton, ToggleButtonModule} from "primeng/togglebutton";
+import {FormsModule} from '@angular/forms';
+import {NgStyle} from '@angular/common';
+import {interval, of, startWith, Subject, tap} from 'rxjs';
+import { DataPointsService } from '../data/datapoints.service';
+import { SimulationState } from '../api/v1';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [
+    MenubarModule,
+    PrimeTemplate,
+    ToggleButtonModule,
+    FormsModule,
+    NgStyle
+  ],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss'
+})
+export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
+  isSimulating: boolean = false;
+  isHealthy: boolean = false;
+  isConnected: boolean = false;
+
+  INTERVAL: number = 5000;
+  closeTimer$ = new Subject<any>();
+  private dataService= inject( DataPointsService);
+
+  constructor(
+  ) {
+
+  }
+
+
+  ngOnInit(): void {
+    this.fetchCurrentSimulationEngineState();
+    this.fetchCurrentHealthState();
+
+  }
+
+  fetchCurrentSimulationEngineState() {
+    let simulationState: SimulationState | null = null;
+    this.dataService.fetchSimulationEngineState()
+      .subscribe({
+        next: (data) => {
+          simulationState = data;
+          this.isSimulating = simulationState != null && simulationState === SimulationState.Running;
+        },
+        error: (err) => {
+          console.error('Error fetching Simulation Engine State', err);
+        }
+      });
+  }
+
+  fetchCurrentHealthState() {
+    this.dataService.fetchHealthState()
+      .subscribe({
+        next: (data) => {
+          this.isHealthy = data === "Healthy";
+          this.closeTimer$.next("");
+        },
+        error: (err) => {
+          this.isHealthy = false;
+          console.error('Error fetching Health State', err);
+        }
+      });
+    return of(true);
+  }
+
+  fetchCurrentConnectedState() {
+    this.dataService.fetchConnectionState()
+      .subscribe({
+        next: (data) => {
+          this.isConnected = data === "Healthy";
+          this.closeTimer$.next("");
+        },
+        error: (err) => {
+          this.isConnected = false;
+          console.error('Error fetching Connection State', err);
+        }
+      });
+    return of(true);
+  }
+
+
+  updateSimulationState(state: boolean) {
+    const wantedSimulationState: SimulationState = state ? SimulationState.Running : SimulationState.Stopped;
+    this.dataService.updateSimulationEngineState(wantedSimulationState);
+
+  }
+
+  ngOnDestroy(): void {
+    this.closeTimer$.next("stop");
+  }
+
+  ngAfterViewInit(): void {
+    interval(this.INTERVAL)
+      .pipe(
+        startWith(0),
+        tap(() => {
+          this.fetchCurrentHealthState();
+          this.fetchCurrentConnectedState()
+        })
+      )
+      .subscribe();
+  }
+}
