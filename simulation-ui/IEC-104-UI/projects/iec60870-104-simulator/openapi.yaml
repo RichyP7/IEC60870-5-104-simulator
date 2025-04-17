@@ -182,6 +182,37 @@ paths:
       responses:
         '200':
           description: Success
+    get:
+      tags:
+        - DataPointValues
+      parameters:
+        - name: idStationary
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+        - name: idObject
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Iec104DataPointDto'
   /api/SimulationEngineState:
     get:
       tags:
