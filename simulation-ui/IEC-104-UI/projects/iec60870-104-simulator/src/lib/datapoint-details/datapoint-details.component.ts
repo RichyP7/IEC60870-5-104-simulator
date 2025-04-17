@@ -6,11 +6,12 @@ import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
-import { DataPoint } from '../data/datapoints.interface';
+import { DataPointVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
-import { Iec104DataPointDto, Iec104DataTypes, IecDoublePointValueEnumDto, SimulationMode } from '../api/v1';
+import { Iec104DataPointDto, Iec104DataTypes, IecValueDto, IntValueDto, SimulationMode, SinglePointValueDto } from '../api/v1';
 import { catchError, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { IecValueInputComponent } from '../shared/iec-value-input/iec-value-input.component';
 
 @Component({
   selector: 'app-datapoint-details',
@@ -22,14 +23,15 @@ import { MessageService } from 'primeng/api';
     TableModule,
     DropdownModule,
     FormsModule,
-    ToastModule
+    ToastModule,
+    IecValueInputComponent
   ],
   templateUrl: './datapoint-details.component.html',
   styleUrl: './datapoint-details.component.scss'
 })
 export class DatapointDetailsComponent implements OnChanges{
   @Input()
-  item: DataPoint | null = null;
+  item: DataPointVis | null = null;
   private dpservice = inject(DataPointsService);
   private messageService = inject(MessageService)
   isEditing = false;
@@ -40,31 +42,31 @@ export class DatapointDetailsComponent implements OnChanges{
     { label: 'None', value: SimulationMode.None, icon: 'pi pi-play-circle' }
   ];
 
-  toggleDoublePointValue(doublePoint: DataPoint) {
-  }
 
-  toggleSimulationMode(point: DataPoint) {
-    this.dpservice.toggleSimulationMode(this.GetDto(point));
-  }
-
-  private GetDto(point: DataPoint): Iec104DataPointDto {
-    //const IecValueDto 
+  private GetDto(point: DataPointVis): Iec104DataPointDto {
+    const dtoint : IntValueDto = {value: point.value.numericValue || undefined};
+    const dtosp :  SinglePointValueDto= {value: point.value.binaryValue || undefined};
+    const test :IecValueDto ={ numericValue : dtoint, singlePointValue : dtosp }
     return {
       objectAddress: point.objectAddress,
       stationaryAddress: point.stationaryAddress,
       iec104DataType: point.iec104DataType as Iec104DataTypes,
       mode :point.mode,
-      //value
+      value :test,
       id: point.id
     };
   }
 
   private syncWithUpdatedData(): void {
     if (this.item) {
+      this.dpservice.fetchData
       // this.dataService.data$.subscribe((data) => {
       //   this.item = data.find((dp) => dp.id === this.item?.id) || null;
      // });
     }
+  }
+  toggleSimulationMode(point: DataPointVis) {
+    this.dpservice.toggleSimulationMode(this.GetDto(point));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -73,15 +75,11 @@ export class DatapointDetailsComponent implements OnChanges{
     }
   }
 
-  dataPointCanBeToggled(item: DataPoint) : boolean {
-    return (item.iec104DataType === 'M_DP_NA_1' || item.iec104DataType === 'M_SP_NA_1')
-  }
-
-  editItem(item: DataPoint) {
+  editItem(item: DataPointVis) {
     this.isEditing = true;
   }
 
-  updateValue(item: DataPoint) {
+  updateValue(item: DataPointVis) {
     this.isEditing = false;
     this.dpservice.updateDataPointValue(this.GetDto(item))
     .pipe(

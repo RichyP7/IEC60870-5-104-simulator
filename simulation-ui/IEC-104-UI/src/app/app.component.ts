@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
-import { DataPointsService, Iec60870104SimulatorComponent } from 'iec60870-104-simulator';
+import { Iec60870104SimulatorComponent } from 'iec60870-104-simulator';
 @Component({
   selector: 'app-root',
   standalone: true,

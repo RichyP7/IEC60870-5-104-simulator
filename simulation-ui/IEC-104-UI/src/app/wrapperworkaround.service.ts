@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { DataPoint, DataPointsService } from 'iec60870-104-simulator';
+import { DataPointsService } from 'iec60870-104-simulator';
 import { Observable } from 'rxjs';
 import { DataPointConfigsService } from '../../projects/iec60870-104-simulator/src/lib/api/v1/api/dataPointConfigs.service';
 import { DataPointValuesService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../../projects/iec60870-104-simulator/src/lib/api/v1';

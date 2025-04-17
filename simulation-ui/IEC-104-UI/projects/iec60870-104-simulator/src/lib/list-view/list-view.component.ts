@@ -3,11 +3,11 @@ import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 import { NgClass, NgForOf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { CreateDialogComponent } from './create-dialog/create-dialog.component';
-import { Toast, ToastModule } from 'primeng/toast';
+import { ToastModule } from 'primeng/toast';
 import { catchError, of } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
-import {  ApiModule, DataPointConfigsService, Iec104DataPointDto, Iec104DataTypes, IecValueDto, IntValueDto, SimulationMode } from '../api/v1';
-import { DataPoint, DataPointVis } from '../data/datapoints.interface';
+import { ApiModule, Iec104DataPointDto, Iec104DataTypes, IecValueDto, IntValueDto, SimulationMode } from '../api/v1';
+import { DataPointValueVis, DataPointVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
 import { MessageService } from 'primeng/api';
 
@@ -66,9 +66,9 @@ export class ListViewComponent implements OnInit {
       id:item.id, 
       stationaryAddress : item.stationaryAddress ,
       objectAddress : item.objectAddress,
-      iec104DataType : item.iec104DataType.toString(),
-      value : item.value ? item.value : "0",
-      mode : item.mode ? item.mode as SimulationMode : SimulationMode.None
+      iec104DataType : item.iec104DataType,
+      value : item.value,
+      mode : item.mode
      }
     this.itemSelected.emit(this.selectedItem)
   }
@@ -115,9 +115,13 @@ export class ListViewComponent implements OnInit {
 
 function mapDtoToInternal(itemDto: Iec104DataPointDto): DataPointVis {
   let item = itemDto.value?.numericValue?.value?.toString();
-  return new DataPointVis(itemDto.id ? itemDto.id:"unknown",itemDto.stationaryAddress,
-    itemDto.objectAddress,itemDto.iec104DataType,
-    item ? item: "empty", SimulationMode.Cyclic);
+  return new DataPointVis(itemDto.id ? itemDto.id:"unknown",
+    itemDto.stationaryAddress,
+    itemDto.objectAddress,
+    itemDto.iec104DataType, 
+    new DataPointValueVis(itemDto.value?.numericValue? itemDto.value.numericValue.value: 0,
+      itemDto.value?.singlePointValue?.value ),
+    SimulationMode.Cyclic);
 }
 export interface GroupedData {
   stationaryAddress: number;

@@ -1,0 +1,9 @@
+<div>
+    <p>Values for {{inputType}}</p>
+    <div *ngIf="inputType === 'INTEGER'">
+        <input [(ngModel)]="valueitem.numericValue" class="p-inputtext p-component w-20">
+    </div>
+    <div *ngIf="inputType ==='BOOL'">
+        <p-toggleswitch [(ngModel)]="valueitem.binaryValue" />
+    </div>
+</div>

@@ -11,21 +11,19 @@ export interface DataPointInterface {
   fetchConnectionState(): Observable<String>;
   updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto>
 }
-export interface DataPoint {
-  id: string;
-  stationaryAddress: number;
-  objectAddress: number;
-  iec104DataType: string;
-  value: string;
-  mode: SimulationMode;
-}
 export class DataPointVis {
   constructor(
     public id: string,
     public stationaryAddress: number,
     public objectAddress: number,
     public iec104DataType: string,
-    public value: string,
+    public value: DataPointValueVis,
     public mode: SimulationMode,
+  ) { }
+}
+export class DataPointValueVis {
+  constructor(
+    public numericValue?: number | null,
+    public binaryValue?: boolean | null
   ) { }
 }

@@ -3,7 +3,7 @@ import { ListViewComponent } from './list-view/list-view.component';
 import { FormsModule } from '@angular/forms';
 import { DatapointDetailsComponent } from './datapoint-details/datapoint-details.component';
 import { HeaderComponent } from './header/header.component';
-import { DataPoint } from './data/datapoints.interface';
+import { DataPointVis } from './data/datapoints.interface';
 
 @Component({
   selector: 'lib-iec60870-104-simulator',
@@ -18,10 +18,10 @@ import { DataPoint } from './data/datapoints.interface';
   styles: ``,
 })
 export class Iec60870104SimulatorComponent {
-  selectedItem: DataPoint | null = null;
+  selectedItem: DataPointVis | null = null;
   title = 'IEC-104-UI';
 
-  onItemSelected(item: DataPoint) {
+  onItemSelected(item: DataPointVis) {
     this.selectedItem = item
   }
 }

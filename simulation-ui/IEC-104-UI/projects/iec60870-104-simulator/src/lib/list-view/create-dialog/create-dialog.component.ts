@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import {NgClass} from '@angular/common';
-import { DataPoint } from '../../data/datapoints.interface';
+import { DataPointVis } from '../../data/datapoints.interface';
 import { Iec104DataTypes, SimulationMode } from '../../api/v1';
 
 @Component({
@@ -27,7 +27,7 @@ import { Iec104DataTypes, SimulationMode } from '../../api/v1';
 export class CreateDialogComponent implements OnInit {
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() dataPointCreated = new EventEmitter<DataPoint>();
+  @Output() dataPointCreated = new EventEmitter<DataPointVis>();
 
   profileForm: FormGroup ;
 
@@ -61,13 +61,13 @@ export class CreateDialogComponent implements OnInit {
     if (this.profileForm.valid) {
       const profileData = this.profileForm.value;
 
-      let dataPoint: DataPoint = {
+      let dataPoint: DataPointVis = {
         id : profileData.id,
         mode: profileData.mode,
         value: profileData.value,
         stationaryAddress: profileData.stationaryAddress,
         objectAddress: profileData.objectAddress,
-        iec104DataType: profileData.iec104DataType
+        iec104DataType: profileData.iec104DataType,
       }
       console.log(dataPoint);
       this.dataPointCreated.emit(dataPoint);

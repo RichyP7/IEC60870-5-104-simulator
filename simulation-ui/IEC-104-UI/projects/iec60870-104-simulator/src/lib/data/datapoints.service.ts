@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DataPoint, DataPointInterface } from './datapoints.interface';
+import { DataPointInterface } from './datapoints.interface';
 import { DataPointConfigsService, DataPointValuesService, Iec104DataPoint, Iec104DataPointDto, SimulationEngineStateService, SimulationState } from '../api/v1';
 import { HttpClient } from '@angular/common/http';
 
@@ -20,6 +20,7 @@ export class DataPointsService implements DataPointInterface {
   fetchData(): Observable<Iec104DataPointDto[]> {
     return this.dpService.apiDataPointConfigsGet();
   }
+
 
   toggleSimulationMode(dataPoint: Iec104DataPointDto) {
     let simulationMode = dataPoint.mode
@@ -55,7 +56,6 @@ export class DataPointsService implements DataPointInterface {
 
 
   updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
-    console.log("here"+ dataPoint.value)
     return this.dpValueService.apiDataPointValuesIdStationaryIdObjectPost(dataPoint.stationaryAddress,dataPoint.objectAddress,dataPoint)
   }
 }
