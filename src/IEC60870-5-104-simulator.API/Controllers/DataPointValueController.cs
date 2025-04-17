@@ -34,4 +34,21 @@ public class DataPointValuesController : ControllerBase
         }
         return Ok();
     }
+    [HttpGet("{idStationary}/{idObject}")]
+    public async Task<ActionResult<Iec104DataPointDto>> Get([FromRoute] int idStationary, [FromRoute] int idObject)
+    {
+        try
+        {
+            var result = await dpService.GetCurrentValue(new IecAddress(idStationary, idObject));
+            return new OkObjectResult(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex) when (ex is AutoMapperMappingException || ex is InvalidCastException)
+        {
+            return BadRequest("Supplied value to send is invalid");
+        }
+    }
 }

@@ -28,7 +28,7 @@ public sealed class BaseTest: BaseWebApplication
 		Assert.True(response.IsSuccessStatusCode);
     }
 
-        [Fact]
+    [Fact]
     public async Task Test_Simulator_Starts_Correctly()
     {
 	    _factory.CreateClient();
