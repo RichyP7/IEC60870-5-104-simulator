@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DataPointValueVis } from '../../data/datapoints.interface';
 import { CommonModule } from '@angular/common';
@@ -14,23 +14,23 @@ import { Iec104DataTypes } from '../../api/v1';
 export class IecValueInputComponent implements OnInit {
   @Input() valueitem: DataPointValueVis = new DataPointValueVis();
   @Input() inputIecType: string =""// = Iec104DataTypes.AsduTypeundef;
-  inputForm: FormGroup;
   inputType: InputType = InputType.BOOL;
 
-  constructor(private fb: FormBuilder) {
-    this.inputForm = this.fb.group({
-    });
+  constructor() {
   }
 
 ngOnInit(): void {
+  this.inputType = this.getInputType(this.inputIecType)
+  console.log(this.inputType.toString());
+}
+ngOnChanges(changes: SimpleChanges) {
+  this.inputType = this.getInputType(this.inputIecType)
 }
 
 onSubmit() {
-  if (this.inputForm.valid) {
-    console.log('Input Value:', this.inputForm.value.inputValue);
-  } else {
-    console.error('Invalid input');
-  }
+
+    console.log('Input Value:');
+
 }
 getInputType(typestring: string): InputType {
   const type = typestring as Iec104DataTypes;
@@ -42,7 +42,6 @@ getInputType(typestring: string): InputType {
     case 'M_DP_NA_1':
     case 'M_DP_TA_1':
     case 'M_DP_TB_1':
-
       return InputType.DOUBLEPOINT;
     case 'M_ST_NA_1':
     case 'M_ST_TA_1':

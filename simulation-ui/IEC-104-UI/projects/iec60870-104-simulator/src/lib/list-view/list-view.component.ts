@@ -60,7 +60,6 @@ export class ListViewComponent implements OnInit {
     console.log(item);
     if(!item.id || !item.mode)
       return;
-    let localDataPoint = 
     //this.router.navigate([`/datapoint/${item.stationaryAddress}/${item.objectAddress}`]);
     this.selectedItem = {
       id:item.id, 

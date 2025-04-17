@@ -1,9 +1,31 @@
 <div>
-    <p>Values for {{inputType}}</p>
+    <div *ngIf="inputType === 'INTEGER'">
+        <div >Value: {{valueitem.numericValue}}</div>
+    </div>
+    <div *ngIf="inputType ==='BOOL'">
+        <div >Value:{{valueitem.binaryValue}}</div>
+    </div>
+    <div *ngIf="inputType === 'DOUBLEPOINT'">
+        <div >Value:{{valueitem.doublepointValue}}</div>
+    </div>
+    <div *ngIf="inputType === 'FLOAT'">
+        <div >Value: {{valueitem.floatValue}}</div>
+    </div>
+    
+</div>
+
+<div>
     <div *ngIf="inputType === 'INTEGER'">
         <input [(ngModel)]="valueitem.numericValue" class="p-inputtext p-component w-20">
     </div>
     <div *ngIf="inputType ==='BOOL'">
         <p-toggleswitch [(ngModel)]="valueitem.binaryValue" />
     </div>
+    <div *ngIf="inputType ==='DOUBLEPOINT'">
+        <input [(ngModel)]="valueitem.doublepointValue" />
+    </div>
+    <div *ngIf="inputType ==='FLOAT'">
+        <input [(ngModel)]="valueitem.floatValue" />
+    </div>
+    
 </div>

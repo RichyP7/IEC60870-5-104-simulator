@@ -6,9 +6,9 @@ import {TableModule} from 'primeng/table';
 import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule} from '@angular/forms';
 import {Toast, ToastModule} from 'primeng/toast';
-import { DataPointVis } from '../data/datapoints.interface';
+import { DataPointValueVis, DataPointVis, DoublePointValueVis } from '../data/datapoints.interface';
 import { DataPointsService } from '../data/datapoints.service';
-import { Iec104DataPointDto, Iec104DataTypes, IecValueDto, IntValueDto, SimulationMode, SinglePointValueDto } from '../api/v1';
+import { Iec104DataPointDto, Iec104DataTypes, IecDoublePointValueEnumDto, IecValueDto, IntValueDto, SimulationMode, SinglePointValueDto } from '../api/v1';
 import { catchError, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { IecValueInputComponent } from '../shared/iec-value-input/iec-value-input.component';
@@ -58,11 +58,15 @@ export class DatapointDetailsComponent implements OnChanges{
   }
 
   private syncWithUpdatedData(): void {
+    console.log("syncWithUpdatedData");
     if (this.item) {
-      this.dpservice.fetchData
-      // this.dataService.data$.subscribe((data) => {
-      //   this.item = data.find((dp) => dp.id === this.item?.id) || null;
-     // });
+      let update :Iec104DataPointDto ={
+        stationaryAddress :this.item.stationaryAddress,objectAddress: this.item.objectAddress,
+        iec104DataType: this.item.iec104DataType as Iec104DataTypes
+      };
+      this.dpservice.fetchSingleIoPointValue(update).subscribe((data) => {
+          this.item = mapDtoToInternal(data);
+        });
     }
   }
   toggleSimulationMode(point: DataPointVis) {
@@ -95,4 +99,15 @@ export class DatapointDetailsComponent implements OnChanges{
     )
     .subscribe();
   }
+}
+function mapDtoToInternal(itemDto: Iec104DataPointDto): DataPointVis {
+  return new DataPointVis(itemDto.id ? itemDto.id:"unknown",
+    itemDto.stationaryAddress,
+    itemDto.objectAddress,
+    itemDto.iec104DataType.toString(), 
+    new DataPointValueVis(itemDto.value?.numericValue? itemDto.value.numericValue.value: -1,
+      itemDto.value?.singlePointValue?.value ,
+      itemDto.value?.doublePointValue?.value ? (itemDto.value.doublePointValue.value as DoublePointValueVis): DoublePointValueVis.INDETERMINATE,
+      itemDto.value?.floatValue?.value ? itemDto.value.floatValue.value:-1),
+    SimulationMode.Cyclic);
 }

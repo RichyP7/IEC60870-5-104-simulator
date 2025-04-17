@@ -18,6 +18,11 @@ private dpService1 = inject(DataPointConfigsService);
     console.log("New DataPointServiceInject"+ this.dpService1.configuration.basePath);
     return this.dpService1.apiDataPointConfigsGet();
   }
+  override fetchSingleIoPointValue(dataPoint: Iec104DataPointDto) : Observable<Iec104DataPointDto> {
+    console.log("New DataPointServiceInject"+ this.dpService1.configuration.basePath);
+    return this.dpValueServicewrapper.apiDataPointValuesIdStationaryIdObjectGet(dataPoint.stationaryAddress,dataPoint.objectAddress);
+  }
+
 
   override toggleSimulationMode(dataPoint: Iec104DataPointDto) {
     let simulationMode = dataPoint.mode

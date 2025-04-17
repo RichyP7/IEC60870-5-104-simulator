@@ -52,7 +52,7 @@
       </div>
 
       <div class="grid-item label">Value:
-        <lib-iec-value-input *ngIf="this.isEditing" [valueitem]="item.value" [inputIecType]="item.iec104DataType"></lib-iec-value-input>
+        <lib-iec-value-input [valueitem]="item.value" [inputIecType]="item.iec104DataType"></lib-iec-value-input>
         <p-button
         *ngIf="this.isEditing"
         label="Update"

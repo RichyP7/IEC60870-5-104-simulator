@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Iec104DataPoint, Iec104DataPointDto, SimulationMode, SimulationState } from "../api/v1";
+import { DoublePointValueDto, Iec104DataPoint, Iec104DataPointDto, IecDoublePointValueEnumDto, SimulationMode, SimulationState } from "../api/v1";
 
 export interface DataPointInterface {
   fetchData(): Observable<Iec104DataPointDto[]>;
@@ -9,7 +9,8 @@ export interface DataPointInterface {
   fetchSimulationEngineState(): Observable<SimulationState>;
   fetchHealthState(): Observable<String>;
   fetchConnectionState(): Observable<String>;
-  updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto>
+  fetchSingleIoPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto>;
+  updateDataPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto>;
 }
 export class DataPointVis {
   constructor(
@@ -24,6 +25,14 @@ export class DataPointVis {
 export class DataPointValueVis {
   constructor(
     public numericValue?: number | null,
-    public binaryValue?: boolean | null
+    public binaryValue?: boolean | null,
+    public doublepointValue?: DoublePointValueVis | null,
+    public floatValue?: number | null
   ) { }
 }
+export enum DoublePointValueVis {
+  INTERMEDIATE = 'INTERMEDIATE',
+  FALSE = 'false',
+  TRUE = 'true',
+  INDETERMINATE = 'INDETERMINATE'
+} 

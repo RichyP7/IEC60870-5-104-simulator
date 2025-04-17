@@ -20,7 +20,9 @@ export class DataPointsService implements DataPointInterface {
   fetchData(): Observable<Iec104DataPointDto[]> {
     return this.dpService.apiDataPointConfigsGet();
   }
-
+  fetchSingleIoPointValue(dataPoint: Iec104DataPointDto): Observable<Iec104DataPointDto> {
+    return this.dpValueService.apiDataPointValuesIdStationaryIdObjectGet(dataPoint.stationaryAddress,dataPoint.objectAddress);
+  }
 
   toggleSimulationMode(dataPoint: Iec104DataPointDto) {
     let simulationMode = dataPoint.mode
