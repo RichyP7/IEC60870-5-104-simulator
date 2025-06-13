@@ -137,7 +137,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     case Iec104DataTypes.M_ME_NB_1:
                     case Iec104DataTypes.M_ME_TB_1:
                     case Iec104DataTypes.M_ME_TE_1:
-                        newdatapoint.Value = new IecValueScaledObject(new ScaledValueRecord(0));
+                        newdatapoint.Value = SetScaledePoint(newdatapoint.InitString);
                         break;
                     case Iec104DataTypes.M_ME_NC_1:
                     case Iec104DataTypes.M_ME_TC_1:
@@ -167,6 +167,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return !String.IsNullOrEmpty(initstring) && (Enum.TryParse(initstring, out IecDoublePointValue doubleValue))
                 ? new IecDoublePointValueObject(doubleValue)
                 : new IecDoublePointValueObject(IecDoublePointValue.OFF);
+        }
+        private static IecValueScaledObject SetScaledePoint(string initstring)
+        {
+            return !String.IsNullOrEmpty(initstring) && Int32.TryParse(initstring, out int intValue) ?
+                new IecValueScaledObject(new ScaledValueRecord(intValue)) :
+                new IecValueScaledObject(new ScaledValueRecord(0));
         }
 
         public IEnumerable<Iec104DataPoint> GetAllDataPoints()

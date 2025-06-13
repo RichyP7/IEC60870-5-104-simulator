@@ -70,7 +70,7 @@ namespace IEC60870_5_104_simulator.Domain.ValueTypes
 
         public override object GetValue()
         {
-            return Value;
+            return Value?.Value ??-1;
         }
         
         public override string ToString()
@@ -101,6 +101,11 @@ namespace IEC60870_5_104_simulator.Domain.ValueTypes
         public ScaledValueRecord(int value)
         {
             Value = value;
+        }
+        public ScaledValueRecord(int value,short shortValue)
+        {
+            Value = value;
+            ShortValue = shortValue;
         }
 
         public int Value { get; set; }

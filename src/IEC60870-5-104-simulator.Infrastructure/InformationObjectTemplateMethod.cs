@@ -56,7 +56,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         }
 
-        public InformationObject GetMeasuredValueScaled(int objectAddress, IecIntValueObject value, Iec104DataTypes type)
+        public InformationObject GetMeasuredValueScaled(int objectAddress, IecValueScaledObject value, Iec104DataTypes type)
         {
             return type switch
             {

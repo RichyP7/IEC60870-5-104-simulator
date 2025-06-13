@@ -42,7 +42,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 case Iec104DataTypes.M_ME_TB_1:
                 case Iec104DataTypes.M_ME_TE_1:
                     int scaled = CreateMeasuredValueScaled(sentCommand, responseDataPoint.Address);
-                    return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress, new IecIntValueObject(scaled), responseDataPoint.Iec104DataType);
+                    return template.GetMeasuredValueScaled(responseDataPoint.Address.ObjectAddress, new IecValueScaledObject(new ScaledValueRecord(scaled)), responseDataPoint.Iec104DataType);
                 case Iec104DataTypes.M_ME_NC_1:
                 case Iec104DataTypes.M_ME_TC_1:
                 case Iec104DataTypes.M_ME_TF_1:
