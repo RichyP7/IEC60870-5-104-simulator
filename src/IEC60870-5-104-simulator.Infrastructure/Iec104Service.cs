@@ -36,7 +36,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             this.repository = repository;
         }
 
-        public async Task Start()
+        public Task Start()
         {
             SendInitialize();
             server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
@@ -45,11 +45,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
             server.SetConnectionRequestHandler(requesthandler, null);
             this.server.Start();
             this._started = true;
+            return Task.CompletedTask;
         }
 
         private bool requesthandler(object parameter, IPAddress ipAddress)
         {
-            logger.LogInformation("Request event");
+            logger.LogInformation("Request event {ipaddress}",ipAddress.ToString());
             return true;
         }
 
