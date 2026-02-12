@@ -45,7 +45,7 @@ If you are using docker set DOCKER_BUILDKIT=1 for skipping unused build targets 
 
 ```
 docker pull ghcr.io/richyp7/iec60870-5-104-simulator:main
-docker run ghcr.io/richyp7/iec60870-5-104-simulator:main
+docker run -p 2404:2404 ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 Currently it is just acknowledging commands. See [Roadmap](##Roadmap)
 
