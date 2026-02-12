@@ -1,0 +1,65 @@
+<p-toast></p-toast>
+<div class="details-card" *ngIf="item != null">
+  <p-card header="Datapoint Details">
+    <p-button
+    *ngIf="isEditing"
+    icon="pi pi-times"
+    class="p-button-text p-button-sm p-button-danger"
+    (onClick)="this.isEditing = false"
+  ></p-button>
+  <p-button
+    *ngIf="!isEditing"
+    icon="pi pi-pen-to-square"
+    class="p-button-text p-button-sm"
+    (onClick)="editItem(item)"
+  ></p-button>
+    <div class="grid details-grid">
+    
+      <div class="grid-item label">ID:</div>
+      <div class="grid-item value">{{ item.id }}</div>
+
+      <div class="grid-item label">Stationary Address:</div>
+      <div class="grid-item value">{{ item.stationaryAddress }}</div>
+
+      <div class="grid-item label">Object Address:</div>
+      <div class="grid-item value">{{ item.objectAddress }}</div>
+
+      <div class="grid-item label">IEC104 Data Type:</div>
+      <div class="grid-item value">
+        {{ item.iec104DataType }}
+        <a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tf6500_tc3_iec60870_5_10x/984447883.html&id=" target="_blank" class="text-primary-emphasis text-xl">
+          <i class="pi pi-info-circle"></i>
+        </a>
+      </div>
+
+      <div class="grid-item label">Simulation Mode:</div>
+      <div class="grid-item value flex align-items-center">
+        <p-dropdown [options]="simulationModes" [(ngModel)]="item.mode" optionLabel="label" optionValue="value"
+          (onChange)="toggleSimulationMode(item)">
+          <ng-template let-option pTemplate="selectedItem">
+            <div class="dropdown-item">
+              <span>{{ option.label }}</span>
+              <i *ngIf="option.icon" [class]="option.icon"></i>
+            </div>
+          </ng-template>
+          <ng-template let-option pTemplate="item">
+            <div class="dropdown-item flex align-items-center">
+              <span>{{ option.label }}</span>
+              <i *ngIf="option.icon" [class]="option.icon"></i>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <div class="grid-item label">Value:
+        <lib-iec-value-input [valueitem]="item.value" [inputIecType]="item.iec104DataType"></lib-iec-value-input>
+        <p-button
+        *ngIf="this.isEditing"
+        label="Update"
+        class="p-button-sm"
+        (onClick)="updateValue(item)" />
+      </div>
+
+    </div>
+  </p-card>
+</div>

@@ -1,5 +1,10 @@
 export const environment = {
-  production: true,
+  production: false,
+  development: true,
+
+  API_BASE_PATH: "http://localhost:8080",
+  BASE_PATH: "http://localhost:8090",
+  environmentName:"DEV",
   API_ENDPOINT:
     typeof window !== "undefined" && (window as { [key: string]: any })["env"]?.API_ENDPOINT
       ? (window as { [key: string]: any })["env"].API_ENDPOINT

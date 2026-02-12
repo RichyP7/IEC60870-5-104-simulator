@@ -1,33 +1,25 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, EnvironmentProviders, importProvidersFrom, makeEnvironmentProviders, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { providePrimeNG } from 'primeng/config';
-import Lara from '@primeng/themes/lara';
 import {provideAnimations} from '@angular/platform-browser/animations';
-import {provideHttpClient, withFetch} from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withFetch} from '@angular/common/http';
 import {MessageService} from 'primeng/api';
+import { routes } from './app.routes';
+import { DataPointsService } from 'iec60870-104-simulator';
+import { WrapperWorkAroundService } from './wrapperworkaround.service';
+import { environment } from '../environments/environment';
+import { BASE_PATH} from '../../projects/iec60870-104-simulator/src/lib/api/v1';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(),
     provideAnimations(),
-    provideHttpClient(withFetch()),
-    providePrimeNG({
-      theme: {
-        preset: Lara,
-        options: {
-          darkModeSelector: 'system',
-          cssLayer: {
-            name: 'primeng',
-            order: 'tailwind-base, primeng, tailwind-utilities'
-          }
-        }
-      }
-    })
-  ]
+    provideHttpClient(withFetch()), 
+    { provide: BASE_PATH, useFactory:apiConfigFactory },
+    { provide: DataPointsService, useClass:WrapperWorkAroundService }]
 };
+export function apiConfigFactory(): string {
+  return  environment.API_BASE_PATH;
+}
