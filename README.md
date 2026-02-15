@@ -186,7 +186,7 @@ docker compose build
 | Cyclic random Measurements  | Send cyclic random measurement for configured types                                               | ✅ Implemented   |
 | Custom Simulation Profiles  | Iterate through predefined value profiles for measured values                                     | ✅ Implemented   |
 | Configuration UI            | Web UI for configuration of simulator                                                             | ✅ Implemented   |
-| Sim Measurements for Commands | Send Measurement types if a connected command gets sent                                         | ⏳ In Progress   |
+| Sim Measurements for Commands | Send Measurement types if a connected command gets sent                                         | ✅ Implemented   |
 | ASDU Types                  | Support all ASDU types 1, 2, 30, 31                                                               | ⏳ In Progress   |
 | Unit Testing                | Comprehensive unit tests to ensure reliability.                                                   | ⏳ In Progress   |
 | Logging and Debugging       | Detailed logs for troubleshooting and debugging.                                                  | ⏳ In Progress   |

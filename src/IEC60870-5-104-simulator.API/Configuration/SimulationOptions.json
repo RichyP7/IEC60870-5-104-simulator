@@ -28,7 +28,7 @@
           "Id": "SPM2",
           "Ca": "20",
           "Oa": "57",
-          "TypeId": 1,
+          "TypeId": 1
         },
         {
           "Id": "SCALEDM1",
@@ -53,7 +53,7 @@
           "Id": "NORMM2",
           "Ca": "21",
           "Oa": "31",
-          "TypeId": 9,
+          "TypeId": 9
         },
         {
           "Id": "NORMM3",
