@@ -59,7 +59,15 @@
           "Id": "NORMM3",
           "Ca": "21",
           "Oa": "32",
-          "TypeId": 9,
+          "TypeId": 9
+        },
+        {
+          "Id": "PROFILE1",
+          "Ca": "20",
+          "Oa": "40",
+          "TypeId": 13,
+          "Mode": "PredefinedProfile",
+          "ProfileName": "TestProfile"
         }
       ],
       "Commands":[

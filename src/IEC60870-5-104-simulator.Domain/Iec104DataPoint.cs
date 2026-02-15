@@ -10,6 +10,7 @@ namespace IEC60870_5_104_simulator.Domain
         public IecValueObject Value { get; set; }
         public SimulationMode Mode { get; set; }
         public string InitString { get; set; }
+        public string ProfileName { get; set; }
 
 
         public Iec104DataPoint(IecAddress address, Iec104DataTypes iec104DataType)
@@ -27,6 +28,7 @@ namespace IEC60870_5_104_simulator.Domain
         None,
         Cyclic,
         CyclicStatic,
-        Response
+        Response,
+        PredefinedProfile
     }
 }

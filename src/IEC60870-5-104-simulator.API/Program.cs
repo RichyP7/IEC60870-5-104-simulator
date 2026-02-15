@@ -3,9 +3,12 @@ using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.API.Services;
+using IEC60870_5_104_simulator.Domain.Interfaces;
+using IEC60870_5_104_simulator.Infrastructure;
 using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using ServiceExtensionMethods;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,10 +49,17 @@ Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
 builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("Configuration/Profiles.json", optional: true, reloadOnChange: true);
 builder.Services.AddOptions<Iec104SimulationOptions>().Bind(
     builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation))
     .ValidateDataAnnotations().ValidateOnStart();
-
+builder.Services.AddOptions<ProfilesOptions>().Bind(
+    builder.Configuration);
+builder.Services.AddSingleton<IProfileProvider>(sp =>
+{
+    var profilesOptions = sp.GetRequiredService<IOptions<ProfilesOptions>>().Value;
+    return new ProfileProvider(profilesOptions.Profiles);
+});
 
 
 var app = builder.Build();
