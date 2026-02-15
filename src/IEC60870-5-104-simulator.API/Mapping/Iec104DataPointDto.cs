@@ -58,5 +58,6 @@ public enum SimulationModeDto
     None,
     Cyclic,
     CyclicStatic,
-    Response
+    Response,
+    PredefinedProfile
 }

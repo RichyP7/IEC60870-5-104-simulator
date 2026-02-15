@@ -25,10 +25,11 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
             storageMock = new();
             mockValueFactory = new();
             testServer = new lib60870.CS104.Server();
+            var mockProfileProvider = new Mock<IProfileProvider>();
             service = new Iec104Service(
-                testServer, 
+                testServer,
                 mockFactory.Object,
-                mockCommandFactory.Object,NullLogger<Iec104Service>.Instance,new  Iec104ConfigurationService(storageMock.Object),storageMock.Object ); ;
+                mockCommandFactory.Object,NullLogger<Iec104Service>.Instance,new  Iec104ConfigurationService(storageMock.Object),storageMock.Object, mockProfileProvider.Object);
         }
 
     }

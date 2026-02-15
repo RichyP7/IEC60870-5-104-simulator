@@ -4,6 +4,7 @@ using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
+using static IEC60870_5_104_simulator.API.Iec104SimulationOptions;
 using Microsoft.Extensions.Options;
 
 namespace IEC60870_5_104_simulator.Service
@@ -15,6 +16,7 @@ namespace IEC60870_5_104_simulator.Service
         private readonly IIec104ConfigurationService datapointConfigService;
         private readonly IMapper mapper;
         private readonly ServerStartedHealthCheck healthCheck;
+        private readonly IProfileProvider profileProvider;
         private bool dataConfigurationDone = false;
         public SimulationState SimulationStatus { get; set; } = SimulationState.Stopped;
 
@@ -22,7 +24,7 @@ namespace IEC60870_5_104_simulator.Service
         private readonly int cycleTimeMs;
 
         public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options, IIec104ConfigurationService datapointconfig, IMapper mapper,
-            ServerStartedHealthCheck healthCheck)
+            ServerStartedHealthCheck healthCheck, IProfileProvider profileProvider)
         {
             this.logger = logger;
             this.iecService = iecservice;
@@ -31,6 +33,7 @@ namespace IEC60870_5_104_simulator.Service
             this.datapointConfigService = datapointconfig;
             this.mapper = mapper;
             this.healthCheck = healthCheck;
+            this.profileProvider = profileProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -90,12 +93,25 @@ namespace IEC60870_5_104_simulator.Service
             var resultMeasures = this.mapper.Map<List<Iec104DataPoint>>(measures);
             if (commands != null)
                 AssignResponses(commands, commandDataPoints, resultMeasures);
+            ValidateProfiles(resultMeasures);
             this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
 
             logger.LogInformation("{NumberCommands} commands and {NumberMeasures} measurements got configured", commands?.Count, measures?.Count);
             resultMeasures.ForEach(v => logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {Type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType));
             commandDataPoints.ForEach(v => logger.LogInformation("Id: {Id} Ca {Ca} Oa {Oa} Type:{Type}, Resp: {Response}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType, v.SimulatedDataPoint?.Id));
             dataConfigurationDone = true;
+        }
+
+        private void ValidateProfiles(List<Iec104DataPoint> measures)
+        {
+            foreach (var measure in measures.Where(m => m.Mode == SimulationMode.PredefinedProfile))
+            {
+                if (string.IsNullOrEmpty(measure.ProfileName))
+                    throw new InvalidOperationException($"Datapoint '{measure.Id}' has mode PredefinedProfile but no ProfileName specified");
+
+                if (!profileProvider.ProfileExists(measure.ProfileName))
+                    throw new InvalidOperationException($"Datapoint '{measure.Id}' references profile '{measure.ProfileName}' which does not exist in Profiles.json");
+            }
         }
 
         private static void AssignResponses(List<Iec104SimulationOptions.CommandPointConfig> commands, List<Iec104CommandDataPointConfig> commandDataPoints, List<Iec104DataPoint> resultMeasures)

@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IEC60870_5_104_simulator.API
 {
+    public class ProfilesOptions
+    {
+        public const string SectionName = "Profiles";
+        public Dictionary<string, float[]> Profiles { get; set; } = new();
+    }
+
     public class Iec104SimulationOptions
     {
         public const string Iec104Simulation = "Iec104Simulation";
@@ -32,6 +38,7 @@ namespace IEC60870_5_104_simulator.API
             public string Id { get; set; }
             public SimulationModeConfig Mode { get; set; }
             public string InitValue{ get; set; }
+            public string ProfileName { get; set; }
 
         }
         public enum SimulationModeConfig
@@ -39,7 +46,8 @@ namespace IEC60870_5_104_simulator.API
             None,
             Cyclic,
             CyclicStatic,
-            Random
+            Random,
+            PredefinedProfile
         }
         public class CommandPointConfig
         {

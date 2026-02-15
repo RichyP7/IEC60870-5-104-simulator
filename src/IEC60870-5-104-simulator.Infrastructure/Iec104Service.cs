@@ -19,6 +19,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private readonly ILogger<Iec104Service> logger;
         private IIec104ConfigurationService configuration;
         private readonly IIecValueRepository repository;
+        private readonly IProfileProvider profileProvider;
         private bool _connected = false;
         private bool _started = false;
 
@@ -26,7 +27,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public IInformationObjectFactory factory { get; }
 
         public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger,
-            IIec104ConfigurationService configuration, IIecValueRepository repository)
+            IIec104ConfigurationService configuration, IIecValueRepository repository, IProfileProvider profileProvider)
         {
             this.server = server;
             this.factory = factory;
@@ -34,6 +35,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             this.logger = logger;
             this.configuration = configuration;
             this.repository = repository;
+            this.profileProvider = profileProvider;
         }
 
         public Task Start()
@@ -129,13 +131,21 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, existingValue.Value);
                     myASDU.Value.AddInformationObject(ioa);
                 }
+                else if (dataPoint.Mode == SimulationMode.PredefinedProfile)
+                {
+                    float profileValue = profileProvider.GetNextValue(dataPoint.ProfileName, dataPoint.Address);
+                    IecValueObject value = CreateValueObjectFromProfile(dataPoint.Iec104DataType, profileValue);
+                    repository.SetObjectValue(dataPoint.Address, value);
+                    InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, value);
+                    myASDU.Value.AddInformationObject(ioa);
+                }
             }
             Send(asdus.Select(v => v.Value));
         }
 
         private static IEnumerable<Iec104DataPoint> GetAllCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
         {
-            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic)|| v.Mode.Equals(SimulationMode.CyclicStatic) );
+            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic) || v.Mode.Equals(SimulationMode.CyclicStatic) || v.Mode.Equals(SimulationMode.PredefinedProfile));
         }
 
         private IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)
@@ -238,6 +248,24 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private bool IsNonCommandType(ASDU asdu)
         {
             return (int)asdu.TypeId < 45 || (int)asdu.TypeId > 107;
+        }
+
+        private static IecValueObject CreateValueObjectFromProfile(Iec104DataTypes dataType, float profileValue)
+        {
+            return dataType switch
+            {
+                Iec104DataTypes.M_ME_NC_1 or Iec104DataTypes.M_ME_TC_1 or Iec104DataTypes.M_ME_TF_1 or
+                Iec104DataTypes.M_ME_NA_1 or Iec104DataTypes.M_ME_TA_1 or Iec104DataTypes.M_ME_ND_1
+                    => new IecValueFloatObject(profileValue),
+
+                Iec104DataTypes.M_ME_NB_1 or Iec104DataTypes.M_ME_TB_1 or Iec104DataTypes.M_ME_TE_1
+                    => new IecValueScaledObject(new ScaledValueRecord((int)profileValue)),
+
+                Iec104DataTypes.M_ST_NA_1 or Iec104DataTypes.M_ST_TA_1 or Iec104DataTypes.M_ST_TB_1
+                    => new IecIntValueObject((int)profileValue),
+
+                _ => throw new NotSupportedException($"PredefinedProfile mode is not supported for data type {dataType}")
+            };
         }
 
         private ASDU CreateAsdu(int ca, CauseOfTransmission cot)
