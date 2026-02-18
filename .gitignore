@@ -404,3 +404,6 @@ FodyWeavers.xsd
 /.idea/watcherTasks.xml
 /simulation-ui/IEC-104-UI/.gitignore
 /.idea/IEC60870-5-104-simulator.iml
+
+.angular/
+dist/

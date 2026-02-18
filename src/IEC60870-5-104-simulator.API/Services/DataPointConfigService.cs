@@ -33,10 +33,11 @@ public class DataPointConfigService
         return dataPoint;
     }
 
-    public Iec104DataPointDto UpdateSimulationMode(IecAddress address, SimulationMode mode)
+    public Iec104DataPointDto UpdateSimulationMode(IecAddress address, SimulationMode mode, string? profileName = null)
     {
-        _iecValueRepository.GetDataPointValue(address);
+        var dataPoint = _iecValueRepository.GetDataPointValue(address);
         _iecValueRepository.SetSimulationMode(address, mode);
+        dataPoint.ProfileName = profileName;
         return mapper.Map<Iec104DataPointDto>(_iecValueRepository.GetDataPointValue(address));
     }
 

@@ -1,4 +1,4 @@
-﻿import {Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {DataPoint} from '../list-view.component';
@@ -24,12 +24,11 @@ export class DataService {
   }
 
   toggleSimulationMode(dataPoint: DataPoint) {
-    let simulationMode = dataPoint.mode
-    this.http.put<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, JSON.stringify(simulationMode)
-      ,
-      {
-        headers: { 'Content-Type': 'application/json' },
-      })
+    const update = {
+      mode: dataPoint.mode,
+      profileName: dataPoint.profileName ?? null
+    };
+    this.http.put<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}/simulation-mode`, update)
       .subscribe((data) => {
         const currentData = this.dataSubject.getValue();
         const updatedDataList = currentData.map((dp) =>
@@ -37,6 +36,10 @@ export class DataService {
         );
         this.dataSubject.next(updatedDataList);
     });
+  }
+
+  fetchProfiles(): Observable<string[]> {
+    return this.http.get<string[]>(`${environment.API_ENDPOINT}Profiles`);
   }
 
   updateSimulationEngineState(simulationState: SimulationState) {
@@ -66,34 +69,23 @@ export class DataService {
     return this.http.get<String>(environment.HEALTH_ENDPOINT + 'ready', { responseType: 'text' as 'json' });
   }
 
-
   updateDataPointValue(dataPoint: DataPoint) {
-
-    this.http.put<DataPoint>(`${environment.API_ENDPOINT}DataPointValue/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, JSON.stringify(dataPoint.value)
-      ,
-      {
-        headers: { 'Content-Type': 'application/json' },
-      })
+    this.http.post<DataPoint>(`${environment.API_ENDPOINT}DataPointValues/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`, dataPoint)
       .pipe(
         catchError(error => {
-          console.log(error.error.exceptionMessage)
-          const errorMessage = 'Failed to update data point';
+          const errorMessage = error.error?.exceptionMessage || 'Failed to update data point';
           this.errorSubject.next(errorMessage);
           this.messageService.add({
             severity: 'error',
-            summary: 'Error - Bad Request',
-            detail: error.error.exceptionMessage,
+            summary: 'Error',
+            detail: errorMessage,
           });
           this.fetchData();
           return of(null);
         })
       ).subscribe((data) => {
       if (data) {
-        const currentData = this.dataSubject.getValue();
-        const updatedDataList = currentData.map((dp) =>
-          dp.objectAddress === data.objectAddress && dp.stationaryAddress === data.stationaryAddress ? data : dp
-        );
-        this.dataSubject.next(updatedDataList);
+        this.fetchData();
       }
     });
   }

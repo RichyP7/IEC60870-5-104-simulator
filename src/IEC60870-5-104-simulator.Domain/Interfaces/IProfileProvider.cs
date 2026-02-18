@@ -6,5 +6,6 @@ namespace IEC60870_5_104_simulator.Domain.Interfaces
     {
         float GetNextValue(string profileName, IecAddress address);
         bool ProfileExists(string profileName);
+        IEnumerable<string> GetProfileNames();
     }
 }

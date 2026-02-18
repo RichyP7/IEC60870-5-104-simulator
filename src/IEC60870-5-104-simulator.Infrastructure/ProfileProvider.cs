@@ -14,6 +14,11 @@ namespace IEC60870_5_104_simulator.Infrastructure
             _profiles = profiles;
         }
 
+        public IEnumerable<string> GetProfileNames()
+        {
+            return _profiles.Keys;
+        }
+
         public bool ProfileExists(string profileName)
         {
             return _profiles.ContainsKey(profileName);

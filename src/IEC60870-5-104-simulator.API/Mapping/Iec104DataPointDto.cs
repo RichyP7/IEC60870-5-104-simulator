@@ -15,6 +15,7 @@ public class Iec104DataPointDto
     public IecValueDto Value { get; set; } = new IecValueDto();
 
     public SimulationModeDto Mode { get; set; }
+    public string? ProfileName { get; set; }
 }
 public class IecValueDto
 {
@@ -60,4 +61,10 @@ public enum SimulationModeDto
     CyclicStatic,
     Response,
     PredefinedProfile
+}
+
+public class SimulationModeUpdateDto
+{
+    public SimulationModeDto Mode { get; set; }
+    public string? ProfileName { get; set; }
 }

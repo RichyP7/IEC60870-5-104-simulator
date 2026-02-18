@@ -5,8 +5,9 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
 import {DataPoint, Iec104DataTypes, SimulationMode} from '../list-view.component';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {Select} from 'primeng/select';
+import {DataService} from '../DataService/data.service';
 
 @Component({
   selector: 'app-create-dialog',
@@ -19,6 +20,7 @@ import {Select} from 'primeng/select';
     Button,
     ReactiveFormsModule,
     NgClass,
+    NgIf,
     Select
   ],
   templateUrl: './create-dialog.component.html',
@@ -29,19 +31,26 @@ export class CreateDialogComponent implements OnInit {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() dataPointCreated = new EventEmitter<DataPoint>();
 
-  profileForm: FormGroup ;
+  profileForm: FormGroup;
 
   iec104DataTypes: string[] = Object.values(Iec104DataTypes);
-  simulationModes: string[] = Object.values(SimulationMode);
+  simulationModes = [
+    {label: 'None', value: SimulationMode.None},
+    {label: 'Cyclic Random', value: SimulationMode.Cyclic},
+    {label: 'Cyclic Static', value: SimulationMode.CyclicStatic},
+    {label: 'Response', value: SimulationMode.Response},
+    {label: 'Predefined Profile', value: SimulationMode.PredefinedProfile}
+  ];
+  availableProfiles: string[] = [];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private dataService: DataService) {
     this.profileForm = this.fb.group({
       id: ['', Validators.required],
       stationaryAddress: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       objectAddress: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       iec104DataType: ['', Validators.required],
       mode: ['', Validators.required],
-      value: [null]
+      profileName: [null]
     });
 
     this.profileForm.get('mode')?.markAsDirty();
@@ -49,12 +58,21 @@ export class CreateDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dataService.fetchProfiles().subscribe(profiles => {
+      this.availableProfiles = profiles;
+    });
+  }
 
+  get isPredefinedProfile(): boolean {
+    return this.profileForm.get('mode')?.value === SimulationMode.PredefinedProfile;
   }
 
   closeDialog() {
     this.visible = false;
     this.visibleChange.emit(this.visible);
+    this.profileForm.reset();
+    this.profileForm.get('mode')?.markAsDirty();
+    this.profileForm.get('iec104DataType')?.markAsDirty();
   }
 
   save() {
@@ -62,18 +80,16 @@ export class CreateDialogComponent implements OnInit {
       const profileData = this.profileForm.value;
 
       let dataPoint: DataPoint = {
-        id : profileData.id,
+        id: profileData.id,
         mode: profileData.mode,
-        value: profileData.value,
+        value: {},
         stationaryAddress: profileData.stationaryAddress,
         objectAddress: profileData.objectAddress,
-        iec104DataType: profileData.iec104DataType
+        iec104DataType: profileData.iec104DataType,
+        profileName: profileData.profileName
       }
-      console.log(dataPoint);
       this.dataPointCreated.emit(dataPoint);
-      this.closeDialog()
-    } else {
-      console.log('Form is invalid');
+      this.closeDialog();
     }
   }
 

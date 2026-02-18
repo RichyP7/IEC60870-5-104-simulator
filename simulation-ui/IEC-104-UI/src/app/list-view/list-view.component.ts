@@ -35,11 +35,27 @@ export class ListViewComponent implements OnInit {
   groupedData: GroupedData[] = [];
   showDialog: boolean = false;
 
+  readonly modeLabels: Record<string, string> = {
+    'None': 'None',
+    'Cyclic': 'Cyclic Random',
+    'CyclicStatic': 'Cyclic Static',
+    'Response': 'Response',
+    'PredefinedProfile': 'Profile'
+  };
+
   constructor(
     private router: Router,
     private dataService: DataService,
     private messageService: MessageService
   ) {}
+
+  displayValue(item: DataPoint): string {
+    return getDisplayValue(item.value);
+  }
+
+  modeLabel(mode: SimulationMode): string {
+    return this.modeLabels[mode] || mode;
+  }
 
   ngOnInit() {
     this.dataService.data$.subscribe((data) => {
@@ -102,8 +118,43 @@ export interface DataPoint {
   stationaryAddress: number;
   objectAddress: number;
   iec104DataType: string;
-  value: string;
+  value: IecValue;
   mode: SimulationMode;
+  profileName?: string;
+}
+
+export interface IecValue {
+  numericValue?: { value: number } | null;
+  singlePointValue?: { value: boolean } | null;
+  doublePointValue?: { value: DoublePointValue } | null;
+  floatValue?: { value: number } | null;
+  scaledValue?: { value: number; shortValue: number } | null;
+}
+
+export enum DoublePointValue {
+  INTERMEDIATE = 'INTERMEDIATE',
+  OFF = 'OFF',
+  ON = 'ON',
+  INDETERMINATE = 'INDETERMINATE'
+}
+
+export function getDisplayValue(value: IecValue | null | undefined): string {
+  if (!value) return '-';
+  if (value.singlePointValue != null) return value.singlePointValue.value ? 'ON' : 'OFF';
+  if (value.doublePointValue != null) return value.doublePointValue.value.toString();
+  if (value.floatValue != null) return value.floatValue.value.toString();
+  if (value.scaledValue != null) return value.scaledValue.value.toString();
+  if (value.numericValue != null) return value.numericValue.value.toString();
+  return '-';
+}
+
+export function getValueType(dataType: string): 'singlePoint' | 'doublePoint' | 'float' | 'scaled' | 'numeric' {
+  if (dataType.startsWith('M_SP_') || dataType === 'C_SC_NA_1' || dataType === 'C_SC_TA_1') return 'singlePoint';
+  if (dataType.startsWith('M_DP_') || dataType === 'C_DC_NA_1' || dataType === 'C_DC_TA_1') return 'doublePoint';
+  if (dataType.startsWith('M_ME_NC_') || dataType.startsWith('M_ME_TC_') || dataType.startsWith('M_ME_TF_')) return 'float';
+  if (dataType.startsWith('M_ME_NB_') || dataType.startsWith('M_ME_TB_') || dataType.startsWith('M_ME_TE_')
+    || dataType === 'C_SE_NB_1' || dataType === 'C_SE_TB_1') return 'scaled';
+  return 'numeric';
 }
 
 export interface GroupedData {
@@ -115,7 +166,8 @@ export enum SimulationMode {
   None = 'None',
   Cyclic = 'Cyclic',
   CyclicStatic = 'CyclicStatic',
-  Response = 'Response'
+  Response = 'Response',
+  PredefinedProfile = 'PredefinedProfile'
 }
 
 export enum Iec104DataTypes {

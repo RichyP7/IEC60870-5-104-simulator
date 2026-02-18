@@ -1,26 +1,74 @@
 p-accordion {
   display: block;
   min-width: 200px;
-
   max-height: 70vh;
   overflow: auto;
-
-
-  font-size: math;
-}
-
-.indented-list {
-  padding-left: 1rem;
 }
 
 .accordion-container {
   display: flex;
   justify-content: space-between;
   width: 90%;
+  margin-top: 0.75rem;
+  gap: 0.5rem;
 }
 
 .card {
   width: 90%;
   margin-top: 2rem;
   margin-left: 1rem;
+}
+
+.item-count {
+  font-weight: normal;
+  opacity: 0.6;
+  margin-left: 0.25rem;
+  font-size: 0.9em;
+}
+
+.item-row {
+  transition: background-color 0.15s;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: var(--p-surface-100, rgba(0,0,0,0.04));
+  }
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.item-id {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.item-badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  background-color: var(--p-surface-200, #e5e7eb);
+  color: var(--p-surface-700, #374151);
+  white-space: nowrap;
+}
+
+.item-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.meta-tag {
+  font-size: 0.8rem;
+  color: var(--p-surface-500, #6b7280);
+}
+
+.value-tag {
+  font-weight: 500;
+  color: var(--p-primary-color, #3b82f6);
 }

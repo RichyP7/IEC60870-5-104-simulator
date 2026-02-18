@@ -38,37 +38,66 @@
         </p-dropdown>
       </div>
 
+      <div class="grid-item label" *ngIf="isPredefinedProfile">Profile:</div>
+      <div class="grid-item value flex align-items-center" *ngIf="isPredefinedProfile">
+        <p-select [options]="availableProfiles" [(ngModel)]="item.profileName"
+          (onChange)="onProfileNameChange(item)" placeholder="Select a profile"></p-select>
+      </div>
+
       <div class="grid-item label">Value:</div>
-      <div class="grid-item value flex align-items-center">
-        <span *ngIf="!this.isEditing">{{ item.value }}</span>
-        <input *ngIf="this.isEditing" [(ngModel)]="item.value" class="p-inputtext p-component w-20">
+      <div class="grid-item value flex align-items-center gap-2">
+        <!-- Read-only display -->
+        <ng-container *ngIf="!isEditing">
+          <span class="value-display" [class.auto-mode]="isAutoMode">{{ displayValue() }}</span>
+          <span *ngIf="isAutoMode" class="auto-hint">(auto)</span>
+          <p-button
+            *ngIf="!isAutoMode"
+            icon="pi pi-pen-to-square"
+            [text]="true"
+            size="small"
+            (onClick)="startEditing()"
+          ></p-button>
+        </ng-container>
 
-        <p-button
-          class="ml-2"
-          *ngIf="dataPointCanBeToggled(item)"
-          label="Toggle value"
-          (onClick)="toggleDoublePointValue(item)"
-        />
-        <p-button
-          *ngIf="!dataPointCanBeToggled(item) && !isEditing"
-          icon="pi pi-pen-to-square"
-          class="p-button-text p-button-sm"
-          (onClick)="editItem(item)"
-        ></p-button>
+        <!-- Editing: Single Point (boolean toggle) -->
+        <ng-container *ngIf="isEditing && valueType === 'singlePoint'">
+          <p-toggleSwitch [(ngModel)]="editValue"></p-toggleSwitch>
+          <span class="ml-1">{{ editValue ? 'ON' : 'OFF' }}</span>
+        </ng-container>
 
-        <p-button
-          *ngIf="isEditing"
-          icon="pi pi-times"
-          class="p-button-text p-button-sm p-button-danger"
-          (onClick)="this.isEditing = false"
-        ></p-button>
+        <!-- Editing: Double Point (dropdown) -->
+        <ng-container *ngIf="isEditing && valueType === 'doublePoint'">
+          <p-select [options]="doublePointOptions" [(ngModel)]="editValue"
+            optionLabel="label" optionValue="value"></p-select>
+        </ng-container>
 
-        <p-button
-          *ngIf="this.isEditing"
-          label="Update"
-          class="p-button-sm"
-          (onClick)="updateValue(item)"
-        ></p-button>
+        <!-- Editing: Float -->
+        <ng-container *ngIf="isEditing && valueType === 'float'">
+          <p-inputNumber [(ngModel)]="editValue" mode="decimal" [minFractionDigits]="1" [maxFractionDigits]="4"></p-inputNumber>
+        </ng-container>
+
+        <!-- Editing: Scaled / Numeric -->
+        <ng-container *ngIf="isEditing && (valueType === 'scaled' || valueType === 'numeric')">
+          <p-inputNumber [(ngModel)]="editValue"></p-inputNumber>
+        </ng-container>
+
+        <!-- Edit action buttons -->
+        <ng-container *ngIf="isEditing">
+          <p-button
+            icon="pi pi-check"
+            severity="success"
+            [text]="true"
+            size="small"
+            (onClick)="saveValue()"
+          ></p-button>
+          <p-button
+            icon="pi pi-times"
+            severity="danger"
+            [text]="true"
+            size="small"
+            (onClick)="cancelEditing()"
+          ></p-button>
+        </ng-container>
       </div>
     </div>
   </p-card>

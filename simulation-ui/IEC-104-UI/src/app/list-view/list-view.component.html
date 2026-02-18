@@ -4,19 +4,24 @@
   <p-accordion>
     <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i"
     >
-      <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
+      <p-accordion-header>
+        Stationary Address: {{ tab.stationaryAddress }}
+        <span class="item-count">({{ tab.items.length }})</span>
+      </p-accordion-header>
       <p-accordion-content *ngFor="let item of tab.items" >
         <div
           [ngClass]="{'selected-item': item.objectAddress === selectedItem?.objectAddress && item.stationaryAddress === selectedItem?.stationaryAddress}"
-          class="item-details p-2 border-round cursor-pointer"
+          class="item-row p-2 border-round cursor-pointer"
           (click)="clickOnDataPoint(item)"
         >
-          <div>
-            <p class="m-0">ID: {{ item.id }}</p>
-            <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>
-            <p class="m-0">Object Address: {{ item.objectAddress }}</p>
-            <p class="m-0">IEC104 Data Type: {{ item.iec104DataType }}</p>
-            <p class="m-0">Mode: {{ item.mode }}</p>
+          <div class="item-header">
+            <span class="item-id">{{ item.id }}</span>
+            <span class="item-badge mode-badge">{{ modeLabel(item.mode) }}</span>
+          </div>
+          <div class="item-meta">
+            <span class="meta-tag">OA: {{ item.objectAddress }}</span>
+            <span class="meta-tag">{{ item.iec104DataType }}</span>
+            <span class="meta-tag value-tag">{{ displayValue(item) }}</span>
           </div>
         </div>
       </p-accordion-content>
@@ -24,13 +29,11 @@
   </p-accordion>
 </div>
 <div class="card accordion-container">
-  <p-button label="Reload DataPoints" (onClick)="reloadData()" />
-  <p-button label="Create DataPoint" (click)="showDialog = true" />
+  <p-button label="Reload" icon="pi pi-refresh" (onClick)="reloadData()" severity="secondary" />
+  <p-button label="Create DataPoint" icon="pi pi-plus" (click)="showDialog = true" />
 </div>
 <app-create-dialog
   [visible]="showDialog"
   (visibleChange)="processDialogChange($event)"
   (dataPointCreated)="createDataPoint($event)"
 ></app-create-dialog>
-
-

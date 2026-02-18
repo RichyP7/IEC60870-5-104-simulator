@@ -2,17 +2,17 @@
   <form [formGroup]="profileForm" (ngSubmit)="save()">
     <div class="flex items-center gap-4 mb-4">
       <label for="id" class="font-semibold w-36">ID</label>
-      <input pInputText id="id" class="flex-auto" formControlName="id" [ngClass]="{'p-invalid': profileForm.get('id')?.invalid}" autocomplete="off" />
+      <input pInputText id="id" class="flex-auto" formControlName="id" [ngClass]="{'p-invalid': profileForm.get('id')?.invalid && profileForm.get('id')?.touched}" autocomplete="off" placeholder="e.g. Measurement_1" />
     </div>
 
     <div class="flex items-center gap-4 mb-4">
       <label for="stationaryAddress" class="font-semibold w-36">Stationary Address</label>
-      <input pInputText id="stationaryAddress" class="flex-auto" type="number" formControlName="stationaryAddress" [ngClass]="{'p-invalid': profileForm.get('stationaryAddress')?.invalid}" autocomplete="off" />
+      <input pInputText id="stationaryAddress" class="flex-auto" type="number" formControlName="stationaryAddress" [ngClass]="{'p-invalid': profileForm.get('stationaryAddress')?.invalid && profileForm.get('stationaryAddress')?.touched}" autocomplete="off" placeholder="e.g. 1" />
     </div>
 
     <div class="flex items-center gap-4 mb-4">
       <label for="objectAddress" class="font-semibold w-36">Object Address</label>
-      <input pInputText id="objectAddress" class="flex-auto" type="number" formControlName="objectAddress" [ngClass]="{'p-invalid': profileForm.get('objectAddress')?.invalid}" autocomplete="off" />
+      <input pInputText id="objectAddress" class="flex-auto" type="number" formControlName="objectAddress" [ngClass]="{'p-invalid': profileForm.get('objectAddress')?.invalid && profileForm.get('objectAddress')?.touched}" autocomplete="off" placeholder="e.g. 100" />
     </div>
 
     <div class="flex items-center gap-4 mb-4">
@@ -22,22 +22,22 @@
           <i class="pi pi-info-circle"></i>
         </a>
       </label>
-      <p-select id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-select>
-    </div>
-
-    <div class="flex items-center gap-4 mb-8">
-      <label for="mode" class="font-semibold w-36">Mode</label>
-      <p-select id="mode" class="flex-auto" [options]="simulationModes" formControlName="mode" [ngClass]="{'ng-dirty': true}" [styleClass]="profileForm.get('mode')?.invalid ? 'ng-dirty' : ''" ></p-select>
+      <p-select id="iec104DataType" class="flex-auto" [options]="iec104DataTypes" formControlName="iec104DataType" [filter]="true" filterPlaceholder="Search types..." [ngClass]="{'ng-dirty': profileForm.get('iec104DataType')?.invalid}"></p-select>
     </div>
 
     <div class="flex items-center gap-4 mb-4">
-      <label for="value" class="font-semibold w-36">Value</label>
-      <input pInputText id="value" class="flex-auto" formControlName="value" [ngClass]="{'p-invalid': profileForm.get('value')?.invalid}" autocomplete="off" />
+      <label for="mode" class="font-semibold w-36">Mode</label>
+      <p-select id="mode" class="flex-auto" [options]="simulationModes" formControlName="mode" optionLabel="label" optionValue="value" [ngClass]="{'ng-dirty': true}" [styleClass]="profileForm.get('mode')?.invalid ? 'ng-dirty' : ''"></p-select>
     </div>
 
-    <div class="flex justify-end gap-2">
+    <div class="flex items-center gap-4 mb-4" *ngIf="isPredefinedProfile">
+      <label for="profileName" class="font-semibold w-36">Profile</label>
+      <p-select id="profileName" class="flex-auto" [options]="availableProfiles" formControlName="profileName" placeholder="Select a profile"></p-select>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-4">
       <p-button label="Cancel" severity="secondary" (click)="closeDialog()" />
-      <p-button label="Save" type="submit" [disabled]="profileForm.invalid" />
+      <p-button label="Create" type="submit" icon="pi pi-plus" [disabled]="profileForm.invalid" />
     </div>
   </form>
 </p-dialog>

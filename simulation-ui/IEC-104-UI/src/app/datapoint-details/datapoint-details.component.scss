@@ -6,8 +6,16 @@
   align-items: center;
 }
 
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
 }
 
 .details-card {
@@ -21,11 +29,10 @@ p-card {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  font-size: math;
 }
 
 p-card > div {
-  flex-grow: 1; /* Ensure card content stretches */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
@@ -33,14 +40,16 @@ p-card > div {
 .details-grid {
   display: grid;
   grid-template-columns: auto 1fr;
-  row-gap: 0.5rem;
-  column-gap: 1rem;
+  row-gap: 0.75rem;
+  column-gap: 1.25rem;
   align-items: center;
   width: 100%;
 }
 
 .label {
   font-weight: bold;
+  color: var(--p-surface-600, #4b5563);
+  font-size: 0.875rem;
 }
 
 .grid-item {
@@ -57,4 +66,19 @@ p-card > div {
   vertical-align: text-top;
 }
 
+.value-display {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--p-primary-color, #3b82f6);
 
+  &.auto-mode {
+    color: var(--p-surface-500, #6b7280);
+    font-weight: normal;
+  }
+}
+
+.auto-hint {
+  font-size: 0.75rem;
+  color: var(--p-surface-400, #9ca3af);
+  font-style: italic;
+}

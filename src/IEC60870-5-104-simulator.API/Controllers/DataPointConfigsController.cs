@@ -36,10 +36,10 @@ namespace IEC60870_5_104_simulator.API.Controllers
         }
 
         [HttpPut("{idStationary}/{idObject}/simulation-mode")]
-        public Iec104DataPointDto SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeDto simulationMode)
+        public Iec104DataPointDto SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeUpdateDto update)
         {
             IecAddress address = new IecAddress(idStationary, idObject);
-            var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)simulationMode);
+            var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)update.Mode, update.ProfileName);
             return dataPoint;
         }
         
