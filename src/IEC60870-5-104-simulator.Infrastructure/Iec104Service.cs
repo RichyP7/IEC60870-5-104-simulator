@@ -23,6 +23,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private bool _connected = false;
         private bool _started = false;
 
+        // Maximum number of information objects to pack into a single ASDU
+        private const int MaxInformationObjectsPerASDU = 20;
 
         public IInformationObjectFactory factory { get; }
 
@@ -116,20 +118,33 @@ namespace IEC60870_5_104_simulator.Infrastructure
         internal void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints)
         {
             var cyclicDataPoints = GetAllCyclicDataPoints(datapoints);
-            IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> asdus = CreateDistinctAsdus(cyclicDataPoints);
+            // Create a starting ASDU per type and keep lists so we can split when full
+            var initialAsdus = CreateDistinctAsdus(cyclicDataPoints).ToList();
+            var asduLists = initialAsdus.ToDictionary(kv => kv.Key, kv => new List<ASDU> { kv.Value });
+
             foreach (Iec104DataPoint dataPoint in cyclicDataPoints)
             {
-                var myASDU = asdus.First(v => v.Key.Equals(dataPoint.Iec104DataType));
+                var list = asduLists[dataPoint.Iec104DataType];
+                var currentAsdu = list.Last();
+
+                // Ensure we don't exceed the configured max per ASDU
+                if (currentAsdu.NumberOfElements >= MaxInformationObjectsPerASDU)
+                {
+                    var newAsdu = CreateAsdu(currentAsdu.Ca, CauseOfTransmission.PERIODIC);
+                    list.Add(newAsdu);
+                    currentAsdu = newAsdu;
+                }
+
                 if (dataPoint.Mode == SimulationMode.Cyclic)
                 {
                     InformationObject ioa = factory.CreateRandomInformationObject(dataPoint);
-                    myASDU.Value.AddInformationObject(ioa);
+                    currentAsdu.Value.AddInformationObject(ioa);
                 }
                 else if (dataPoint.Mode == SimulationMode.CyclicStatic)
                 {
                     Iec104DataPoint existingValue = repository.GetDataPointValue(dataPoint.Address);
                     InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, existingValue.Value);
-                    myASDU.Value.AddInformationObject(ioa);
+                    currentAsdu.Value.AddInformationObject(ioa);
                 }
                 else if (dataPoint.Mode == SimulationMode.PredefinedProfile)
                 {
@@ -137,10 +152,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     IecValueObject value = CreateValueObjectFromProfile(dataPoint.Iec104DataType, profileValue);
                     repository.SetObjectValue(dataPoint.Address, value);
                     InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, value);
-                    myASDU.Value.AddInformationObject(ioa);
+                    currentAsdu.Value.AddInformationObject(ioa);
                 }
             }
-            Send(asdus.Select(v => v.Value));
+
+            // Send all created ASDUs
+            var toSend = asduLists.SelectMany(kv => kv.Value);
+            Send(toSend);
         }
 
         private static IEnumerable<Iec104DataPoint> GetAllCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
