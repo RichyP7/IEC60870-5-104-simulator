@@ -138,13 +138,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 if (dataPoint.Mode == SimulationMode.Cyclic)
                 {
                     InformationObject ioa = factory.CreateRandomInformationObject(dataPoint);
-                    currentAsdu.Value.AddInformationObject(ioa);
+                    currentAsdu.AddInformationObject(ioa);
                 }
                 else if (dataPoint.Mode == SimulationMode.CyclicStatic)
                 {
                     Iec104DataPoint existingValue = repository.GetDataPointValue(dataPoint.Address);
                     InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, existingValue.Value);
-                    currentAsdu.Value.AddInformationObject(ioa);
+                    currentAsdu.AddInformationObject(ioa);
                 }
                 else if (dataPoint.Mode == SimulationMode.PredefinedProfile)
                 {
@@ -152,7 +152,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     IecValueObject value = CreateValueObjectFromProfile(dataPoint.Iec104DataType, profileValue);
                     repository.SetObjectValue(dataPoint.Address, value);
                     InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, value);
-                    currentAsdu.Value.AddInformationObject(ioa);
+                    currentAsdu.AddInformationObject(ioa);
                 }
             }
 
@@ -181,6 +181,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
         private void Send(IEnumerable<ASDU> asdus)
         {
+            logger.LogInformation("Number of elements to send: {number}", asdus.Sum(v=> v.NumberOfElements));
             foreach (var toSend in from ASDU toSend in asdus
                                    where toSend.NumberOfElements > 0
                                    select toSend)
