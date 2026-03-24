@@ -3,6 +3,7 @@ using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Globalization;
 
 namespace IEC60870_5_104_simulator.Infrastructure
 {
@@ -142,12 +143,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     case Iec104DataTypes.M_ME_NC_1:
                     case Iec104DataTypes.M_ME_TC_1:
                     case Iec104DataTypes.M_ME_TF_1:
-                        newdatapoint.Value = new IecValueFloatObject(0.0f);
+                        newdatapoint.Value = SetFloatPoint(newdatapoint.InitString);
                         break;
                     case Iec104DataTypes.M_ME_NA_1:
                     case Iec104DataTypes.M_ME_TA_1:
                     case Iec104DataTypes.M_ME_ND_1:
-                        newdatapoint.Value = new IecValueFloatObject(0.0f);
+                        newdatapoint.Value = SetFloatPoint(newdatapoint.InitString);
                         break;
                     default:
                         throw new NotImplementedException($"{newdatapoint.Iec104DataType} is not implemented");
@@ -174,6 +175,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 new IecValueScaledObject(new ScaledValueRecord(intValue)) :
                 new IecValueScaledObject(new ScaledValueRecord(0));
         }
+        private static IecValueFloatObject SetFloatPoint(string initstring)
+        {
+            return !String.IsNullOrEmpty(initstring) && float.TryParse(initstring, CultureInfo.InvariantCulture,out float floatValue) ?
+                new IecValueFloatObject(floatValue) :
+                new IecValueFloatObject(0);
+        }
+
 
         public IEnumerable<Iec104DataPoint> GetAllDataPoints()
         {
