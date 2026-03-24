@@ -123,7 +123,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                     case Iec104DataTypes.M_ST_NA_1:
                     case Iec104DataTypes.M_ST_TA_1:
                     case Iec104DataTypes.M_ST_TB_1:
-                        newdatapoint.Value = new IecIntValueObject(0);
+                        newdatapoint.Value = SetStepValue(newdatapoint.InitString);
                         break;
                     case Iec104DataTypes.M_SP_NA_1:
                     case Iec104DataTypes.M_SP_TA_1:
@@ -177,9 +177,15 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
         private static IecValueFloatObject SetFloatPoint(string initstring)
         {
-            return !String.IsNullOrEmpty(initstring) && float.TryParse(initstring, CultureInfo.InvariantCulture,out float floatValue) ?
+            return !String.IsNullOrEmpty(initstring) && float.TryParse(initstring, CultureInfo.InvariantCulture, out float floatValue) ?
                 new IecValueFloatObject(floatValue) :
                 new IecValueFloatObject(0);
+        }
+        private static IecIntValueObject SetStepValue(string initstring)
+        {
+            return !String.IsNullOrEmpty(initstring) && Helpers.TryParseIntClamped(initstring, StepPositionConst.STEP_POSITION_MIN, StepPositionConst.STEP_POSITION_MAX, out int intValue) ?
+                new IecIntValueObject(intValue) :
+                new IecIntValueObject(0);
         }
 
 
@@ -188,5 +194,4 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return StoredDataPoints.Values.AsEnumerable();
         }
     }
-
 }
