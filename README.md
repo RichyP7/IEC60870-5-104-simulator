@@ -97,6 +97,41 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 | `CyclicStatic` | Re-sends the current value every cycle |
 | `PredefinedProfile` | Iterates through a predefined list of values from a profile (loops continuously) |
 
+### Initial Values
+
+Each measure can optionally define an `InitValue` field that sets the value of the data point at startup. If omitted, a type-specific default is used.
+
+| TypeId | Type | `InitValue` format | Example | Default |
+|--------|------|--------------------|---------|---------|
+| 1 | M_SP_NA_1 | `"true"` or `"false"` | `"true"` | `"false"` |
+| 3 | M_DP_NA_1 | `"INTERMEDIATE"`, `"OFF"`, `"ON"`, or `"INDETERMINATE"` | `"INDETERMINATE"` | `"OFF"` |
+| 5 | M_ST_NA_1 | Integer string in range -64 to 63 | `"5"` | `"0"` |
+| 9 | M_ME_NA_1 | Float string (e.g. `"0.5"`) | `"0.5"` | `"0"` |
+| 11 | M_ME_NB_1 | Integer string | `"100"` | `"0"` |
+| 13 | M_ME_NC_1 | Float string (e.g. `"3.14"`) | `"3.14"` | `"0"` |
+
+Example:
+
+```json
+{
+  "Id": "SPM1",
+  "Ca": "20",
+  "Oa": "26",
+  "TypeId": 1,
+  "InitValue": "true"
+}
+```
+
+```json
+{
+  "Id": "DPM1",
+  "Ca": "20",
+  "Oa": "27",
+  "TypeId": 3,
+  "InitValue": "INDETERMINATE"
+}
+```
+
 ### Predefined Profiles
 
 For simulating realistic measurement curves (e.g. current, power over time), use the `PredefinedProfile` mode. Profiles are defined in `Configuration/Profiles.json`:
