@@ -9,7 +9,13 @@
   </div>
 
   <div *ngFor="let scenario of scenarios" class="scenario-card flex items-center gap-2 bg-white border border-surface-200 rounded px-3 py-1 shadow-sm">
-    <span class="font-medium text-sm whitespace-nowrap">{{ scenario.name }}</span>
+    <span class="font-medium text-sm whitespace-nowrap"
+      [pTooltip]="scenarioTooltips.get(scenario.name) ?? ''"
+      [escape]="false"
+      tooltipPosition="bottom"
+      tooltipStyleClass="scenario-step-tooltip"
+      [showDelay]="200"
+    >{{ scenario.name }}</span>
     <p-tag
       [value]="getStatus(scenario.name)"
       [severity]="statusSeverity(getStatus(scenario.name))"

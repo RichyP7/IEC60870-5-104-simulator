@@ -9,5 +9,7 @@ namespace IEC60870_5_104_simulator.Domain.Interfaces
         Task<bool> TriggerAsync(string name, CancellationToken ct = default);
 
         IEnumerable<ScenarioState> GetStates();
+
+        IEnumerable<ScenarioDefinition> GetDefinitions();
     }
 }
