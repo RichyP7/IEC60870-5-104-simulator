@@ -13,6 +13,9 @@ FROM nginx:alpine
 # Copy the built Angular app to nginx's html directory
 COPY --from=frontend-build /app/dist/iec-104-ui/browser /usr/share/nginx/html
 
+# Copy custom nginx config with SPA fallback
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Create the entrypoint script for environment variables
 RUN echo '#!/bin/sh' > /docker-entrypoint.sh \
     && echo 'echo "Generating env.js from env.template.js..."' >> /docker-entrypoint.sh \

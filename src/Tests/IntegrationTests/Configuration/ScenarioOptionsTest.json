@@ -1,0 +1,88 @@
+{
+  "Iec104Simulation": {
+    "CycleTimeMs": 10000,
+    "DataPointConfiguration": {
+      "Measures": [
+        {
+          "Ca": "1",
+          "Oa": "101",
+          "TypeId": 3,
+          "InitValue": "ON",
+          "Mode": "CyclicStatic"
+        },
+        {
+          "Ca": "1",
+          "Oa": "102",
+          "TypeId": 11,
+          "InitValue": "5000",
+          "Mode": "Gaussian",
+          "BaseValue": 5000,
+          "MinValue": 0,
+          "MaxValue": 8000,
+          "FluctuationRate": 150
+        },
+        {
+          "Ca": "1",
+          "Oa": "103",
+          "TypeId": 1,
+          "InitValue": "false",
+          "Mode": "CyclicStatic"
+        },
+        {
+          "Ca": "1",
+          "Oa": "104",
+          "TypeId": 13,
+          "InitValue": "110.0",
+          "Mode": "Gaussian",
+          "BaseValue": 110.0,
+          "MinValue": 95.0,
+          "MaxValue": 125.0,
+          "FluctuationRate": 1.5
+        }
+      ],
+      "Commands": []
+    }
+  },
+  "Scenarios": [
+    {
+      "Name": "ca1-transformer-trip",
+      "RecoveryMs": 0,
+      "Steps": [
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 101,
+          "ValueStr": "OFF",
+          "Freeze": true,
+          "Description": "Breaker opens"
+        },
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 102,
+          "ValueStr": "0",
+          "Freeze": true,
+          "Description": "Power drops"
+        }
+      ],
+      "RecoverySteps": [
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 101,
+          "ValueStr": "ON",
+          "Freeze": false,
+          "Description": "Breaker reclosed"
+        },
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 102,
+          "ValueStr": "5000",
+          "Freeze": false,
+          "Description": "Power restored"
+        }
+      ]
+    }
+  ]
+}

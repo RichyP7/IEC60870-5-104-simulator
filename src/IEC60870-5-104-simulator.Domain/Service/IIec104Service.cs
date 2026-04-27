@@ -2,10 +2,11 @@
 {
     public interface IIec104Service
     {
-        Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints);
+        Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs);
         Task Simulate(Iec104DataPoint dataPoint);
         Task Start();
         Task Stop();
         bool ConnectionEstablished();
+        int GetActiveClientCount();
     }
 }

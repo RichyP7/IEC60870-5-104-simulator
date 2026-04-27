@@ -7,5 +7,9 @@ export const environment = {
   HEALTH_ENDPOINT:
     typeof window !== "undefined" && (window as { [key: string]: any })["env"]?.HEALTH_ENDPOINT
       ? (window as { [key: string]: any })["env"].HEALTH_ENDPOINT
-      : "http://localhost:8080/health/"
+      : "http://localhost:8080/health/",
+  HUB_ENDPOINT:
+    typeof window !== "undefined" && (window as { [key: string]: any })["env"]?.HUB_ENDPOINT
+      ? (window as { [key: string]: any })["env"].HUB_ENDPOINT
+      : "http://localhost:8080/hubs/simulation"
 };

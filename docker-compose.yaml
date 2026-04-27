@@ -18,6 +18,7 @@
     environment:
       - ENV_API_ENDPOINT=http://localhost:8080/api/
       - ENV_API_HEALTH_ENDPOINT=http://localhost:8080/health/
+      - ENV_HUB_ENDPOINT=http://localhost:8080/hubs/simulation
     depends_on:
       - backend
         

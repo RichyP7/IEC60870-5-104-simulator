@@ -28,7 +28,7 @@ public class TestCreateDoublePoint : BaseWebApplication
         var toCreate = new Iec104DataPointDto
         {
             Id = "TestCreateDoublePoint",
-            Mode = SimulationModeDto.CyclicStatic,
+            Mode = SimulationModeDto.Periodic,
             ObjectAddress = 20,
             StationaryAddress = 21,
             Iec104DataType = Iec104DataTypes.M_DP_NA_1,
@@ -37,7 +37,7 @@ public class TestCreateDoublePoint : BaseWebApplication
                 DoublePointValue =
                     new DoublePointValueDto()
                     {
-                        Value = IecDoublePointValueEnumDto.INTERMEDIATE
+                        Value = 0  // 0 = INTERMEDIATE
                     }
             }
         };

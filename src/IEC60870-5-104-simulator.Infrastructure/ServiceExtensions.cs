@@ -12,6 +12,9 @@ namespace ServiceExtensionMethods
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddSingleton<IIec104Service, Iec104Service>();
+            services.AddSingleton<IASDUDispatcher, ASDUDispatcher>();
+            services.AddSingleton<IIec104CommandHandler, Iec104CommandHandler>();
+            services.AddSingleton<ICyclicSimulationService, CyclicSimulationService>();
             services.AddSingleton<IIec104ConfigurationService, Iec104ConfigurationService>();
             services.AddSingleton<lib60870.CS104.Server>(v =>
             {

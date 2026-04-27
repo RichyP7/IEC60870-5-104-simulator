@@ -193,5 +193,21 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             return StoredDataPoints.Values.AsEnumerable();
         }
+
+        public void FreezeDataPoint(IecAddress address)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? dp))
+                dp.Frozen = true;
+            else
+                throw new KeyNotFoundException($"FreezeDataPoint: Ca={address.StationaryAddress} Oa={address.ObjectAddress} not found");
+        }
+
+        public void UnfreezeDataPoint(IecAddress address)
+        {
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? dp))
+                dp.Frozen = false;
+            else
+                throw new KeyNotFoundException($"UnfreezeDataPoint: Ca={address.StationaryAddress} Oa={address.ObjectAddress} not found");
+        }
     }
 }

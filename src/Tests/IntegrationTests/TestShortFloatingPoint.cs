@@ -31,7 +31,7 @@ public class TestShortFloatingPoint : BaseWebApplication
         var toCreate = new Iec104DataPointDto
         {
             Id = "TestShortDoublePoint",
-            Mode = SimulationModeDto.None,
+            Mode = SimulationModeDto.Static,
             ObjectAddress = oa,
             StationaryAddress = sa,
             Iec104DataType = Iec104DataTypes.M_ME_NC_1,

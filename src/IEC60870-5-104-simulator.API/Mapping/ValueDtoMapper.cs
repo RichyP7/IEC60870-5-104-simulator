@@ -12,7 +12,7 @@ namespace IEC60870_5_104_simulator.API.Mapping
             else if (source is IecSinglePointValueObject spCasted)
                 return new IecValueDto { SinglePointValue = new SinglePointValueDto() { Value = spCasted.Value} };
             else if (source is IecDoublePointValueObject dpCasted)
-                return new IecValueDto { DoublePointValue = new DoublePointValueDto() { Value = (IecDoublePointValueEnumDto)dpCasted.Value } };
+                return new IecValueDto { DoublePointValue = new DoublePointValueDto() { Value = (int)dpCasted.Value } };
             else if (source is IecValueFloatObject castedFloat)
                 return new IecValueDto { FloatValue = new FloatValueDto() { Value = castedFloat.Value } };
             else if (source is IecValueScaledObject casted)

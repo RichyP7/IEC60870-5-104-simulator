@@ -5,7 +5,6 @@
 
       "Measures": [
         {
-          "Id": "Point1",
           "Ca": "20",
           "Oa": "25",
           "TypeId": 11,
@@ -14,11 +13,10 @@
       ],
       "Commands":[
         {
-          "Id": "Command1",
           "Ca": "20",
           "Oa": "2",
           "TypeId": 47,
-          "ResponseId": "Point1"
+          "ResponseId": "CA20_IOA25"
         }
       ]
     }

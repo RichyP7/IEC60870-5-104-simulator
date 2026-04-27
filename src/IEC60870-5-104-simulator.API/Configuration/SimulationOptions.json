@@ -1,120 +1,192 @@
 ﻿{
   "Iec104Simulation": {
-    "CycleTimeMs": 10000,
+    "CycleTimeMs": 5000,
     "DataPointConfiguration": {
 
       "Measures": [
         {
-          "Id": "Point1",
           "Ca": "20",
           "Oa": "25",
           "TypeId": 5,
           "InitValue": "true"
         },
         {
-          "Id": "DPM1",
           "Ca": "20",
           "Oa": "27",
           "TypeId": 3,
-          "InitValue": "INDETERMINATE"
+          "InitValue": "INDETERMINATE",
+          "Mode": "Static"
         },
         {
-          "Id": "SPM1",
           "Ca": "20",
           "Oa": "26",
-          "TypeId": 1
+          "TypeId": 1,
+          "Mode": "Periodic"
         },
         {
-          "Id": "SPM2",
           "Ca": "20",
           "Oa": "57",
-          "TypeId": 1
+          "TypeId": 1,
+          "Mode": "Periodic"
         },
         {
-          "Id": "SCALEDM1",
           "Ca": "20",
           "Oa": "28",
-          "TypeId": 11
+          "TypeId": 11,
+          "Mode": "RandomWalk",
+          "FluctuationRate": 100,
+          "MinValue": -1000,
+          "MaxValue": 1000
         },
         {
-          "Id": "SHORTM1",
           "Ca": "20",
           "Oa": "29",
-          "TypeId": 13
+          "TypeId": 13,
+          "Mode": "RandomWalk",
+          "FluctuationRate": 5.0,
+          "MinValue": 0.0,
+          "MaxValue": 100.0
         },
         {
-          "Id": "NORMM1",
           "Ca": "20",
           "Oa": "31",
           "TypeId": 9,
-          "Mode": "CyclicStatic"
+          "Mode": "Periodic"
         },
         {
-          "Id": "NORMM2",
           "Ca": "21",
           "Oa": "31",
-          "TypeId": 9
+          "TypeId": 9,
+          "Mode": "RandomWalk",
+          "FluctuationRate": 0.05,
+          "MinValue": -1.0,
+          "MaxValue": 1.0
         },
         {
-          "Id": "NORMM3",
           "Ca": "21",
           "Oa": "32",
-          "TypeId": 9
+          "TypeId": 9,
+          "Mode": "RandomWalk",
+          "FluctuationRate": 0.05,
+          "MinValue": -1.0,
+          "MaxValue": 1.0
         },
         {
-          "Id": "PROFILE1",
           "Ca": "20",
           "Oa": "40",
           "TypeId": 13,
-          "Mode": "PredefinedProfile",
-          "ProfileName": "TestProfile"
+          "Mode": "Profile",
+          "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
+        },
+        {
+          "Ca": "1",
+          "Oa": "101",
+          "TypeId": 3,
+          "InitValue": "ON",
+          "Mode": "Static"
+        },
+        {
+          "Ca": "1",
+          "Oa": "102",
+          "TypeId": 11,
+          "InitValue": "5000",
+          "Mode": "GaussianNoise",
+          "BaseValue": 5000,
+          "MinValue": 0,
+          "MaxValue": 8000,
+          "FluctuationRate": 150
+        },
+        {
+          "Ca": "1",
+          "Oa": "103",
+          "TypeId": 1,
+          "InitValue": "false",
+          "Mode": "Periodic"
+        },
+        {
+          "Ca": "1",
+          "Oa": "104",
+          "TypeId": 13,
+          "InitValue": "110.0",
+          "Mode": "GaussianNoise",
+          "BaseValue": 110.0,
+          "MinValue": 95.0,
+          "MaxValue": 125.0,
+          "FluctuationRate": 1.5
+        },
+        {
+          "Ca": "1",
+          "Oa": "105",
+          "TypeId": 13,
+          "InitValue": "0.0",
+          "Mode": "Solar",
+          "BaseValue": 2500.0,
+          "MinValue": 0.0,
+          "MaxValue": 2800.0,
+          "FluctuationRate": 0.08
+        },
+        {
+          "Ca": "1",
+          "Oa": "106",
+          "TypeId": 13,
+          "InitValue": "1200.0",
+          "Mode": "Wind",
+          "BaseValue": 1200.0,
+          "MinValue": 0.0,
+          "MaxValue": 3000.0,
+          "FluctuationRate": 80.0
+        },
+        {
+          "Ca": "1",
+          "Oa": "107",
+          "TypeId": 13,
+          "InitValue": "0.0",
+          "Mode": "EnergyCounter",
+          "MinValue": 0.0,
+          "MaxValue": 999999.0,
+          "LinkedPowerPointId": "CA1_IOA102"
         }
       ],
       "Commands":[
         {
-          "Id": "Command1",
           "Ca": "20",
           "Oa": "2",
           "TypeId": 47,
-          "ResponseId": "Point1"
+          "ResponseId": "CA20_IOA25"
         },
         {
-          "Id": "DPC1",
           "Ca": "100",
           "Oa": "25",
           "TypeId": 46,
-          "ResponseId": "DPM1"
+          "ResponseId": "CA20_IOA27"
         },
         {
-          "Id": "SPC1",
           "Ca": "100",
           "Oa": "26",
           "TypeId": 45,
-          "ResponseId": "SPM1"
+          "ResponseId": "CA20_IOA26"
         },
         {
-          "Id": "SCALEDC1",
           "Ca": "100",
           "Oa": "29",
           "TypeId": 49,
-          "ResponseId": "SCALEDM1"
+          "ResponseId": "CA20_IOA28"
         },
         {
-          "Id": "SHORTC1",
           "Ca": "100",
           "Oa": "30",
           "TypeId": 49,
-          "ResponseId": "SHORTM1"
+          "ResponseId": "CA20_IOA29"
         },
         {
-          "Id": "NORMC1",
           "Ca": "100",
           "Oa": "31",
           "TypeId": 48,
-          "ResponseId": "NORMM1"
+          "ResponseId": "CA20_IOA31"
         }
       ]
     }
   }
 
 }
+

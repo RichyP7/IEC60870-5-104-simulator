@@ -1,0 +1,29 @@
+<div class="scenario-panel px-4 py-2 bg-surface-50 border-b border-surface-200 flex items-center gap-3 flex-wrap">
+  <span class="font-semibold text-sm flex items-center gap-1 shrink-0">
+    <i class="pi pi-bolt text-orange-500"></i>
+    Scenarios
+  </span>
+
+  <div *ngIf="scenarios.length === 0" class="text-surface-400 text-sm">
+    No scenarios configured.
+  </div>
+
+  <div *ngFor="let scenario of scenarios" class="scenario-card flex items-center gap-2 bg-white border border-surface-200 rounded px-3 py-1 shadow-sm">
+    <span class="font-medium text-sm whitespace-nowrap">{{ scenario.name }}</span>
+    <p-tag
+      [value]="getStatus(scenario.name)"
+      [severity]="statusSeverity(getStatus(scenario.name))"
+    ></p-tag>
+    <span *ngIf="isRunning(scenario.name)" class="text-xs text-orange-600 font-mono whitespace-nowrap">
+      {{ getCountdownSec(scenario.name) }}s remaining
+    </span>
+    <p-button
+      [label]="isRunning(scenario.name) ? 'Running…' : 'Trigger'"
+      [icon]="isRunning(scenario.name) ? 'pi pi-spin pi-spinner' : 'pi pi-play'"
+      [disabled]="isRunning(scenario.name)"
+      severity="danger"
+      size="small"
+      (onClick)="trigger(scenario.name)"
+    ></p-button>
+  </div>
+</div>

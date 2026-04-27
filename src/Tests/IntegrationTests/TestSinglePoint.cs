@@ -30,7 +30,7 @@ public sealed class TestSinglePoint: BaseWebApplication
     {
 	    var client = _factory.CreateClient();
 	    
-	    var response = await client.PutAsJsonAsync($"/api/DataPointConfigs/{Sa}/{Oa}/simulation-mode", SimulationMode.Cyclic.ToString());
+	    var response = await client.PutAsJsonAsync($"/api/DataPointConfigs/{Sa}/{Oa}/simulation-mode", SimulationMode.RandomWalk.ToString());
 	    response.EnsureSuccessStatusCode();
 
 	    Connection con = new Connection(HostName);
@@ -82,7 +82,7 @@ public sealed class TestSinglePoint: BaseWebApplication
 			{
 				SinglePointValue = new SinglePointValueDto() { Value = true}
 			},
-			Mode = SimulationModeDto.None
+			Mode = SimulationModeDto.Static
 		};
         var valueResponse = await client.PostAsJsonAsync($"/api/DataPointValues/{Sa}/{Oa}", dto);
 	    valueResponse.EnsureSuccessStatusCode();
