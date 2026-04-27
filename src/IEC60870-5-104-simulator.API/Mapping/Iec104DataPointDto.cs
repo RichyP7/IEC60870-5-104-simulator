@@ -15,6 +15,15 @@ public class Iec104DataPointDto
     public IecValueDto Value { get; set; } = new IecValueDto();
 
     public SimulationModeDto Mode { get; set; }
+
+    // Simulation realism metadata
+    public double? BaseValue { get; set; }
+    public double? MinValue { get; set; }
+    public double? MaxValue { get; set; }
+    public double? FluctuationRate { get; set; }
+    public string? LinkedPowerPointId { get; set; }
+    public float[]? ProfileValues { get; set; }
+    public bool Frozen { get; set; }
 }
 public class IecValueDto
 {
@@ -34,14 +43,8 @@ public class SinglePointValueDto
 }
 public class DoublePointValueDto
 {
-    public IecDoublePointValueEnumDto Value { get; set; }
-}
-public enum IecDoublePointValueEnumDto
-{
-    INTERMEDIATE,
-    OFF,
-    ON,
-    INDETERMINATE
+    /// <summary>0=INTERMEDIATE, 1=OFF, 2=ON, 3=INDETERMINATE</summary>
+    public int Value { get; set; }
 }
 
 public class FloatValueDto
@@ -55,9 +58,14 @@ public record ScaledValueDto
 }
 public enum SimulationModeDto
 {
-    None,
-    Cyclic,
-    CyclicStatic,
-    Response,
-    PredefinedProfile
+    Static,
+    Periodic,
+    RandomWalk,
+    GaussianNoise,
+    Solar,
+    Wind,
+    EnergyCounter,
+    CounterOnDemand,
+    Profile,
+    CommandResponse,
 }

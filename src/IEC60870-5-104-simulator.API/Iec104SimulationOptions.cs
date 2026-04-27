@@ -3,12 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IEC60870_5_104_simulator.API
 {
-    public class ProfilesOptions
-    {
-        public const string SectionName = "Profiles";
-        public Dictionary<string, float[]> Profiles { get; set; } = new();
-    }
-
     public class Iec104SimulationOptions
     {
         public const string Iec104Simulation = "Iec104Simulation";
@@ -34,20 +28,30 @@ namespace IEC60870_5_104_simulator.API
             public int Oa { get; set; }
             [Range(0, 256, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int TypeId { get; set; }
-            [Required(AllowEmptyStrings = false)]
-            public string Id { get; set; }
+            public string? Id { get; set; }
             public SimulationModeConfig Mode { get; set; }
             public string InitValue{ get; set; }
-            public string ProfileName { get; set; }
+            public float[]? ProfileValues { get; set; }
 
+            // Simulation realism parameters (optional)
+            public double? BaseValue { get; set; }
+            public double? MinValue { get; set; }
+            public double? MaxValue { get; set; }
+            public double? FluctuationRate { get; set; }
+            public string? LinkedPowerPointId { get; set; }
         }
         public enum SimulationModeConfig
         {
-            None,
-            Cyclic,
-            CyclicStatic,
-            Random,
-            PredefinedProfile
+            Static,
+            Periodic,
+            RandomWalk,
+            GaussianNoise,
+            Solar,
+            Wind,
+            EnergyCounter,
+            CounterOnDemand,
+            Profile,
+            CommandResponse,
         }
         public class CommandPointConfig
         {
@@ -57,8 +61,7 @@ namespace IEC60870_5_104_simulator.API
             public int Oa { get; set; }
             [Range(45, 87, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int TypeId { get; set; }
-            [Required(AllowEmptyStrings = false)]
-            public required string Id { get; set; }
+            public string? Id { get; set; }
             public string ResponseId { get; set; }
         }
     }

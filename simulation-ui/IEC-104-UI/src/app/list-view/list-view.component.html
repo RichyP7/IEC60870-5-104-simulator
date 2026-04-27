@@ -1,22 +1,60 @@
 <p-toast></p-toast>
 <div class="card">
 
-  <p-accordion>
-    <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i"
-    >
-      <p-accordion-header>Stationary Address: {{ tab.stationaryAddress }}</p-accordion-header>
-      <p-accordion-content *ngFor="let item of tab.items" >
+  <p-accordion [value]="activeValues" [multiple]="true">
+    <p-accordion-panel *ngFor="let tab of groupedData; let i = index" [value]="i">
+      <p-accordion-header>
+        Common Address {{ tab.stationaryAddress }}
+        <span class="station-count">({{ tab.items.length }} point{{ tab.items.length !== 1 ? 's' : '' }})</span>
+      </p-accordion-header>
+      <p-accordion-content *ngFor="let item of tab.items">
         <div
-          [ngClass]="{'selected-item': item.objectAddress === selectedItem?.objectAddress && item.stationaryAddress === selectedItem?.stationaryAddress}"
-          class="item-details p-2 border-round cursor-pointer"
+          [ngClass]="{
+            'selected-item': item.objectAddress === selectedItem?.objectAddress && item.stationaryAddress === selectedItem?.stationaryAddress,
+            'recently-changed': isRecentlyChanged(item)
+          }"
+          class="dp-row p-1 border-round cursor-pointer"
           (click)="clickOnDataPoint(item)"
         >
-          <div>
-            <p class="m-0">ID: {{ item.id }}</p>
-            <p class="m-0">Stationary Address: {{ item.stationaryAddress }}</p>
-            <p class="m-0">Object Address: {{ item.objectAddress }}</p>
-            <p class="m-0">IEC104 Data Type: {{ item.iec104DataType }}</p>
-            <p class="m-0">Mode: {{ item.mode }}</p>
+          <div class="dp-row-inner">
+            <!-- IOA badge -->
+            <span class="dp-ioa">IOA {{ item.objectAddress }}</span>
+
+            <!-- Type tag -->
+            <span class="dp-type" [title]="item.iec104DataType">{{ item.iec104DataType }}</span>
+
+            <!-- Mode badge -->
+            <span class="dp-mode" [attr.data-mode]="item.mode">{{ item.mode }}</span>
+
+            <!-- Value (live) -->
+            <span class="dp-value-display">{{ formatDisplayValue(item.value) }}</span>
+
+            <!-- Frozen indicator -->
+            <span *ngIf="item.frozen" class="dp-frozen" title="Frozen (simulation paused)">
+              <i class="pi pi-lock"></i>
+            </span>
+
+            <!-- Row actions -->
+            <span class="dp-row-actions" (click)="$event.stopPropagation()">
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                title="Edit"
+                (onClick)="openEdit(item, $event)"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                size="small"
+                title="Delete"
+                (onClick)="confirmDelete(item, $event)"
+              ></p-button>
+            </span>
           </div>
         </div>
       </p-accordion-content>
@@ -33,4 +71,43 @@
   (dataPointCreated)="createDataPoint($event)"
 ></app-create-dialog>
 
+<!-- ── Edit DataPoint dialog ─────────────────────────────────────────────── -->
+<p-dialog
+  header="Edit DataPoint"
+  [modal]="true"
+  [visible]="showEditDialog"
+  (visibleChange)="showEditDialog = $event"
+  [style]="{ width: '42rem', maxWidth: '95vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeEditDialog()"
+>
+  <app-datapoint-details
+    [item]="editItem"
+    (saved)="onDataPointSaved($event)"
+    (closed)="closeEditDialog()"
+  ></app-datapoint-details>
+</p-dialog>
+
+<!-- ── Delete confirm dialog ─────────────────────────────────────────────── -->
+<p-dialog
+  header="Confirm Delete"
+  [modal]="true"
+  [visible]="showDeleteConfirm"
+  (visibleChange)="showDeleteConfirm = $event"
+  [style]="{ width: '28rem' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="cancelDelete()"
+>
+  <p *ngIf="deleteTarget">
+    Delete <strong>{{ deleteTarget.id }}</strong>
+    (CA&nbsp;{{ deleteTarget.stationaryAddress }}&nbsp;·&nbsp;IOA&nbsp;{{ deleteTarget.objectAddress }})?<br>
+    <small class="text-color-secondary">This cannot be undone.</small>
+  </p>
+  <div class="dialog-actions">
+    <p-button label="Cancel" severity="secondary" (onClick)="cancelDelete()"></p-button>
+    <p-button label="Delete" severity="danger" icon="pi pi-trash" (onClick)="executeDelete()"></p-button>
+  </div>
+</p-dialog>
 

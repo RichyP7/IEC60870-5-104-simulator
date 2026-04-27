@@ -96,6 +96,10 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 | `Cyclic` | Generates a new random value every cycle |
 | `CyclicStatic` | Re-sends the current value every cycle |
 | `PredefinedProfile` | Iterates through a predefined list of values from a profile (loops continuously) |
+| `Gaussian` | Applies Box-Muller Gaussian noise around `BaseValue` ± `FluctuationRate` |
+| `Solar` | Sinusoidal day-curve (peak at solar noon) with Gaussian noise, parameterised by `BaseValue` |
+| `Wind` | Random-walk around `BaseValue` bounded by `MinValue`/`MaxValue` |
+| `Counter` | Energy accumulator — integrates power from `LinkedPowerPointId` (MWh) each cycle |
 
 ### Initial Values
 
@@ -193,12 +197,64 @@ docker run -p 2404:2404 -p 8080:8080 \
 | GET | `/api/DataPointConfigs` | List all configured datapoints |
 | GET | `/api/DataPointConfigs/{Ca}/{Oa}` | Get a specific datapoint |
 | POST | `/api/DataPointConfigs` | Create a new datapoint |
+| PUT | `/api/DataPointConfigs/{Ca}/{Oa}` | Update datapoint simulation parameters |
 | PUT | `/api/DataPointConfigs/{Ca}/{Oa}/simulation-mode` | Change simulation mode |
 | DELETE | `/api/DataPointConfigs/{Ca}/{Oa}` | Delete a datapoint |
 | GET | `/api/DataPointValues/{Ca}/{Oa}` | Get current value |
 | POST | `/api/DataPointValues/{Ca}/{Oa}` | Send a value immediately |
+| GET | `/api/Scenarios` | List all scenario states |
+| POST | `/api/Scenarios/{name}/trigger` | Trigger a fault scenario (202 Accepted / 409 Conflict if already running) |
+| GET | `/api/Status` | Simulator status (uptime, engine state, active IEC clients) |
 | GET | `/health/ready` | Readiness check (server + connection) |
 | GET | `/health/live` | Liveness check (server started) |
+
+### SignalR Real-time Push
+
+Connect to `ws://localhost:8080/hubs/simulation` for real-time updates:
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `FullSnapshot` | `DataPointUpdate[]` | Full datapoint snapshot pushed every cycle |
+| `DataPointChanged` | `DataPointUpdate` | Single changed datapoint |
+| `ScenarioUpdate` | `ScenarioStateDto` | Scenario status change (Idle/Running/Completed/Failed) |
+| `ClientCountUpdate` | `int` | Number of connected IEC-104 clients changed |
+
+## SCADA Demo
+
+The built-in demo configuration (`SimulationOptions.json`) includes CA1 stations with realistic waveforms:
+
+| ID | IOA | Type | Mode | Description |
+|----|-----|------|------|-------------|
+| CA1_BREAKER | 101 | M_DP_NA_1 | CyclicStatic | Circuit breaker state (ON/OFF) |
+| CA1_ACTIVE_POWER | 102 | M_ME_NB_1 | Gaussian | Active power ~5000 W ± 150 |
+| CA1_OVERLOAD_ALARM | 103 | M_SP_NA_1 | CyclicStatic | Overload alarm flag |
+| CA1_VOLTAGE | 104 | M_ME_NC_1 | Gaussian | Grid voltage ~110 kV ± 1.5 |
+| CA1_SOLAR_PV | 105 | M_ME_NC_1 | Solar | Solar PV output (day curve) |
+| CA1_WIND_POWER | 106 | M_ME_NC_1 | Wind | Wind power (random walk ~1200 W) |
+| CA1_ENERGY_COUNTER | 107 | M_ME_NC_1 | Counter | Energy accumulator (MWh) |
+
+### Running the Transformer-Trip Fault Scenario
+
+The `ca1-transformer-trip` scenario simulates a fault followed by automatic recovery:
+
+| Step | Delay | Action |
+|------|-------|--------|
+| 1 | 0 ms | Breaker → INTERMEDIATE state |
+| 2 | 2 s | Active power → 0 W (load drop) |
+| 3 | 3 s | Overload alarm → true |
+| 4 | 3.5 s | Voltage → 0.0 kV (outage) |
+| 5 | 5.5 s | Breaker → OFF (trip confirmed) |
+| Recovery | +10 s | Restores power/alarm/voltage/breaker to pre-fault values |
+
+**Trigger via REST:**
+```bash
+curl -X POST http://localhost:8080/api/Scenarios/ca1-transformer-trip/trigger
+```
+
+**Check status:**
+```bash
+curl http://localhost:8080/api/Scenarios
+```
 
 ## Running Tests
 
@@ -227,6 +283,8 @@ docker compose build
 | Logging and Debugging       | Detailed logs for troubleshooting and debugging.                                                  | ⏳ In Progress   |
 | Secure Authentication       | Implement secure authentication mechanisms.                                                       | Not started      |
 | Performance Optimization    | Optimize performance for large-scale simulations.                                                 | Not started      |
-| Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | Not started      |
+| Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | ✅ Implemented   |
+| Fault Scenario Engine       | Timed multi-step fault sequences with auto-recovery via REST trigger.                             | ✅ Implemented   |
+| Realism Simulation Modes    | Gaussian noise, Solar day-curve, Wind random-walk, Energy counter modes.                          | ✅ Implemented   |
 
 <a name="myfootnote1">1</a>: Supported by DALL-E 3

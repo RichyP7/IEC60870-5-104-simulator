@@ -1,0 +1,84 @@
+{
+  "Scenarios": [
+    {
+      "Name": "ca1-transformer-trip",
+      "RecoveryMs": 10000,
+      "Steps": [
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 101,
+          "ValueStr": "INTERMEDIATE",
+          "Freeze": true,
+          "Description": "Breaker TRIP command received — intermediate state"
+        },
+        {
+          "DelayMs": 2000,
+          "Ca": 1,
+          "Oa": 101,
+          "ValueStr": "OFF",
+          "Freeze": true,
+          "Description": "Circuit breaker opens — power supply cut"
+        },
+        {
+          "DelayMs": 1000,
+          "Ca": 1,
+          "Oa": 102,
+          "ValueStr": "0",
+          "Freeze": true,
+          "Description": "Active power drops to 0 kW"
+        },
+        {
+          "DelayMs": 500,
+          "Ca": 1,
+          "Oa": 103,
+          "ValueStr": "true",
+          "Freeze": true,
+          "Description": "Transformer overload alarm activated"
+        },
+        {
+          "DelayMs": 2000,
+          "Ca": 1,
+          "Oa": 104,
+          "ValueStr": "0.0",
+          "Freeze": true,
+          "Description": "Transformer voltage collapses to 0 kV"
+        }
+      ],
+      "RecoverySteps": [
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 101,
+          "ValueStr": "ON",
+          "Freeze": false,
+          "Description": "Circuit breaker reclosed — power restored"
+        },
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 102,
+          "ValueStr": "5000",
+          "Freeze": false,
+          "Description": "Active power restored to 5000 kW"
+        },
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 103,
+          "ValueStr": "false",
+          "Freeze": false,
+          "Description": "Overload alarm cleared"
+        },
+        {
+          "DelayMs": 0,
+          "Ca": 1,
+          "Oa": 104,
+          "ValueStr": "110.0",
+          "Freeze": false,
+          "Description": "Transformer voltage restored to 110 kV"
+        }
+      ]
+    }
+  ]
+}

@@ -25,6 +25,13 @@
     <InternalsVisibleTo Include="IntegrationTests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Configuration\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
   <PropertyGroup>
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
