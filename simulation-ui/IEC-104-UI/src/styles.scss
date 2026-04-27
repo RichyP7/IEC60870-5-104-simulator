@@ -30,3 +30,10 @@ div.p-accordioncontent-content:has(div.selected-item){
 .recently-changed {
   animation: row-highlight 0.5s ease-out forwards;
 }
+
+/* Scenario step tooltip — no line breaks, width follows content */
+.scenario-step-tooltip.p-tooltip .p-tooltip-text {
+  max-width: none;
+  width: max-content;
+  white-space: nowrap;
+}

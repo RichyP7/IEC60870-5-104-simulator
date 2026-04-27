@@ -41,5 +41,35 @@ namespace IEC60870_5_104_simulator.API.Controllers
 
             return Accepted(new { message = $"Scenario '{scenarioName}' started." });
         }
+
+        /// <summary>Returns all scenario definitions including their steps and recovery steps.</summary>
+        [HttpGet("definitions")]
+        public IActionResult GetDefinitions()
+        {
+            var definitions = _scenarioService.GetDefinitions().Select(d => new
+            {
+                name = d.Name,
+                recoveryMs = d.RecoveryMs,
+                steps = d.Steps.Select(s => new
+                {
+                    delayMs = s.DelayMs,
+                    ca = s.Ca,
+                    oa = s.Oa,
+                    valueStr = s.ValueStr,
+                    freeze = s.Freeze,
+                    description = s.Description
+                }),
+                recoverySteps = d.RecoverySteps.Select(s => new
+                {
+                    delayMs = s.DelayMs,
+                    ca = s.Ca,
+                    oa = s.Oa,
+                    valueStr = s.ValueStr,
+                    freeze = s.Freeze,
+                    description = s.Description
+                })
+            });
+            return Ok(definitions);
+        }
     }
 }

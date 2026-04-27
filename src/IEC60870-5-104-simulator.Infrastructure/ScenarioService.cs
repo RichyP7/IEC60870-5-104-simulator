@@ -42,6 +42,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public IEnumerable<ScenarioState> GetStates() => _states.Values;
 
+        public IEnumerable<ScenarioDefinition> GetDefinitions() => _definitions;
+
         public async Task<bool> TriggerAsync(string name, CancellationToken ct = default)
         {
             var def = _definitions.FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
