@@ -13,7 +13,7 @@
           "Ca": "20",
           "Oa": "57",
           "TypeId": 1,
-          "Mode": "Cyclic"
+          "Mode": "Periodic"
         }
       ],
       "Commands":[

@@ -6,16 +6,14 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests;
 
-public sealed class ScenarioIntegrationTest : BaseWebApplication
+/// <summary>Isolated test to verify initial scenario list state with a fresh factory.</summary>
+public sealed class ScenarioListTest : BaseWebApplication
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
-    private readonly ITestOutputHelper _output;
 
-    public ScenarioIntegrationTest(CustomWebApplicationFactory<Program> factory, ITestOutputHelper output)
+    public ScenarioListTest(CustomWebApplicationFactory<Program> factory)
     {
         _factory = factory;
-        _output = output;
-        // Use the scenario test config (includes CA1 datapoints + scenario definition)
         _factory.UpdateOptionsPath("../../../Configuration/ScenarioOptionsTest.json");
     }
 
@@ -31,6 +29,22 @@ public sealed class ScenarioIntegrationTest : BaseWebApplication
         body.Should().NotBeNull();
         body!.Should().ContainSingle(s => s.Name == "ca1-transformer-trip");
         body![0].Status.Should().Be("Idle");
+    }
+
+    private record ScenarioDto(string Name, string Status, int RemainingMs);
+}
+
+public sealed class ScenarioIntegrationTest : BaseWebApplication
+{
+    private readonly CustomWebApplicationFactory<Program> _factory;
+    private readonly ITestOutputHelper _output;
+
+    public ScenarioIntegrationTest(CustomWebApplicationFactory<Program> factory, ITestOutputHelper output)
+    {
+        _factory = factory;
+        _output = output;
+        // Use the scenario test config (includes CA1 datapoints + scenario definition)
+        _factory.UpdateOptionsPath("../../../Configuration/ScenarioOptionsTest.json");
     }
 
     [Fact]

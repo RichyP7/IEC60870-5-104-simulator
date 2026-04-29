@@ -31,19 +31,33 @@ namespace IEC60870_5_104_simulator.API.Controllers
         }
         
         [HttpGet("{idStationary}/{idObject}")]
-        public Iec104DataPointDto Get([FromRoute ]int idStationary, [FromRoute] int idObject)
+        public IActionResult Get([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-            IecAddress address = new IecAddress(idStationary, idObject);
-            var dataPoint = _dataPointService.GetDataPoint(address);
-            return dataPoint;
+            try
+            {
+                IecAddress address = new IecAddress(idStationary, idObject);
+                var dataPoint = _dataPointService.GetDataPoint(address);
+                return Ok(dataPoint);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{idStationary}/{idObject}/simulation-mode")]
-        public Iec104DataPointDto SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeDto simulationMode)
+        public IActionResult SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeDto simulationMode)
         {
-            IecAddress address = new IecAddress(idStationary, idObject);
-            var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)simulationMode);
-            return dataPoint;
+            try
+            {
+                IecAddress address = new IecAddress(idStationary, idObject);
+                var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)simulationMode);
+                return Ok(dataPoint);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
