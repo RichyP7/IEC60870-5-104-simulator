@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IntegrationTests.TestPreparation;
 
@@ -17,6 +18,12 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, OptionsPath);
             configBuilder.AddJsonFile(configPath, optional: false, reloadOnChange: true);
+        });
+
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
         });
     }
 

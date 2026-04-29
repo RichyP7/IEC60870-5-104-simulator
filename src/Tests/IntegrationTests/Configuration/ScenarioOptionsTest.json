@@ -8,14 +8,14 @@
           "Oa": "101",
           "TypeId": 3,
           "InitValue": "ON",
-          "Mode": "CyclicStatic"
+          "Mode": "Periodic"
         },
         {
           "Ca": "1",
           "Oa": "102",
           "TypeId": 11,
           "InitValue": "5000",
-          "Mode": "Gaussian",
+          "Mode": "GaussianNoise",
           "BaseValue": 5000,
           "MinValue": 0,
           "MaxValue": 8000,
@@ -26,14 +26,14 @@
           "Oa": "103",
           "TypeId": 1,
           "InitValue": "false",
-          "Mode": "CyclicStatic"
+          "Mode": "Periodic"
         },
         {
           "Ca": "1",
           "Oa": "104",
           "TypeId": 13,
           "InitValue": "110.0",
-          "Mode": "Gaussian",
+          "Mode": "GaussianNoise",
           "BaseValue": 110.0,
           "MinValue": 95.0,
           "MaxValue": 125.0,

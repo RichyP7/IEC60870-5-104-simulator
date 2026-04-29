@@ -8,7 +8,8 @@
           "Ca": "20",
           "Oa": "25",
           "TypeId": 11,
-          "Mode": "Cyclic"
+          "Mode": "Periodic",
+          "InitValue": "32767"
         }
       ],
       "Commands":[
