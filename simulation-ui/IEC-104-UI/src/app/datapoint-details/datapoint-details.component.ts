@@ -20,8 +20,7 @@ const MODE_OPTIONS: Record<SimulationMode, ModeOption> = {
   [SimulationMode.Periodic]:        { label: 'Periodic (fixed value, every cycle)',      value: SimulationMode.Periodic },
   [SimulationMode.RandomWalk]:      { label: 'Random Walk (incremental changes)',        value: SimulationMode.RandomWalk },
   [SimulationMode.GaussianNoise]:   { label: 'Gaussian Noise (around base value)',       value: SimulationMode.GaussianNoise },
-  [SimulationMode.Solar]:           { label: 'Solar (daytime curve)',                    value: SimulationMode.Solar },
-  [SimulationMode.Wind]:            { label: 'Wind (bounded random walk)',               value: SimulationMode.Wind },
+  [SimulationMode.PeriodicWave]:    { label: 'Periodic Wave (configurable sine period)',  value: SimulationMode.PeriodicWave },
   [SimulationMode.EnergyCounter]:   { label: 'Energy Counter (accumulates + sends)',     value: SimulationMode.EnergyCounter },
   [SimulationMode.CounterOnDemand]: { label: 'Counter On Demand (silent accumulation)',  value: SimulationMode.CounterOnDemand },
   [SimulationMode.Profile]:         { label: 'Profile (predefined float array)',         value: SimulationMode.Profile },
@@ -72,9 +71,9 @@ const TYPE_MODE_MAP: Record<string, SimulationMode[]> = {
   M_ME_TE_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.Profile],
 
   // Measured Value, Short Float (IEEE754) — full float, supports energy curves
-  M_ME_NC_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.Solar, SimulationMode.Wind, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
-  M_ME_TC_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.Solar, SimulationMode.Wind, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
-  M_ME_TF_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.Solar, SimulationMode.Wind, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
+  M_ME_NC_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.PeriodicWave, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
+  M_ME_TC_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.PeriodicWave, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
+  M_ME_TF_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise, SimulationMode.PeriodicWave, SimulationMode.Profile, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
 
   // Integrated Totals / Binary Counter Readings (BCR)
   M_IT_NA_1: [SimulationMode.Static, SimulationMode.Periodic, SimulationMode.EnergyCounter, SimulationMode.CounterOnDemand],
@@ -163,7 +162,8 @@ export class DatapointDetailsComponent implements OnChanges {
       minValue: [null],
       maxValue: [null],
       fluctuationRate: [null],
-      linkedPowerPointId: [null],
+      wavePeriodSeconds: [null],
+      linkedDataPointId: [null],
       profileValues: [''],
     });
   }
@@ -187,7 +187,7 @@ export class DatapointDetailsComponent implements OnChanges {
     const flat = this.availableSimulationModes;
     const periodic = flat.filter(o =>
       [SimulationMode.Periodic, SimulationMode.RandomWalk, SimulationMode.GaussianNoise,
-       SimulationMode.Solar, SimulationMode.Wind, SimulationMode.EnergyCounter, SimulationMode.Profile]
+       SimulationMode.PeriodicWave, SimulationMode.EnergyCounter, SimulationMode.Profile]
       .includes(o.value));
     const triggered = flat.filter(o =>
       [SimulationMode.Static, SimulationMode.CounterOnDemand, SimulationMode.CommandResponse]
@@ -206,14 +206,18 @@ export class DatapointDetailsComponent implements OnChanges {
   }
 
   get showSimParamFields(): boolean {
-    return [SimulationMode.GaussianNoise, SimulationMode.Solar, SimulationMode.Wind, SimulationMode.RandomWalk].includes(this.selectedMode);
+    return [SimulationMode.GaussianNoise, SimulationMode.PeriodicWave, SimulationMode.RandomWalk].includes(this.selectedMode);
+  }
+
+  get showWavePeriodField(): boolean {
+    return this.selectedMode === SimulationMode.PeriodicWave;
   }
 
   get fluctuationRateLabel(): string {
     return this.selectedMode === SimulationMode.RandomWalk ? 'Max Step Size' : 'Fluctuation Rate';
   }
 
-  get showLinkedPowerPointId(): boolean {
+  get showLinkedDataPointId(): boolean {
     return this.selectedMode === SimulationMode.EnergyCounter || this.selectedMode === SimulationMode.CounterOnDemand;
   }
 
@@ -283,7 +287,8 @@ export class DatapointDetailsComponent implements OnChanges {
       minValue: item.minValue ?? null,
       maxValue: item.maxValue ?? null,
       fluctuationRate: item.fluctuationRate ?? null,
-      linkedPowerPointId: item.linkedPowerPointId ?? null,
+      wavePeriodSeconds: item.wavePeriodSeconds ?? null,
+      linkedDataPointId: item.linkedDataPointId ?? null,
       profileValues: (item.profileValues ?? []).join(', '),
     }, { emitEvent: false });
 
@@ -315,7 +320,8 @@ export class DatapointDetailsComponent implements OnChanges {
       minValue: fv.minValue,
       maxValue: fv.maxValue,
       fluctuationRate: fv.fluctuationRate,
-      linkedPowerPointId: fv.linkedPowerPointId,
+      wavePeriodSeconds: fv.wavePeriodSeconds,
+      linkedDataPointId: fv.linkedDataPointId,
       profileValues: fv.profileValues
         ? (fv.profileValues as string).split(',').map((s: string) => parseFloat(s.trim())).filter((n: number) => !isNaN(n))
         : [],

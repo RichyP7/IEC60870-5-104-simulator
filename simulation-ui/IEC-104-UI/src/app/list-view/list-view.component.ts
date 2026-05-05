@@ -258,7 +258,8 @@ export interface DataPoint {
   minValue?: number | null;
   maxValue?: number | null;
   fluctuationRate?: number | null;
-  linkedPowerPointId?: string | null;
+  wavePeriodSeconds?: number | null;
+  linkedDataPointId?: string | null;
   profileValues?: number[] | null;
   frozen?: boolean;
 }
@@ -273,8 +274,7 @@ export enum SimulationMode {
   Periodic          = 'Periodic',
   RandomWalk        = 'RandomWalk',
   GaussianNoise     = 'GaussianNoise',
-  Solar             = 'Solar',
-  Wind              = 'Wind',
+  PeriodicWave      = 'PeriodicWave',
   EnergyCounter     = 'EnergyCounter',
   CounterOnDemand   = 'CounterOnDemand',
   Profile           = 'Profile',

@@ -24,6 +24,7 @@ namespace IEC60870_5_104_simulator.API
         {
             [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int Ca { get; set; }
+            public string? Name { get; set; }
             [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int Oa { get; set; }
             [Range(0, 256, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
@@ -38,7 +39,8 @@ namespace IEC60870_5_104_simulator.API
             public double? MinValue { get; set; }
             public double? MaxValue { get; set; }
             public double? FluctuationRate { get; set; }
-            public string? LinkedPowerPointId { get; set; }
+            public double? WavePeriodSeconds { get; set; }
+            public string? LinkedDataPointId { get; set; }
         }
         public enum SimulationModeConfig
         {
@@ -46,8 +48,7 @@ namespace IEC60870_5_104_simulator.API
             Periodic,
             RandomWalk,
             GaussianNoise,
-            Solar,
-            Wind,
+            PeriodicWave,
             EnergyCounter,
             CounterOnDemand,
             Profile,
@@ -57,6 +58,7 @@ namespace IEC60870_5_104_simulator.API
         {
             [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int Ca { get; set; }
+            public string? Name { get; set; }
             [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int Oa { get; set; }
             [Range(45, 87, ErrorMessage = "Value for {0} must be between {1} and {2}.")]

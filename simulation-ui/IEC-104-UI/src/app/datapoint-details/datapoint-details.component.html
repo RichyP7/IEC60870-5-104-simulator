@@ -92,11 +92,22 @@
             </span>
           </ng-container>
 
-          <!-- Counter: linked power point -->
-          <ng-container *ngIf="showLinkedPowerPointId">
-            <span class="dp-label">Linked Power Point ID</span>
+          <!-- PeriodicWave: wave period -->
+          <ng-container *ngIf="showWavePeriodField">
+            <span class="dp-label">Wave Period (ms)</span>
             <span class="dp-value">
-              <input pInputText formControlName="linkedPowerPointId"
+              <p-inputnumber formControlName="wavePeriodSeconds"
+                [minFractionDigits]="0" [maxFractionDigits]="0"
+                styleClass="w-full" placeholder="Period in seconds (default 86400 = 24 h)">
+              </p-inputnumber>
+            </span>
+          </ng-container>
+
+          <!-- Counter: linked power point -->
+          <ng-container *ngIf="showLinkedDataPointId">
+            <span class="dp-label">Linked Data Point ID</span>
+            <span class="dp-value">
+              <input pInputText formControlName="linkedDataPointId"
                 class="w-full" placeholder="ID of the source power datapoint">
             </span>
           </ng-container>

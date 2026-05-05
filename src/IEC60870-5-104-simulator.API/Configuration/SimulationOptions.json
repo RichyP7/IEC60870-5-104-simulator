@@ -119,18 +119,19 @@
           "Oa": "105",
           "TypeId": 13,
           "InitValue": "0.0",
-          "Mode": "Solar",
+          "Mode": "PeriodicWave",
           "BaseValue": 2500.0,
           "MinValue": 0.0,
           "MaxValue": 2800.0,
-          "FluctuationRate": 0.08
+          "FluctuationRate": 0.08,
+          "WavePeriodSeconds": 86400
         },
         {
           "Ca": "1",
           "Oa": "106",
           "TypeId": 13,
           "InitValue": "1200.0",
-          "Mode": "Wind",
+          "Mode": "RandomWalk",
           "BaseValue": 1200.0,
           "MinValue": 0.0,
           "MaxValue": 3000.0,
@@ -144,7 +145,7 @@
           "Mode": "EnergyCounter",
           "MinValue": 0.0,
           "MaxValue": 999999.0,
-          "LinkedPowerPointId": "CA1_IOA102"
+          "LinkedDataPointId": "CA1_IOA102"
         }
       ],
       "Commands":[
