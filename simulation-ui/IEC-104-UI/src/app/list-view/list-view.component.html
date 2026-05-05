@@ -17,6 +17,9 @@
           (click)="clickOnDataPoint(item)"
         >
           <div class="dp-row-inner">
+            <!-- Name -->
+            <span *ngIf="item.name" class="dp-name" [title]="item.name">{{ item.name }}</span>
+
             <!-- IOA badge -->
             <span class="dp-ioa">IOA {{ item.objectAddress }}</span>
 

@@ -48,6 +48,17 @@ p-accordion {
   padding: 0.15rem 0;
 }
 
+.dp-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  min-width: 8rem;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-color, #1f2937);
+}
+
 .dp-ioa {
   font-weight: 700;
   font-size: 0.8rem;
