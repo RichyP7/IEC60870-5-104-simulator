@@ -5,12 +5,14 @@
 
       "Measures": [
         {
+          "Name": "Tap Changer Position",
           "Ca": "20",
           "Oa": "25",
           "TypeId": 5,
           "InitValue": "true"
         },
         {
+          "Name": "Switchgear Status",
           "Ca": "20",
           "Oa": "27",
           "TypeId": 3,
@@ -18,18 +20,21 @@
           "Mode": "Static"
         },
         {
+          "Name": "Status Signal 26",
           "Ca": "20",
           "Oa": "26",
           "TypeId": 1,
           "Mode": "Periodic"
         },
         {
+          "Name": "Status Signal 57",
           "Ca": "20",
           "Oa": "57",
           "TypeId": 1,
           "Mode": "Periodic"
         },
         {
+          "Name": "Measured Power (scaled)",
           "Ca": "20",
           "Oa": "28",
           "TypeId": 11,
@@ -39,6 +44,7 @@
           "MaxValue": 1000
         },
         {
+          "Name": "Temperature",
           "Ca": "20",
           "Oa": "29",
           "TypeId": 13,
@@ -48,12 +54,14 @@
           "MaxValue": 100.0
         },
         {
+          "Name": "Normalized Measurement",
           "Ca": "20",
           "Oa": "31",
           "TypeId": 9,
           "Mode": "Periodic"
         },
         {
+          "Name": "Phase Angle A",
           "Ca": "21",
           "Oa": "31",
           "TypeId": 9,
@@ -63,6 +71,7 @@
           "MaxValue": 1.0
         },
         {
+          "Name": "Phase Angle B",
           "Ca": "21",
           "Oa": "32",
           "TypeId": 9,
@@ -72,6 +81,7 @@
           "MaxValue": 1.0
         },
         {
+          "Name": "Load Profile",
           "Ca": "20",
           "Oa": "40",
           "TypeId": 13,
@@ -79,6 +89,7 @@
           "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
         },
         {
+          "Name": "Transformer Breaker",
           "Ca": "1",
           "Oa": "101",
           "TypeId": 3,
@@ -86,6 +97,7 @@
           "Mode": "Static"
         },
         {
+          "Name": "Active Power (W)",
           "Ca": "1",
           "Oa": "102",
           "TypeId": 11,
@@ -97,6 +109,7 @@
           "FluctuationRate": 150
         },
         {
+          "Name": "Fault Alarm",
           "Ca": "1",
           "Oa": "103",
           "TypeId": 1,
@@ -104,6 +117,7 @@
           "Mode": "Periodic"
         },
         {
+          "Name": "Voltage (kV)",
           "Ca": "1",
           "Oa": "104",
           "TypeId": 13,
@@ -115,6 +129,7 @@
           "FluctuationRate": 1.5
         },
         {
+          "Name": "Solar Power Output (W)",
           "Ca": "1",
           "Oa": "105",
           "TypeId": 13,
@@ -127,6 +142,7 @@
           "WavePeriodSeconds": 86400
         },
         {
+          "Name": "Wind Power Output (W)",
           "Ca": "1",
           "Oa": "106",
           "TypeId": 13,
@@ -138,6 +154,7 @@
           "FluctuationRate": 80.0
         },
         {
+          "Name": "Energy Meter (Wh)",
           "Ca": "1",
           "Oa": "107",
           "TypeId": 13,
@@ -150,36 +167,42 @@
       ],
       "Commands":[
         {
+          "Name": "Tap Changer Command",
           "Ca": "20",
           "Oa": "2",
           "TypeId": 47,
           "ResponseId": "CA20_IOA25"
         },
         {
+          "Name": "Switchgear Command",
           "Ca": "100",
           "Oa": "25",
           "TypeId": 46,
           "ResponseId": "CA20_IOA27"
         },
         {
+          "Name": "Status Toggle Command",
           "Ca": "100",
           "Oa": "26",
           "TypeId": 45,
           "ResponseId": "CA20_IOA26"
         },
         {
+          "Name": "Power Set Point",
           "Ca": "100",
           "Oa": "29",
           "TypeId": 49,
           "ResponseId": "CA20_IOA28"
         },
         {
+          "Name": "Temperature Set Point",
           "Ca": "100",
           "Oa": "30",
           "TypeId": 49,
           "ResponseId": "CA20_IOA29"
         },
         {
+          "Name": "Normalize Set Point",
           "Ca": "100",
           "Oa": "31",
           "TypeId": 48,

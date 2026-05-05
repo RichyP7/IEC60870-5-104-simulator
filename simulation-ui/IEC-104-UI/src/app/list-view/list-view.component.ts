@@ -249,6 +249,7 @@ export interface IecValueDto {
 
 export interface DataPoint {
   id: string;
+  name?: string | null;
   stationaryAddress: number;
   objectAddress: number;
   iec104DataType: string;
