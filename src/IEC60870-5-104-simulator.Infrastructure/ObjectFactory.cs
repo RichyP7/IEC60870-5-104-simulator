@@ -21,10 +21,9 @@ namespace IEC60870_5_104_simulator.Infrastructure
             _random = new Random();
             _strategies = new Dictionary<SimulationMode, ISimulationStrategy>
             {
-                [SimulationMode.GaussianNoise] = new GaussianNoiseStrategy(_random),
-                [SimulationMode.Solar]         = new SolarStrategy(_random),
-                [SimulationMode.Wind]          = new WindStrategy(_random),
-                [SimulationMode.RandomWalk]    = new RandomWalkStrategy(_random),
+                [SimulationMode.GaussianNoise]  = new GaussianNoiseStrategy(_random),
+                [SimulationMode.PeriodicWave]    = new PeriodicWaveStrategy(_random),
+                [SimulationMode.RandomWalk]      = new RandomWalkStrategy(_random),
             };
         }
 

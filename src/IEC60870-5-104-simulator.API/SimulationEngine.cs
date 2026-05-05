@@ -155,12 +155,12 @@ namespace IEC60870_5_104_simulator.Service
         {
             var allIds = measures.Select(m => m.Id).ToHashSet();
             foreach (var measure in measures.Where(m =>
-                !string.IsNullOrEmpty(m.LinkedPowerPointId) &&
+                !string.IsNullOrEmpty(m.LinkedDataPointId) &&
                 (m.Mode == SimulationMode.EnergyCounter || m.Mode == SimulationMode.CounterOnDemand)))
             {
-                if (!allIds.Contains(measure.LinkedPowerPointId!))
+                if (!allIds.Contains(measure.LinkedDataPointId!))
                     throw new InvalidOperationException(
-                        $"Datapoint '{measure.Id}' references unknown LinkedPowerPointId '{measure.LinkedPowerPointId}'. Check the Id matches an existing measure.");
+                        $"Datapoint '{measure.Id}' references unknown LinkedDataPointId '{measure.LinkedDataPointId}'. Check the Id matches an existing measure.");
             }
         }
 

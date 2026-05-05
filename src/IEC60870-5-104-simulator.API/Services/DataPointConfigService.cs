@@ -61,7 +61,7 @@ public class DataPointConfigService
 
     /// <summary>
     /// Updates simulation parameters (BaseValue, MinValue, MaxValue, FluctuationRate,
-    /// LinkedPowerPointId, Mode) on an existing datapoint without changing the IEC-104 type.
+    /// LinkedDataPointId, Mode) on an existing datapoint without changing the IEC-104 type.
     /// </summary>
     public void UpdateDataPointParams(IecAddress address, Iec104DataPointDto dto)
     {
@@ -76,7 +76,9 @@ public class DataPointConfigService
             dp.MaxValue = dto.MaxValue;
         if (dto.FluctuationRate.HasValue)
             dp.FluctuationRate = dto.FluctuationRate;
-        if (dto.LinkedPowerPointId != null)
-            dp.LinkedPowerPointId = dto.LinkedPowerPointId;
+        if (dto.WavePeriodSeconds.HasValue)
+            dp.WavePeriodSeconds = dto.WavePeriodSeconds;
+        if (dto.LinkedDataPointId != null)
+            dp.LinkedDataPointId = dto.LinkedDataPointId;
     }
 }

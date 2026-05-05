@@ -5,6 +5,7 @@ namespace IEC60870_5_104_simulator.Domain
     public class Iec104DataPoint
     {
         public string Id { get; set; }
+        public string? Name { get; set; }
         public IecAddress Address { get; set; }
         public Iec104DataTypes Iec104DataType { get; set; }
         public IecValueObject Value { get; set; }
@@ -18,7 +19,8 @@ namespace IEC60870_5_104_simulator.Domain
         public double? MinValue { get; set; }
         public double? MaxValue { get; set; }
         public double? FluctuationRate { get; set; }
-        public string? LinkedPowerPointId { get; set; }
+        public double? WavePeriodSeconds { get; set; }
+        public string? LinkedDataPointId { get; set; }
 
         // Frozen flag: when true, cyclic simulation skips this point (e.g. during fault scenario)
         public bool Frozen { get; set; }
@@ -43,10 +45,8 @@ namespace IEC60870_5_104_simulator.Domain
         RandomWalk,
         /// <summary>Gaussian noise around BaseValue, bounded by MinValue/MaxValue. Sent every cycle.</summary>
         GaussianNoise,
-        /// <summary>Sinusoidal daytime solar generation profile. Sent every cycle.</summary>
-        Solar,
-        /// <summary>Bounded random-walk wind power simulation. Sent every cycle.</summary>
-        Wind,
+        /// <summary>Positive half-sine wave with configurable period (WavePeriodSeconds). Sent every cycle.</summary>
+        PeriodicWave,
         /// <summary>Accumulating energy counter transmitted on every cycle (COT=PERIODIC).</summary>
         EnergyCounter,
         /// <summary>Counter that accumulates silently each cycle but is only transmitted on interrogation (GI/CI).</summary>

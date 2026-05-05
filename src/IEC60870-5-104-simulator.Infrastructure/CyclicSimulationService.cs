@@ -35,23 +35,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
         {
             var allPoints = datapoints.ToList();
+            var pointsById = allPoints.Where(dp => dp.Id != null).ToDictionary(dp => dp.Id!);
 
-            // Build an O(1) lookup by datapoint ID so counter phases can find linked power points
-            // without a full linear scan on every tick.
-            var pointsById = allPoints
-                .Where(dp => dp.Id != null)
-                .ToDictionary(dp => dp.Id!);
-
-            // ── Phase 1: Non-counter cyclic modes (RandomWalk, Periodic, Profile, Gaussian, Solar, Wind)
-            // The factory methods persist the computed value to the repository as a side-effect,
-            // so that counter modes reading LinkedPowerPointId in Phase 2/3 see fresh values.
             var nonCounterCyclic = GetNonCounterCyclicDataPoints(allPoints);
 
-            // ── Phase 2: EnergyCounter — compute using fresh linked-point values, send periodically.
             var energyCounters = allPoints
                 .Where(dp => !dp.Frozen && dp.Mode == SimulationMode.EnergyCounter).ToList();
 
-            // Build the initial ASDU dictionary for all points that will be transmitted this cycle.
             var allPeriodicPoints = nonCounterCyclic.Concat(energyCounters).ToList();
             var asduLists = CreateDistinctAsdus(allPeriodicPoints)
                 .ToDictionary(kv => kv.Key, kv => new List<ASDU> { kv.Value });
@@ -65,10 +55,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 AppendToAsdus(asduLists, dp, _factory.CreateInformationObjectWithValue(dp, newValue));
             }
 
-            // ── Phase 3: CounterOnDemand — accumulate silently each cycle using fresh power values,
-            // but never include in periodic ASDUs (transmitted only on interrogation).
             foreach (var dp in allPoints.Where(dp => !dp.Frozen && dp.Mode == SimulationMode.CounterOnDemand))
-                AccumulateCounter(dp, pointsById, cycleTimeMs); // side-effect: persists accumulated value to repo
+                AccumulateCounter(dp, pointsById, cycleTimeMs);
 
             _dispatcher.Send(asduLists.SelectMany(kv => kv.Value));
         }
@@ -87,20 +75,20 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
             // Resolve the linked power point using the pre-built O(1) dictionary.
             double powerKw = 0.0;
-            if (!string.IsNullOrEmpty(dp.LinkedPowerPointId))
+            if (!string.IsNullOrEmpty(dp.LinkedDataPointId))
             {
-                if (pointsById.TryGetValue(dp.LinkedPowerPointId, out var powerPoint))
+                if (pointsById.TryGetValue(dp.LinkedDataPointId, out var powerPoint))
                 {
                     double? resolved = ExtractNumericValue(powerPoint.Value);
                     if (!resolved.HasValue)
                         throw new InvalidOperationException(
-                            $"Counter '{dp.Id}': linked point '{dp.LinkedPowerPointId}' has a non-numeric value type. Fix the datapoint configuration.");
+                            $"Counter '{dp.Id}': linked point '{dp.LinkedDataPointId}' has a non-numeric value type. Fix the datapoint configuration.");
                     powerKw = resolved.Value;
                 }
                 else
                 {
                     throw new InvalidOperationException(
-                        $"Counter '{dp.Id}': LinkedPowerPointId '{dp.LinkedPowerPointId}' does not exist in the current datapoints. Fix the datapoint configuration.");
+                        $"Counter '{dp.Id}': LinkedDataPointId '{dp.LinkedDataPointId}' does not exist in the current datapoints. Fix the datapoint configuration.");
                 }
             }
 
@@ -203,8 +191,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                          or SimulationMode.Periodic
                          or SimulationMode.Profile
                          or SimulationMode.GaussianNoise
-                         or SimulationMode.Solar
-                         or SimulationMode.Wind);
+                         or SimulationMode.PeriodicWave);
         }
 
         private IEnumerable<KeyValuePair<(int Ca, Iec104DataTypes TypeId), ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)

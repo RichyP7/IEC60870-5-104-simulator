@@ -6,6 +6,7 @@ namespace IEC60870_5_104_simulator.API.Mapping;
 public class Iec104DataPointDto
 {
     public string Id { get; set; }
+    public string? Name { get; set; }
     [Required]
     public int StationaryAddress { get; set; }
     [Required]
@@ -21,7 +22,8 @@ public class Iec104DataPointDto
     public double? MinValue { get; set; }
     public double? MaxValue { get; set; }
     public double? FluctuationRate { get; set; }
-    public string? LinkedPowerPointId { get; set; }
+    public double? WavePeriodSeconds { get; set; }
+    public string? LinkedDataPointId { get; set; }
     public float[]? ProfileValues { get; set; }
     public bool Frozen { get; set; }
 }
@@ -62,8 +64,7 @@ public enum SimulationModeDto
     Periodic,
     RandomWalk,
     GaussianNoise,
-    Solar,
-    Wind,
+    PeriodicWave,
     EnergyCounter,
     CounterOnDemand,
     Profile,
