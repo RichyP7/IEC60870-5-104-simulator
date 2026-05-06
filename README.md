@@ -63,24 +63,26 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 ```json
 {
   "Iec104Simulation": {
-    "CycleTimeMs": 10000,
+    "CycleTimeMs": 5000,
     "DataPointConfiguration": {
       "Measures": [
         {
-          "Id": "Point1",
+          "Id": "CA20_IOA25",
+          "Name": "Tap Changer Position",
           "Ca": "20",
           "Oa": "25",
-          "TypeId": 13,
-          "Mode": "Cyclic"
+          "TypeId": 5,
+          "Mode": "Periodic"
         }
       ],
       "Commands": [
         {
-          "Id": "Command1",
-          "Ca": "100",
-          "Oa": "25",
-          "TypeId": 45,
-          "ResponseId": "Point1"
+          "Id": "CA20_IOA2",
+          "Name": "Tap Changer Command",
+          "Ca": "20",
+          "Oa": "2",
+          "TypeId": 47,
+          "ResponseId": "CA20_IOA25"
         }
       ]
     }
@@ -90,16 +92,17 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 
 ### Simulation Modes
 
-| Mode | Description |
-|------|-------------|
-| `None` | Static value, no cyclic transmission |
-| `Cyclic` | Generates a new random value every cycle |
-| `CyclicStatic` | Re-sends the current value every cycle |
-| `PredefinedProfile` | Iterates through a predefined list of values from a profile (loops continuously) |
-| `Gaussian` | Applies Box-Muller Gaussian noise around `BaseValue` ± `FluctuationRate` |
-| `Solar` | Sinusoidal day-curve (peak at solar noon) with Gaussian noise, parameterised by `BaseValue` |
-| `Wind` | Random-walk around `BaseValue` bounded by `MinValue`/`MaxValue` |
-| `Counter` | Energy accumulator — integrates power from `LinkedPowerPointId` (MWh) each cycle |
+| Mode | Transmission | Description |
+|------|-------------|-------------|
+| `Static` | On startup / interrogation only | Fixed value, never sent on the periodic cycle |
+| `Periodic` | Every cycle | Re-sends the current value with COT=PERIODIC |
+| `RandomWalk` | Every cycle | Value steps randomly by up to `FluctuationRate`, clamped to `MinValue`/`MaxValue` |
+| `GaussianNoise` | Every cycle | Gaussian noise around `BaseValue` ± `FluctuationRate`, bounded by `MinValue`/`MaxValue` |
+| `PeriodicWave` | Every cycle | Positive half-sine wave with period `WavePeriodSeconds`, peak at `BaseValue` |
+| `Profile` | Every cycle | Iterates through the inline `ProfileValues` array (loops continuously) |
+| `EnergyCounter` | Every cycle | Accumulates energy from the linked data point (`LinkedDataPointId`) each cycle |
+| `CounterOnDemand` | On interrogation only | Silently accumulates each cycle but only transmitted on GI/CI request |
+| `CommandResponse` | On command receipt | Mirrors an incoming command ASDU as a measurement response |
 
 ### Initial Values
 
@@ -118,7 +121,8 @@ Example:
 
 ```json
 {
-  "Id": "SPM1",
+  "Id": "CA20_IOA26",
+  "Name": "Status Signal",
   "Ca": "20",
   "Oa": "26",
   "TypeId": 1,
@@ -128,7 +132,8 @@ Example:
 
 ```json
 {
-  "Id": "DPM1",
+  "Id": "CA20_IOA27",
+  "Name": "Switchgear Status",
   "Ca": "20",
   "Oa": "27",
   "TypeId": 3,
@@ -136,32 +141,23 @@ Example:
 }
 ```
 
-### Predefined Profiles
+### Profile Mode
 
-For simulating realistic measurement curves (e.g. current, power over time), use the `PredefinedProfile` mode. Profiles are defined in `Configuration/Profiles.json`:
-
-```json
-{
-  "Profiles": {
-    "TestProfile": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
-  }
-}
-```
-
-Reference the profile by name in your datapoint configuration:
+For simulating realistic measurement curves (e.g. load over time), use the `Profile` mode with an inline `ProfileValues` array:
 
 ```json
 {
-  "Id": "PROFILE1",
+  "Id": "CA20_IOA40",
+  "Name": "Load Profile",
   "Ca": "20",
   "Oa": "40",
   "TypeId": 13,
-  "Mode": "PredefinedProfile",
-  "ProfileName": "TestProfile"
+  "Mode": "Profile",
+  "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
 }
 ```
 
-Each cycle, the next value in the profile is sent. When the end is reached, it loops back to the beginning. This mode is supported for measured value types (float, scaled, normalized, step position) but not for single/double points.
+Each cycle, the next value in the array is sent. When the end is reached, it loops back to the beginning. This mode is supported for measured value types (float, scaled, normalized, step position) but not for single/double points.
 
 ### Supported TypeIds
 
@@ -186,7 +182,6 @@ To use your own configuration, mount your config files into the container:
 ```bash
 docker run -p 2404:2404 -p 8080:8080 \
   -v ./my-config/SimulationOptions.json:/app/Configuration/SimulationOptions.json \
-  -v ./my-config/Profiles.json:/app/Configuration/Profiles.json \
   ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 
@@ -223,15 +218,15 @@ Connect to `ws://localhost:8080/hubs/simulation` for real-time updates:
 
 The built-in demo configuration (`SimulationOptions.json`) includes CA1 stations with realistic waveforms:
 
-| ID | IOA | Type | Mode | Description |
-|----|-----|------|------|-------------|
-| CA1_BREAKER | 101 | M_DP_NA_1 | CyclicStatic | Circuit breaker state (ON/OFF) |
-| CA1_ACTIVE_POWER | 102 | M_ME_NB_1 | Gaussian | Active power ~5000 W ± 150 |
-| CA1_OVERLOAD_ALARM | 103 | M_SP_NA_1 | CyclicStatic | Overload alarm flag |
-| CA1_VOLTAGE | 104 | M_ME_NC_1 | Gaussian | Grid voltage ~110 kV ± 1.5 |
-| CA1_SOLAR_PV | 105 | M_ME_NC_1 | Solar | Solar PV output (day curve) |
-| CA1_WIND_POWER | 106 | M_ME_NC_1 | Wind | Wind power (random walk ~1200 W) |
-| CA1_ENERGY_COUNTER | 107 | M_ME_NC_1 | Counter | Energy accumulator (MWh) |
+| ID | Name | IOA | Type | Mode | Description |
+|----|------|-----|------|------|-------------|
+| CA1_IOA101 | Transformer Breaker | 101 | M_DP_NA_1 | Static | Circuit breaker state (ON/OFF) |
+| CA1_IOA102 | Active Power (W) | 102 | M_ME_NB_1 | GaussianNoise | Active power ~5000 W ± 150 |
+| CA1_IOA103 | Fault Alarm | 103 | M_SP_NA_1 | Periodic | Fault alarm flag |
+| CA1_IOA104 | Voltage (kV) | 104 | M_ME_NC_1 | GaussianNoise | Grid voltage ~110 kV ± 1.5 |
+| CA1_IOA105 | Solar Power Output (W) | 105 | M_ME_NC_1 | PeriodicWave | Day-curve sine wave, peak 2500 W, period 24 h |
+| CA1_IOA106 | Wind Power Output (W) | 106 | M_ME_NC_1 | RandomWalk | Random walk ~1200 W, bounded 0–3000 W |
+| CA1_IOA107 | Energy Meter (Wh) | 107 | M_ME_NC_1 | EnergyCounter | Accumulates Wh from CA1_IOA102 each cycle |
 
 ### Running the Transformer-Trip Fault Scenario
 
@@ -285,6 +280,6 @@ docker compose build
 | Performance Optimization    | Optimize performance for large-scale simulations.                                                 | Not started      |
 | Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | ✅ Implemented   |
 | Fault Scenario Engine       | Timed multi-step fault sequences with auto-recovery via REST trigger.                             | ✅ Implemented   |
-| Realism Simulation Modes    | Gaussian noise, Solar day-curve, Wind random-walk, Energy counter modes.                          | ✅ Implemented   |
+| Realism Simulation Modes    | GaussianNoise, PeriodicWave, RandomWalk, EnergyCounter, CounterOnDemand, Profile modes.            | ✅ Implemented   |
 
 <a name="myfootnote1">1</a>: Supported by DALL-E 3
