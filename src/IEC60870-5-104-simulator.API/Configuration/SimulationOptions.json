@@ -5,6 +5,7 @@
 
       "Measures": [
         {
+          "Id": "CA20_IOA25",
           "Name": "Tap Changer Position",
           "Ca": "20",
           "Oa": "25",
@@ -12,6 +13,7 @@
           "InitValue": "true"
         },
         {
+          "Id": "CA20_IOA27",
           "Name": "Switchgear Status",
           "Ca": "20",
           "Oa": "27",
@@ -20,6 +22,7 @@
           "Mode": "Static"
         },
         {
+          "Id": "CA20_IOA26",
           "Name": "Status Signal 26",
           "Ca": "20",
           "Oa": "26",
@@ -27,6 +30,7 @@
           "Mode": "Periodic"
         },
         {
+          "Id": "CA20_IOA57",
           "Name": "Status Signal 57",
           "Ca": "20",
           "Oa": "57",
@@ -34,6 +38,7 @@
           "Mode": "Periodic"
         },
         {
+          "Id": "CA20_IOA28",
           "Name": "Measured Power (scaled)",
           "Ca": "20",
           "Oa": "28",
@@ -44,6 +49,7 @@
           "MaxValue": 1000
         },
         {
+          "Id": "CA20_IOA29",
           "Name": "Temperature",
           "Ca": "20",
           "Oa": "29",
@@ -54,6 +60,7 @@
           "MaxValue": 100.0
         },
         {
+          "Id": "CA20_IOA31",
           "Name": "Normalized Measurement",
           "Ca": "20",
           "Oa": "31",
@@ -61,6 +68,7 @@
           "Mode": "Periodic"
         },
         {
+          "Id": "CA21_IOA31",
           "Name": "Phase Angle A",
           "Ca": "21",
           "Oa": "31",
@@ -71,6 +79,7 @@
           "MaxValue": 1.0
         },
         {
+          "Id": "CA21_IOA32",
           "Name": "Phase Angle B",
           "Ca": "21",
           "Oa": "32",
@@ -81,6 +90,7 @@
           "MaxValue": 1.0
         },
         {
+          "Id": "CA20_IOA40",
           "Name": "Load Profile",
           "Ca": "20",
           "Oa": "40",
@@ -89,6 +99,7 @@
           "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
         },
         {
+          "Id": "CA1_IOA101",
           "Name": "Transformer Breaker",
           "Ca": "1",
           "Oa": "101",
@@ -97,6 +108,7 @@
           "Mode": "Static"
         },
         {
+          "Id": "CA1_IOA102",
           "Name": "Active Power (W)",
           "Ca": "1",
           "Oa": "102",
@@ -109,6 +121,7 @@
           "FluctuationRate": 150
         },
         {
+          "Id": "CA1_IOA103",
           "Name": "Fault Alarm",
           "Ca": "1",
           "Oa": "103",
@@ -117,6 +130,7 @@
           "Mode": "Periodic"
         },
         {
+          "Id": "CA1_IOA104",
           "Name": "Voltage (kV)",
           "Ca": "1",
           "Oa": "104",
@@ -129,6 +143,7 @@
           "FluctuationRate": 1.5
         },
         {
+          "Id": "CA1_IOA105",
           "Name": "Solar Power Output (W)",
           "Ca": "1",
           "Oa": "105",
@@ -142,6 +157,7 @@
           "WavePeriodSeconds": 86400
         },
         {
+          "Id": "CA1_IOA106",
           "Name": "Wind Power Output (W)",
           "Ca": "1",
           "Oa": "106",
@@ -154,6 +170,7 @@
           "FluctuationRate": 80.0
         },
         {
+          "Id": "CA1_IOA107",
           "Name": "Energy Meter (Wh)",
           "Ca": "1",
           "Oa": "107",
@@ -167,6 +184,7 @@
       ],
       "Commands":[
         {
+          "Id": "CA20_IOA2",
           "Name": "Tap Changer Command",
           "Ca": "20",
           "Oa": "2",
@@ -174,6 +192,7 @@
           "ResponseId": "CA20_IOA25"
         },
         {
+          "Id": "CA100_IOA25",
           "Name": "Switchgear Command",
           "Ca": "100",
           "Oa": "25",
@@ -181,6 +200,7 @@
           "ResponseId": "CA20_IOA27"
         },
         {
+          "Id": "CA100_IOA26",
           "Name": "Status Toggle Command",
           "Ca": "100",
           "Oa": "26",
@@ -188,6 +208,7 @@
           "ResponseId": "CA20_IOA26"
         },
         {
+          "Id": "CA100_IOA29",
           "Name": "Power Set Point",
           "Ca": "100",
           "Oa": "29",
@@ -195,6 +216,7 @@
           "ResponseId": "CA20_IOA28"
         },
         {
+          "Id": "CA100_IOA30",
           "Name": "Temperature Set Point",
           "Ca": "100",
           "Oa": "30",
@@ -202,6 +224,7 @@
           "ResponseId": "CA20_IOA29"
         },
         {
+          "Id": "CA100_IOA31",
           "Name": "Normalize Set Point",
           "Ca": "100",
           "Oa": "31",
