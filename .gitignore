@@ -390,6 +390,10 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# Angular
+simulation-ui/IEC-104-UI/.angular/
+simulation-ui/IEC-104-UI/dist/
+
 # JetBrains Rider
 *.sln.iml
 /src/.idea/.idea.IEC60870-5-104-simulator/.idea/vcs.xml
