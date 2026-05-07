@@ -4,7 +4,7 @@ import {Dialog} from 'primeng/dialog';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
-import {DataPoint, Iec104DataTypes, SimulationMode} from '../list-view.component';
+import {DataPoint, Iec104DataTypes, SimulationMode} from '../../models';
 import {NgClass} from '@angular/common';
 import {Select} from 'primeng/select';
 

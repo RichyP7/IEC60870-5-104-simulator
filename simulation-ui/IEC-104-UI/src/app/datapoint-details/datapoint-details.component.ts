@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {DataPoint, IecValueDto, SimulationMode} from '../list-view/list-view.component';
+import {DataPoint, IecValueDto, SimulationMode} from '../models';
 import {CommonModule} from '@angular/common';
 import {DataService} from '../list-view/DataService/data.service';
 import {Button} from 'primeng/button';
