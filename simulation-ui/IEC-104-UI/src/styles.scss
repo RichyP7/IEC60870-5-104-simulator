@@ -20,3 +20,20 @@ div.p-accordioncontent-content:has(div.selected-item){
   background-color: var(--p-highlight-background) !important;
   transition: background-color 0.5s ease, border 0.5s ease !important;
 }
+
+/* ── Real-time changed row highlight ── */
+@keyframes row-highlight {
+  0%   { background-color: rgba(251, 191, 36, 0.11); }  /* amber-400, muted */
+  100% { background-color: transparent; }
+}
+
+.recently-changed {
+  animation: row-highlight 0.5s ease-out forwards;
+}
+
+/* Scenario step tooltip — no line breaks, width follows content */
+.scenario-step-tooltip.p-tooltip .p-tooltip-text {
+  max-width: none;
+  width: max-content;
+  white-space: nowrap;
+}

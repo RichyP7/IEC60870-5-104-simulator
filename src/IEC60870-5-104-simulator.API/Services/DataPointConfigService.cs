@@ -58,4 +58,27 @@ public class DataPointConfigService
             return false;
         }
     }
+
+    /// <summary>
+    /// Updates simulation parameters (BaseValue, MinValue, MaxValue, FluctuationRate,
+    /// LinkedDataPointId, Mode) on an existing datapoint without changing the IEC-104 type.
+    /// </summary>
+    public void UpdateDataPointParams(IecAddress address, Iec104DataPointDto dto)
+    {
+        var dp = _iecValueRepository.GetDataPointValue(address);
+        if (dto.Mode != default)
+            dp.Mode = (SimulationMode)dto.Mode;
+        if (dto.BaseValue.HasValue)
+            dp.BaseValue = dto.BaseValue;
+        if (dto.MinValue.HasValue)
+            dp.MinValue = dto.MinValue;
+        if (dto.MaxValue.HasValue)
+            dp.MaxValue = dto.MaxValue;
+        if (dto.FluctuationRate.HasValue)
+            dp.FluctuationRate = dto.FluctuationRate;
+        if (dto.WavePeriodSeconds.HasValue)
+            dp.WavePeriodSeconds = dto.WavePeriodSeconds;
+        if (dto.LinkedDataPointId != null)
+            dp.LinkedDataPointId = dto.LinkedDataPointId;
+    }
 }

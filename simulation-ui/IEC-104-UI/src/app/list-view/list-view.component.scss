@@ -1,12 +1,16 @@
 p-accordion {
   display: block;
   min-width: 200px;
-
   max-height: 70vh;
   overflow: auto;
-
-
   font-size: math;
+}
+
+.station-count {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-color-secondary, #6c757d);
+  margin-left: 0.4rem;
 }
 
 .indented-list {
@@ -21,6 +25,126 @@ p-accordion {
 
 .card {
   width: 90%;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
   margin-left: 1rem;
+}
+
+// ── DataPoint row ─────────────────────────────────────────────────────────────
+
+.dp-row {
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover, #f3f4f6);
+  }
+}
+
+.dp-row-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  min-height: 0;
+  padding: 0.15rem 0;
+}
+
+.dp-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  min-width: 8rem;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-color, #1f2937);
+}
+
+.dp-ioa {
+  font-weight: 700;
+  font-size: 0.8rem;
+  min-width: 4.5rem;
+  color: var(--text-color, #1f2937);
+}
+
+.dp-type {
+  font-size: 0.75rem;
+  font-family: monospace;
+  background: var(--surface-200, #e5e7eb);
+  color: var(--text-color-secondary, #374151);
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+}
+
+.dp-mode {
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  padding: 0.15rem 0.55rem;
+  white-space: nowrap;
+  background: var(--primary-100, #dbeafe);
+  color: var(--primary-700, #1d4ed8);
+
+  &[data-mode="GaussianNoise"],
+  &[data-mode="Solar"],
+  &[data-mode="Wind"] {
+    background: var(--green-100, #dcfce7);
+    color: var(--green-700, #15803d);
+  }
+
+  &[data-mode="Static"] {
+    background: var(--surface-200, #f3f4f6);
+    color: var(--text-color-secondary, #6b7280);
+  }
+
+  &[data-mode="CommandResponse"] {
+    background: var(--purple-100, #ede9fe);
+    color: var(--purple-700, #6d28d9);
+  }
+
+  &[data-mode="EnergyCounter"],
+  &[data-mode="CounterOnDemand"] {
+    background: var(--orange-100, #ffedd5);
+    color: var(--orange-700, #c2410c);
+  }
+}
+
+.dp-value-display {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--primary-600, #2563eb);
+  white-space: nowrap;
+}
+
+.dp-frozen {
+  font-size: 0.72rem;
+  color: var(--orange-600, #ea580c);
+  margin-left: 0.25rem;
+}
+
+// Reduce PrimeNG accordion content cell padding so rows sit tighter
+:host ::ng-deep .p-accordioncontent-content {
+  padding: 0.1rem 0.5rem !important;
+}
+
+.dp-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-left: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.dp-row:hover .dp-row-actions {
+  opacity: 1;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }

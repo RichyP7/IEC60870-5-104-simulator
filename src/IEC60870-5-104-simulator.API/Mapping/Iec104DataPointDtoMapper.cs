@@ -11,19 +11,19 @@ public class Iec104DataPointDtoMapper
     public IecValueObject? MapStringToValueObject(String? value, Iec104DataTypes dataType)
     {
         if (value == null) return null;
-        if (DataTypeIsInteger(dataType))
+        if (dataType.IsIntegerValue())
         {
             if (!IsInteger(value)) throw new FormatException("Value must be integer");
             return new IecIntValueObject(int.Parse(value));
         }
 
-        if (DataTypeIsSinglePoint(dataType))
+        if (dataType.IsSinglePoint())
         {
             if (!IsBoolean(value)) throw new FormatException("Value must be bool");
             return new IecSinglePointValueObject(bool.Parse(value));
         }
 
-        if (DataTypeIsFloatingPoint(dataType))
+        if (dataType.IsFloatValue())
         {
             if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
             {
@@ -32,51 +32,13 @@ public class Iec104DataPointDtoMapper
             return new IecValueFloatObject(floatValue);
         }
 
-        if (DataTypeIsDoublePoint(dataType))
+        if (dataType.IsDoublePoint())
         {
             if (!IsDoublePointValue(value, out IecDoublePointValue parsedValue)) throw new FormatException("Value must be Double Point");
             return new IecDoublePointValueObject(parsedValue);
         }
 
         else throw new NotImplementedException();
-    }
-
-    private static bool DataTypeIsInteger(Iec104DataTypes dataType)
-    {
-        return dataType is 
-            Iec104DataTypes.M_ST_NA_1 or
-            Iec104DataTypes.M_ST_TA_1 or
-            Iec104DataTypes.M_ST_TB_1 or
-            Iec104DataTypes.M_ME_NB_1 or
-            Iec104DataTypes.M_ME_TB_1 or 
-            Iec104DataTypes.M_ME_TE_1;
-    }
-    
-    private static bool DataTypeIsSinglePoint(Iec104DataTypes dataType)
-    {
-        return dataType is
-            Iec104DataTypes.M_SP_NA_1 or
-            Iec104DataTypes.M_SP_TA_1 or
-            Iec104DataTypes.M_SP_TB_1;
-    }
-    
-    private static bool DataTypeIsDoublePoint(Iec104DataTypes dataType)
-    {
-        return dataType is
-            Iec104DataTypes.M_DP_NA_1 or
-            Iec104DataTypes.M_DP_TA_1 or
-            Iec104DataTypes.M_DP_TB_1;
-    }
-    
-    private static bool DataTypeIsFloatingPoint(Iec104DataTypes dataType)
-    {
-        return dataType is
-            Iec104DataTypes.M_ME_NC_1 or
-            Iec104DataTypes.M_ME_TC_1 or
-            Iec104DataTypes.M_ME_TF_1 or
-            Iec104DataTypes.M_ME_NA_1 or
-            Iec104DataTypes.M_ME_TA_1 or
-            Iec104DataTypes.M_ME_ND_1;
     }
 
     private static bool IsInteger(string value)

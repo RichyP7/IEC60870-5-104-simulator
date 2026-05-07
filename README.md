@@ -63,24 +63,26 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 ```json
 {
   "Iec104Simulation": {
-    "CycleTimeMs": 10000,
+    "CycleTimeMs": 5000,
     "DataPointConfiguration": {
       "Measures": [
         {
-          "Id": "Point1",
+          "Id": "CA20_IOA25",
+          "Name": "Tap Changer Position",
           "Ca": "20",
           "Oa": "25",
-          "TypeId": 13,
-          "Mode": "Cyclic"
+          "TypeId": 5,
+          "Mode": "Periodic"
         }
       ],
       "Commands": [
         {
-          "Id": "Command1",
-          "Ca": "100",
-          "Oa": "25",
-          "TypeId": 45,
-          "ResponseId": "Point1"
+          "Id": "CA20_IOA2",
+          "Name": "Tap Changer Command",
+          "Ca": "20",
+          "Oa": "2",
+          "TypeId": 47,
+          "ResponseId": "CA20_IOA25"
         }
       ]
     }
@@ -90,12 +92,17 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 
 ### Simulation Modes
 
-| Mode | Description |
-|------|-------------|
-| `None` | Static value, no cyclic transmission |
-| `Cyclic` | Generates a new random value every cycle |
-| `CyclicStatic` | Re-sends the current value every cycle |
-| `PredefinedProfile` | Iterates through a predefined list of values from a profile (loops continuously) |
+| Mode | Transmission | Description |
+|------|-------------|-------------|
+| `Static` | On startup / interrogation only | Fixed value, never sent on the periodic cycle |
+| `Periodic` | Every cycle | Re-sends the current value with COT=PERIODIC |
+| `RandomWalk` | Every cycle | Value steps randomly by up to `FluctuationRate`, clamped to `MinValue`/`MaxValue` |
+| `GaussianNoise` | Every cycle | Gaussian noise around `BaseValue` ± `FluctuationRate`, bounded by `MinValue`/`MaxValue` |
+| `PeriodicWave` | Every cycle | Positive half-sine wave with period `WavePeriodSeconds`, peak at `BaseValue` |
+| `Profile` | Every cycle | Iterates through the inline `ProfileValues` array (loops continuously) |
+| `EnergyCounter` | Every cycle | Accumulates energy from the linked data point (`LinkedDataPointId`) each cycle |
+| `CounterOnDemand` | On interrogation only | Silently accumulates each cycle but only transmitted on GI/CI request |
+| `CommandResponse` | On command receipt | Mirrors an incoming command ASDU as a measurement response |
 
 ### Initial Values
 
@@ -114,7 +121,8 @@ Example:
 
 ```json
 {
-  "Id": "SPM1",
+  "Id": "CA20_IOA26",
+  "Name": "Status Signal",
   "Ca": "20",
   "Oa": "26",
   "TypeId": 1,
@@ -124,7 +132,8 @@ Example:
 
 ```json
 {
-  "Id": "DPM1",
+  "Id": "CA20_IOA27",
+  "Name": "Switchgear Status",
   "Ca": "20",
   "Oa": "27",
   "TypeId": 3,
@@ -132,32 +141,23 @@ Example:
 }
 ```
 
-### Predefined Profiles
+### Profile Mode
 
-For simulating realistic measurement curves (e.g. current, power over time), use the `PredefinedProfile` mode. Profiles are defined in `Configuration/Profiles.json`:
-
-```json
-{
-  "Profiles": {
-    "TestProfile": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
-  }
-}
-```
-
-Reference the profile by name in your datapoint configuration:
+For simulating realistic measurement curves (e.g. load over time), use the `Profile` mode with an inline `ProfileValues` array:
 
 ```json
 {
-  "Id": "PROFILE1",
+  "Id": "CA20_IOA40",
+  "Name": "Load Profile",
   "Ca": "20",
   "Oa": "40",
   "TypeId": 13,
-  "Mode": "PredefinedProfile",
-  "ProfileName": "TestProfile"
+  "Mode": "Profile",
+  "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
 }
 ```
 
-Each cycle, the next value in the profile is sent. When the end is reached, it loops back to the beginning. This mode is supported for measured value types (float, scaled, normalized, step position) but not for single/double points.
+Each cycle, the next value in the array is sent. When the end is reached, it loops back to the beginning. This mode is supported for measured value types (float, scaled, normalized, step position) but not for single/double points.
 
 ### Supported TypeIds
 
@@ -182,7 +182,6 @@ To use your own configuration, mount your config files into the container:
 ```bash
 docker run -p 2404:2404 -p 8080:8080 \
   -v ./my-config/SimulationOptions.json:/app/Configuration/SimulationOptions.json \
-  -v ./my-config/Profiles.json:/app/Configuration/Profiles.json \
   ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 
@@ -193,12 +192,64 @@ docker run -p 2404:2404 -p 8080:8080 \
 | GET | `/api/DataPointConfigs` | List all configured datapoints |
 | GET | `/api/DataPointConfigs/{Ca}/{Oa}` | Get a specific datapoint |
 | POST | `/api/DataPointConfigs` | Create a new datapoint |
+| PUT | `/api/DataPointConfigs/{Ca}/{Oa}` | Update datapoint simulation parameters |
 | PUT | `/api/DataPointConfigs/{Ca}/{Oa}/simulation-mode` | Change simulation mode |
 | DELETE | `/api/DataPointConfigs/{Ca}/{Oa}` | Delete a datapoint |
 | GET | `/api/DataPointValues/{Ca}/{Oa}` | Get current value |
 | POST | `/api/DataPointValues/{Ca}/{Oa}` | Send a value immediately |
+| GET | `/api/Scenarios` | List all scenario states |
+| POST | `/api/Scenarios/{name}/trigger` | Trigger a fault scenario (202 Accepted / 409 Conflict if already running) |
+| GET | `/api/Status` | Simulator status (uptime, engine state, active IEC clients) |
 | GET | `/health/ready` | Readiness check (server + connection) |
 | GET | `/health/live` | Liveness check (server started) |
+
+### SignalR Real-time Push
+
+Connect to `ws://localhost:8080/hubs/simulation` for real-time updates:
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `FullSnapshot` | `DataPointUpdate[]` | Full datapoint snapshot pushed every cycle |
+| `DataPointChanged` | `DataPointUpdate` | Single changed datapoint |
+| `ScenarioUpdate` | `ScenarioStateDto` | Scenario status change (Idle/Running/Completed/Failed) |
+| `ClientCountUpdate` | `int` | Number of connected IEC-104 clients changed |
+
+## SCADA Demo
+
+The built-in demo configuration (`SimulationOptions.json`) includes CA1 stations with realistic waveforms:
+
+| ID | Name | IOA | Type | Mode | Description |
+|----|------|-----|------|------|-------------|
+| CA1_IOA101 | Transformer Breaker | 101 | M_DP_NA_1 | Static | Circuit breaker state (ON/OFF) |
+| CA1_IOA102 | Active Power (W) | 102 | M_ME_NB_1 | GaussianNoise | Active power ~5000 W ± 150 |
+| CA1_IOA103 | Fault Alarm | 103 | M_SP_NA_1 | Periodic | Fault alarm flag |
+| CA1_IOA104 | Voltage (kV) | 104 | M_ME_NC_1 | GaussianNoise | Grid voltage ~110 kV ± 1.5 |
+| CA1_IOA105 | Solar Power Output (W) | 105 | M_ME_NC_1 | PeriodicWave | Day-curve sine wave, peak 2500 W, period 24 h |
+| CA1_IOA106 | Wind Power Output (W) | 106 | M_ME_NC_1 | RandomWalk | Random walk ~1200 W, bounded 0–3000 W |
+| CA1_IOA107 | Energy Meter (Wh) | 107 | M_ME_NC_1 | EnergyCounter | Accumulates Wh from CA1_IOA102 each cycle |
+
+### Running the Transformer-Trip Fault Scenario
+
+The `ca1-transformer-trip` scenario simulates a fault followed by automatic recovery:
+
+| Step | Delay | Action |
+|------|-------|--------|
+| 1 | 0 ms | Breaker → INTERMEDIATE state |
+| 2 | 2 s | Active power → 0 W (load drop) |
+| 3 | 3 s | Overload alarm → true |
+| 4 | 3.5 s | Voltage → 0.0 kV (outage) |
+| 5 | 5.5 s | Breaker → OFF (trip confirmed) |
+| Recovery | +10 s | Restores power/alarm/voltage/breaker to pre-fault values |
+
+**Trigger via REST:**
+```bash
+curl -X POST http://localhost:8080/api/Scenarios/ca1-transformer-trip/trigger
+```
+
+**Check status:**
+```bash
+curl http://localhost:8080/api/Scenarios
+```
 
 ## Running Tests
 
@@ -227,6 +278,8 @@ docker compose build
 | Logging and Debugging       | Detailed logs for troubleshooting and debugging.                                                  | ⏳ In Progress   |
 | Secure Authentication       | Implement secure authentication mechanisms.                                                       | Not started      |
 | Performance Optimization    | Optimize performance for large-scale simulations.                                                 | Not started      |
-| Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | Not started      |
+| Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | ✅ Implemented   |
+| Fault Scenario Engine       | Timed multi-step fault sequences with auto-recovery via REST trigger.                             | ✅ Implemented   |
+| Realism Simulation Modes    | GaussianNoise, PeriodicWave, RandomWalk, EnergyCounter, CounterOnDemand, Profile modes.            | ✅ Implemented   |
 
 <a name="myfootnote1">1</a>: Supported by DALL-E 3

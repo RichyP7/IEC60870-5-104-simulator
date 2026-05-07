@@ -1,7 +1,7 @@
 ﻿import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {DataPoint} from '../list-view.component';
+import {DataPoint} from '../../models';
 import {environment} from '../../../environments/environment.development';
 import {MessageService} from 'primeng/api';
 
@@ -52,6 +52,33 @@ export class DataService {
 
   createDataPoint(datapoint: DataPoint): Observable<DataPoint> {
     return this.http.post<DataPoint>(`${environment.API_ENDPOINT}DataPointConfigs`, datapoint);
+  }
+
+  updateDataPoint(dataPoint: DataPoint): Observable<DataPoint> {
+    return this.http.put<DataPoint>(
+      `${environment.API_ENDPOINT}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`,
+      dataPoint,
+      { headers: { 'Content-Type': 'application/json' } }
+    ).pipe(
+      catchError(error => {
+        const detail = error.error?.exceptionMessage ?? error.message ?? 'Failed to update datapoint';
+        this.messageService.add({ severity: 'error', summary: 'Update Failed', detail });
+        this.fetchData();
+        throw error;
+      })
+    );
+  }
+
+  deleteDataPoint(dataPoint: DataPoint): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.API_ENDPOINT}DataPointConfigs/${dataPoint.stationaryAddress}/${dataPoint.objectAddress}`
+    ).pipe(
+      catchError(error => {
+        const detail = error.error?.exceptionMessage ?? error.message ?? 'Failed to delete datapoint';
+        this.messageService.add({ severity: 'error', summary: 'Delete Failed', detail });
+        throw error;
+      })
+    );
   }
 
   fetchSimulationEngineState(): Observable<SimulationState> {

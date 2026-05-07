@@ -1,7 +1,6 @@
 ﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
-using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using lib60870.CS101;
 using lib60870.CS104;
@@ -14,296 +13,109 @@ namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class Iec104Service : IIec104Service
     {
-        private lib60870.CS104.Server server;
-        private readonly ICommandResponseFactory responseFactory;
-        private readonly ILogger<Iec104Service> logger;
-        private IIec104ConfigurationService configuration;
-        private readonly IIecValueRepository repository;
-        private readonly IProfileProvider profileProvider;
+        private readonly lib60870.CS104.Server _server;
+        private readonly IIecValueRepository _repository;
+        private readonly IASDUDispatcher _dispatcher;
+        private readonly IIec104CommandHandler _commandHandler;
+        private readonly ICyclicSimulationService _cyclicSimulation;
+        private readonly ILogger<Iec104Service> _logger;
+
         private bool _connected = false;
-        private bool _started = false;
+        private int _activeClientCount = 0;
 
-        // Maximum number of information objects to pack into a single ASDU
-        private const int MaxInformationObjectsPerASDU = 20;
-
-        public IInformationObjectFactory factory { get; }
-
-        public Iec104Service(lib60870.CS104.Server server, IInformationObjectFactory factory, ICommandResponseFactory responseFactory, ILogger<Iec104Service> logger,
-            IIec104ConfigurationService configuration, IIecValueRepository repository, IProfileProvider profileProvider)
+        public Iec104Service(
+            lib60870.CS104.Server server,
+            IIecValueRepository repository,
+            IASDUDispatcher dispatcher,
+            IIec104CommandHandler commandHandler,
+            ICyclicSimulationService cyclicSimulation,
+            ILogger<Iec104Service> logger)
         {
-            this.server = server;
-            this.factory = factory;
-            this.responseFactory = responseFactory;
-            this.logger = logger;
-            this.configuration = configuration;
-            this.repository = repository;
-            this.profileProvider = profileProvider;
+            _server = server;
+            _repository = repository;
+            _dispatcher = dispatcher;
+            _commandHandler = commandHandler;
+            _cyclicSimulation = cyclicSimulation;
+            _logger = logger;
         }
 
         public Task Start()
         {
             SendInitialize();
-            server.SetASDUHandler(AsduSendMirrorAcknowledgements, null);
-            server.SetConnectionEventHandler(handler, null);
-            server.SetInterrogationHandler(handlerinterrogation, null);
-            server.SetConnectionRequestHandler(requesthandler, null);
-            this.server.Start();
-            this._started = true;
+            _server.SetASDUHandler(_commandHandler.HandleAsdu, null);
+            _server.SetConnectionEventHandler(OnConnectionEvent, null);
+            _server.SetInterrogationHandler(OnInterrogation, null);
+            _server.SetConnectionRequestHandler(OnConnectionRequest, null);
+            _server.Start();
             return Task.CompletedTask;
-        }
-
-        private bool requesthandler(object parameter, IPAddress ipAddress)
-        {
-            logger.LogInformation("Request event {ipaddress}",ipAddress.ToString());
-            return true;
-        }
-
-        private bool handlerinterrogation(object parameter, IMasterConnection connection, ASDU asdu, byte qoi)
-        {
-            logger.LogInformation("Interrogation event");
-            return true;
-        }
-
-        private void SendInitialize()
-        {
-            ASDU newAsdu = new ASDU(server.GetApplicationLayerParameters(), CauseOfTransmission.INITIALIZED, false, false, 0, 1, false);
-            EndOfInitialization eoi = new EndOfInitialization(0);
-            newAsdu.AddInformationObject(eoi);
-            server.EnqueueASDU(newAsdu);
-        }
-
-        private void handler(object parameter, ClientConnection connection, ClientConnectionEvent eventType)
-        {
-            logger.LogInformation("connection event ({type}): {adress}", eventType.ToString(), connection.RemoteEndpoint.Address.ToString());
-            if (eventType == ClientConnectionEvent.OPENED)
-            {
-                _connected = true;
-            }
-            else if (eventType == ClientConnectionEvent.ACTIVE)
-            {
-                if (false)//_iecOptions.InterrogationOnInitailize)
-                {
-                    //SendInterrogationCommand(connection);
-                }
-            }
-            else if (eventType == ClientConnectionEvent.CLOSED)
-            {
-                _connected = false;
-            }
-
         }
 
         public Task Stop()
         {
-            this.server.Stop();
+            _server.Stop();
             return Task.CompletedTask;
         }
+
         public Task Simulate(Iec104DataPoint dataPoint)
         {
-            var ioa = factory.CreateInformationObjectWithValue(dataPoint,dataPoint.Value);
-            var asdu = CreateAsdu(dataPoint.Address.StationaryAddress, CauseOfTransmission.SPONTANEOUS);
-            asdu.AddInformationObject(ioa);
-            Send(asdu);
-            return Task.CompletedTask;
+            return _commandHandler.Simulate(dataPoint);
         }
-        public Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints)
+
+        public Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
         {
-            if (this._connected)
-            {
-                SimulateCyclicValues(datapoints);
-            }
+            _cyclicSimulation.SimulateCyclicValues(datapoints, cycleTimeMs);
             return Task.CompletedTask;
         }
 
-        internal void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints)
+        public bool ConnectionEstablished() => _connected;
+
+        public int GetActiveClientCount() => _activeClientCount;
+
+        private void SendInitialize()
         {
-            var cyclicDataPoints = GetAllCyclicDataPoints(datapoints);
-            // Create a starting ASDU per type and keep lists so we can split when full
-            var initialAsdus = CreateDistinctAsdus(cyclicDataPoints).ToList();
-            var asduLists = initialAsdus.ToDictionary(kv => kv.Key, kv => new List<ASDU> { kv.Value });
+            ASDU newAsdu = new ASDU(_server.GetApplicationLayerParameters(), CauseOfTransmission.INITIALIZED, false, false, 0, 1, false);
+            newAsdu.AddInformationObject(new EndOfInitialization(0));
+            _server.EnqueueASDU(newAsdu);
+        }
 
-            foreach (Iec104DataPoint dataPoint in cyclicDataPoints)
+        private bool OnConnectionRequest(object parameter, IPAddress ipAddress)
+        {
+            _logger.LogInformation("Request event {ipaddress}", ipAddress.ToString());
+            return true;
+        }
+
+        private bool OnInterrogation(object parameter, IMasterConnection connection, ASDU asdu, byte qoi)
+        {
+            _logger.LogInformation("Interrogation event (QOI={QOI})", qoi);
+
+            var respondPoints = _repository.GetAllDataPoints()
+                .Where(dp => dp.Mode == SimulationMode.Static || dp.Mode == SimulationMode.CounterOnDemand)
+                .ToList();
+
+            if (respondPoints.Count > 0)
             {
-                var list = asduLists[dataPoint.Iec104DataType];
-                var currentAsdu = list.Last();
-
-                // Ensure we don't exceed the configured max per ASDU
-                if (currentAsdu.NumberOfElements >= MaxInformationObjectsPerASDU)
-                {
-                    var newAsdu = CreateAsdu(currentAsdu.Ca, CauseOfTransmission.PERIODIC);
-                    list.Add(newAsdu);
-                    currentAsdu = newAsdu;
-                }
-
-                if (dataPoint.Mode == SimulationMode.Cyclic)
-                {
-                    InformationObject ioa = factory.CreateRandomInformationObject(dataPoint);
-                    currentAsdu.AddInformationObject(ioa);
-                }
-                else if (dataPoint.Mode == SimulationMode.CyclicStatic)
-                {
-                    Iec104DataPoint existingValue = repository.GetDataPointValue(dataPoint.Address);
-                    InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, existingValue.Value);
-                    currentAsdu.AddInformationObject(ioa);
-                }
-                else if (dataPoint.Mode == SimulationMode.PredefinedProfile)
-                {
-                    float profileValue = profileProvider.GetNextValue(dataPoint.ProfileName, dataPoint.Address);
-                    IecValueObject value = CreateValueObjectFromProfile(dataPoint.Iec104DataType, profileValue);
-                    repository.SetObjectValue(dataPoint.Address, value);
-                    InformationObject ioa = factory.CreateInformationObjectWithValue(dataPoint, value);
-                    currentAsdu.AddInformationObject(ioa);
-                }
+                var asdus = _dispatcher.BuildAsdus(respondPoints, CauseOfTransmission.INTERROGATED_BY_STATION);
+                _dispatcher.Send(asdus);
             }
 
-            // Send all created ASDUs
-            var toSend = asduLists.SelectMany(kv => kv.Value);
-            Send(toSend);
+            asdu.Cot = CauseOfTransmission.ACTIVATION_TERMINATION;
+            connection.SendASDU(asdu);
+            return true;
         }
 
-        private static IEnumerable<Iec104DataPoint> GetAllCyclicDataPoints(IEnumerable<Iec104DataPoint> datapoints)
+        private void OnConnectionEvent(object parameter, ClientConnection connection, ClientConnectionEvent eventType)
         {
-            return datapoints.Where(v => v.Mode.Equals(SimulationMode.Cyclic) || v.Mode.Equals(SimulationMode.CyclicStatic) || v.Mode.Equals(SimulationMode.PredefinedProfile));
-        }
-
-        private IEnumerable<KeyValuePair<Iec104DataTypes, ASDU>> CreateDistinctAsdus(IEnumerable<Iec104DataPoint> datapoints)
-        {
-            List<KeyValuePair<Iec104DataTypes, ASDU>> asdusPerTypeandCa = new();
-            foreach (var groupByStationAndType in
-                    datapoints
-                    .GroupBy(x => new { x.Address?.StationaryAddress, x.Iec104DataType })
-                    .Select(g => new { station = g.First().Address.StationaryAddress, iectype = g.First().Iec104DataType }))
+            _logger.LogInformation("connection event ({type}): {adress}", eventType.ToString(), connection.RemoteEndpoint.Address.ToString());
+            if (eventType == ClientConnectionEvent.OPENED)
             {
-                ASDU newAsdu = CreateAsdu(groupByStationAndType.station, CauseOfTransmission.PERIODIC);
-                asdusPerTypeandCa.Add(new KeyValuePair<Iec104DataTypes, ASDU>(groupByStationAndType.iectype, newAsdu));
+                _connected = true;
+                Interlocked.Increment(ref _activeClientCount);
             }
-            return asdusPerTypeandCa;
-        }
-        private void Send(IEnumerable<ASDU> asdus)
-        {
-            logger.LogInformation("Number of elements to send: {number}", asdus.Sum(v=> v.NumberOfElements));
-            foreach (var toSend in from ASDU toSend in asdus
-                                   where toSend.NumberOfElements > 0
-                                   select toSend)
+            else if (eventType == ClientConnectionEvent.CLOSED)
             {
-                Send(toSend);
+                int newCount = Interlocked.Decrement(ref _activeClientCount);
+                _connected = newCount > 0;
             }
-        }
-
-        private void Send(ASDU toSend)
-        {
-            server.EnqueueASDU(toSend);
-            logger.LogInformation("Enqueued {Asdu} items on station {Ca}", toSend.NumberOfElements, toSend.Ca);
-        }
-
-        /// <summary>
-        /// Send ack and response message from the same stationary address
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <param name="connection"></param>
-        /// <param name="asdu"></param>
-        /// <returns></returns>
-        private bool AsduSendMirrorAcknowledgements(object parameter, IMasterConnection connection, ASDU asdu)
-        {
-            try
-            {
-                if (IsNonCommandType(asdu))
-                    return false;
-                AcknowledgeConfiguredCommands(asdu);
-                List<InformationObject> responses = GetGeneratedResponses(asdu);
-                SendGeneratedResponses(responses, asdu.Ca);
-                return true;
-            }
-            catch (KeyNotFoundException kex)
-            {
-                logger.LogWarning(kex, "Command processing failed for {Ca}", asdu.Ca);
-                asdu.Cot = CauseOfTransmission.UNKNOWN_INFORMATION_OBJECT_ADDRESS;
-                asdu.IsNegative = true;
-                server.EnqueueASDU(asdu);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Command processing failed for {Ca}", asdu.Ca);
-                return false; // Return false results in a IsNegative message with unknown TypeID
-            }
-
-        }
-        private void AcknowledgeConfiguredCommands(ASDU asdu)
-        {
-            for (int i = 0; i < asdu.NumberOfElements; i++)
-            {
-                GetConfiguration(asdu, i);
-            }
-            asdu.Cot = CauseOfTransmission.ACTIVATION_CON;
-            asdu.IsNegative = false;
-            server.EnqueueASDU(asdu);
-        }
-
-        private IecAddress GetConfiguration(ASDU asdu, int i)
-        {
-            InformationObject ioa = asdu.GetElement(i);
-            IecAddress iecAddress = new IecAddress(asdu.Ca, ioa.ObjectAddress);
-            if (this.configuration.CheckCommandExisting(iecAddress))
-                return iecAddress;
-            throw new KeyNotFoundException($"Command with CA: {iecAddress.StationaryAddress} and IOA:{iecAddress.ObjectAddress} not found");
-        }
-
-        private List<InformationObject> GetGeneratedResponses(ASDU asdu)
-        {
-            List<InformationObject> responseInformationObjects = new();
-            for (int i = 0; i < asdu.NumberOfElements; i++)
-            {
-                var config = GetConfiguration(asdu, i);
-                Iec104CommandDataPointConfig commandConfig = this.configuration.GetCommand(config);
-                if (commandConfig.SimulatedDataPoint == null)
-                    continue;
-                InformationObject response = responseFactory.Update(commandConfig, asdu.GetElement(i));
-                responseInformationObjects.Add(response);
-            }
-            return responseInformationObjects;
-        }
-
-        private bool IsNonCommandType(ASDU asdu)
-        {
-            return (int)asdu.TypeId < 45 || (int)asdu.TypeId > 107;
-        }
-
-        private static IecValueObject CreateValueObjectFromProfile(Iec104DataTypes dataType, float profileValue)
-        {
-            return dataType switch
-            {
-                Iec104DataTypes.M_ME_NC_1 or Iec104DataTypes.M_ME_TC_1 or Iec104DataTypes.M_ME_TF_1 or
-                Iec104DataTypes.M_ME_NA_1 or Iec104DataTypes.M_ME_TA_1 or Iec104DataTypes.M_ME_ND_1
-                    => new IecValueFloatObject(profileValue),
-
-                Iec104DataTypes.M_ME_NB_1 or Iec104DataTypes.M_ME_TB_1 or Iec104DataTypes.M_ME_TE_1
-                    => new IecValueScaledObject(new ScaledValueRecord((int)profileValue)),
-
-                Iec104DataTypes.M_ST_NA_1 or Iec104DataTypes.M_ST_TA_1 or Iec104DataTypes.M_ST_TB_1
-                    => new IecIntValueObject((int)profileValue),
-
-                _ => throw new NotSupportedException($"PredefinedProfile mode is not supported for data type {dataType}")
-            };
-        }
-
-        private ASDU CreateAsdu(int ca, CauseOfTransmission cot)
-        {
-            return new ASDU(server.GetApplicationLayerParameters(), cot, false, false, 1, ca, false);
-        }
-        private void SendGeneratedResponses(List<InformationObject> responses, int ca)
-        {
-            if (responses.Count > 0)
-            {
-                ASDU newAsduWithResponses = CreateAsdu(ca, CauseOfTransmission.SPONTANEOUS);
-                responses.ForEach(v => newAsduWithResponses.AddInformationObject(v));
-                server.EnqueueASDU(newAsduWithResponses);
-            }
-        }
-
-        public bool ConnectionEstablished()
-        {
-            return this._connected;
         }
     }
 }

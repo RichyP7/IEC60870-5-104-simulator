@@ -13,9 +13,12 @@ namespace IEC60870_5_104_simulator.API.Controllers
     public class DataPointConfigsController : ControllerBase
     {
         private DataPointConfigService _dataPointService;
-        public DataPointConfigsController(DataPointConfigService dataPointService)
+        private DataPointValueService _valueService;
+
+        public DataPointConfigsController(DataPointConfigService dataPointService, DataPointValueService valueService)
         {
             _dataPointService = dataPointService;
+            _valueService = valueService;
         }
         
         // GET: api/<DataPointsController>
@@ -28,19 +31,57 @@ namespace IEC60870_5_104_simulator.API.Controllers
         }
         
         [HttpGet("{idStationary}/{idObject}")]
-        public Iec104DataPointDto Get([FromRoute ]int idStationary, [FromRoute] int idObject)
+        public IActionResult Get([FromRoute ]int idStationary, [FromRoute] int idObject)
         {
-            IecAddress address = new IecAddress(idStationary, idObject);
-            var dataPoint = _dataPointService.GetDataPoint(address);
-            return dataPoint;
+            try
+            {
+                IecAddress address = new IecAddress(idStationary, idObject);
+                var dataPoint = _dataPointService.GetDataPoint(address);
+                return Ok(dataPoint);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{idStationary}/{idObject}/simulation-mode")]
-        public Iec104DataPointDto SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeDto simulationMode)
+        public IActionResult SetSimulationMode([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] SimulationModeDto simulationMode)
         {
-            IecAddress address = new IecAddress(idStationary, idObject);
-            var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)simulationMode);
-            return dataPoint;
+            try
+            {
+                IecAddress address = new IecAddress(idStationary, idObject);
+                var dataPoint = _dataPointService.UpdateSimulationMode(address, (SimulationMode)simulationMode);
+                return Ok(dataPoint);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Unified update: sets value + simulation parameters in one call.
+        /// Also sends the new value as a spontaneous IEC-104 message.
+        /// </summary>
+        [HttpPut("{idStationary}/{idObject}")]
+        public async Task<IActionResult> UpdateDataPoint([FromRoute] int idStationary, [FromRoute] int idObject, [FromBody] Iec104DataPointDto dto)
+        {
+            try
+            {
+                var address = new IecAddress(idStationary, idObject);
+                _dataPointService.UpdateDataPointParams(address, dto);
+                await _valueService.SendNewIecValue(dto);
+                return Ok(_dataPointService.GetDataPoint(address));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex) when (ex is AutoMapper.AutoMapperMappingException || ex is InvalidCastException)
+            {
+                return BadRequest("Supplied value is invalid");
+            }
         }
         
         [HttpPost]

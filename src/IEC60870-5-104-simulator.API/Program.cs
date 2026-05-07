@@ -1,9 +1,12 @@
 using System.Text.Json.Serialization;
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
+using IEC60870_5_104_simulator.API.Hubs;
 using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.API.Services;
+using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
+using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Infrastructure;
 using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -22,6 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<SimulationEngine>();
 builder.Services.AddHostedService(provider => provider.GetService<SimulationEngine>() ?? throw new InvalidProgramException("Register Simulation Engine "));
 builder.Services.AddServices();
@@ -32,6 +36,8 @@ builder.Services.AddHealthChecks()
     .AddCheck<ServerStartedHealthCheck>("liveness");
 builder.Services.AddSingleton<ServerStartedHealthCheck>();
 
+// SignalR scenario event publisher (Infrastructure → API bridge)
+builder.Services.AddSingleton<IScenarioEventPublisher, SignalRScenarioEventPublisher>();
 
 var allowedOrigins = builder.Configuration.GetSection("CorsPolicies:AllowAngularApp:Origins").Get<string[]>()
     ?? Array.Empty<string>();
@@ -49,16 +55,33 @@ Type t = typeof(IecConfigProfile);
 builder.Services.AddAutoMapper(t.Assembly);
 
 builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddJsonFile("Configuration/Profiles.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("Configuration/Scenarios.json", optional: true, reloadOnChange: true);
+
 builder.Services.AddOptions<Iec104SimulationOptions>().Bind(
     builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation))
     .ValidateDataAnnotations().ValidateOnStart();
-builder.Services.AddOptions<ProfilesOptions>().Bind(
-    builder.Configuration);
-builder.Services.AddSingleton<IProfileProvider>(sp =>
+
+builder.Services.AddOptions<ScenariosOptions>().Bind(builder.Configuration);
+
+// Register ScenarioService with definitions loaded from config
+builder.Services.AddSingleton<IScenarioService>(sp =>
 {
-    var profilesOptions = sp.GetRequiredService<IOptions<ProfilesOptions>>().Value;
-    return new ProfileProvider(profilesOptions.Profiles);
+    var opts = sp.GetRequiredService<IOptions<ScenariosOptions>>().Value;
+    var definitions = opts.Scenarios
+        .Select(s => new ScenarioDefinition(
+            s.Name,
+            s.RecoveryMs,
+            s.Steps.Select(step => new ScenarioStep(step.DelayMs, step.Ca, step.Oa, step.ValueStr, step.Freeze, step.Description)).ToList().AsReadOnly(),
+            s.RecoverySteps.Select(step => new ScenarioStep(step.DelayMs, step.Ca, step.Oa, step.ValueStr, step.Freeze, step.Description)).ToList().AsReadOnly()))
+        .ToList()
+        .AsReadOnly();
+
+    return new ScenarioService(
+        definitions,
+        sp.GetRequiredService<IIecValueRepository>(),
+        sp.GetRequiredService<IIec104Service>(),
+        sp.GetRequiredService<IScenarioEventPublisher>(),
+        sp.GetRequiredService<ILogger<ScenarioService>>());
 });
 
 
@@ -71,8 +94,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAngularApp");;
+app.UseCors("AllowAngularApp");
 app.UseExceptionHandler(new ExceptionHandlerOptions()
 {
     AllowStatusCode404Response = true,
@@ -83,6 +105,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = health
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = healthCheck => !healthCheck.Tags.Contains("ready") }); //all but ready
 
 app.MapControllers();
+app.MapHub<SimulationHub>("/hubs/simulation");
 
 app.Run();
 

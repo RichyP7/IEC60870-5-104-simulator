@@ -1,75 +1,162 @@
-<p-toast></p-toast>
-<div class="details-card" *ngIf="item != null">
-  <p-card header="Datapoint Details">
-    <div class="grid details-grid">
-      <div class="grid-item label">ID:</div>
-      <div class="grid-item value">{{ item.id }}</div>
+<div *ngIf="item != null">
 
-      <div class="grid-item label">Stationary Address:</div>
-      <div class="grid-item value">{{ item.stationaryAddress }}</div>
-
-      <div class="grid-item label">Object Address:</div>
-      <div class="grid-item value">{{ item.objectAddress }}</div>
-
-      <div class="grid-item label">IEC104 Data Type:</div>
-      <div class="grid-item value">
-        {{ item.iec104DataType }}
-        <a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tf6500_tc3_iec60870_5_10x/984447883.html&id=" target="_blank" class="text-primary-emphasis text-xl">
-          <i class="pi pi-info-circle"></i>
-        </a>
-      </div>
-
-      <div class="grid-item label">Simulation Mode:</div>
-      <div class="grid-item value flex align-items-center">
-        <p-dropdown [options]="simulationModes" [(ngModel)]="item.mode" optionLabel="label" optionValue="value"
-          (onChange)="toggleSimulationMode(item)">
-          <ng-template let-option pTemplate="selectedItem">
-            <div class="dropdown-item">
-              <span>{{ option.label }}</span>
-              <i *ngIf="option.icon" [class]="option.icon"></i>
-            </div>
-          </ng-template>
-          <ng-template let-option pTemplate="item">
-            <div class="dropdown-item flex align-items-center">
-              <span>{{ option.label }}</span>
-              <i *ngIf="option.icon" [class]="option.icon"></i>
-            </div>
-          </ng-template>
-        </p-dropdown>
-      </div>
-
-      <div class="grid-item label">Value:</div>
-      <div class="grid-item value flex align-items-center">
-        <span *ngIf="!this.isEditing">{{ item.value }}</span>
-        <input *ngIf="this.isEditing" [(ngModel)]="item.value" class="p-inputtext p-component w-20">
-
-        <p-button
-          class="ml-2"
-          *ngIf="dataPointCanBeToggled(item)"
-          label="Toggle value"
-          (onClick)="toggleDoublePointValue(item)"
-        />
-        <p-button
-          *ngIf="!dataPointCanBeToggled(item) && !isEditing"
-          icon="pi pi-pen-to-square"
-          class="p-button-text p-button-sm"
-          (onClick)="editItem(item)"
-        ></p-button>
-
-        <p-button
-          *ngIf="isEditing"
-          icon="pi pi-times"
-          class="p-button-text p-button-sm p-button-danger"
-          (onClick)="this.isEditing = false"
-        ></p-button>
-
-        <p-button
-          *ngIf="this.isEditing"
-          label="Update"
-          class="p-button-sm"
-          (onClick)="updateValue(item)"
-        ></p-button>
-      </div>
+    <!-- Frozen banner -->
+    <div *ngIf="isFrozen" class="frozen-banner">
+      <i class="pi pi-lock"></i>
+      <span>This DataPoint is <strong>frozen</strong> — the simulation engine skips it. Editing is disabled.</span>
     </div>
-  </p-card>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <!-- ── Identity (read-only) ─────────────────────────────────────── -->
+      <section class="dp-section">
+        <h4 class="dp-section-title">Identity</h4>
+        <div class="dp-grid">
+          <span class="dp-label">ID</span>
+          <span class="dp-value id-value">{{ item.id }}</span>
+
+          <span class="dp-label">Common Address (CA)</span>
+          <span class="dp-value">{{ item.stationaryAddress }}</span>
+
+          <span class="dp-label">Object Address (IOA)</span>
+          <span class="dp-value">{{ item.objectAddress }}</span>
+
+          <span class="dp-label">IEC 104 Data Type</span>
+          <span class="dp-value">
+            {{ item.iec104DataType }}
+            <a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tf6500_tc3_iec60870_5_10x/984447883.html&id=" target="_blank" class="info-link">
+              <i class="pi pi-info-circle"></i>
+            </a>
+          </span>
+        </div>
+      </section>
+
+      <p-divider></p-divider>
+
+      <!-- ── Simulation Configuration ──────────────────────────────────── -->
+      <section class="dp-section">
+        <h4 class="dp-section-title">Simulation</h4>
+        <div class="dp-grid">
+
+          <span class="dp-label">Mode</span>
+          <span class="dp-value">
+            <p-select [options]="groupedSimulationModes" formControlName="mode"
+              optionLabel="label" optionValue="value"
+              optionGroupLabel="label" optionGroupChildren="items"
+              [group]="true" styleClass="w-full">
+            </p-select>
+          </span>
+
+          <!-- Profile: inline values array -->
+          <ng-container *ngIf="showProfileValues">
+            <span class="dp-label">Profile Values</span>
+            <span class="dp-value">
+              <input pInputText formControlName="profileValues" class="w-full"
+                placeholder="Comma-separated floats, e.g. 0, 10, 25, 50, 100">
+              <small class="dp-hint">Values cycle each simulation tick (wraps around).</small>
+            </span>
+          </ng-container>
+
+          <!-- Gaussian / Solar / Wind params -->
+          <ng-container *ngIf="showSimParamFields">
+            <span class="dp-label">Base Value</span>
+            <span class="dp-value">
+              <p-inputnumber formControlName="baseValue"
+                [minFractionDigits]="0" [maxFractionDigits]="4"
+                styleClass="w-full" placeholder="Base / centre value">
+              </p-inputnumber>
+            </span>
+
+            <span class="dp-label">Min Value</span>
+            <span class="dp-value">
+              <p-inputnumber formControlName="minValue"
+                [minFractionDigits]="0" [maxFractionDigits]="4"
+                styleClass="w-full" placeholder="Lower bound">
+              </p-inputnumber>
+            </span>
+
+            <span class="dp-label">Max Value</span>
+            <span class="dp-value">
+              <p-inputnumber formControlName="maxValue"
+                [minFractionDigits]="0" [maxFractionDigits]="4"
+                styleClass="w-full" placeholder="Upper bound">
+              </p-inputnumber>
+            </span>
+
+            <span class="dp-label">{{ fluctuationRateLabel }}</span>
+            <span class="dp-value">
+              <p-inputnumber formControlName="fluctuationRate"
+                [minFractionDigits]="0" [maxFractionDigits]="4"
+                styleClass="w-full" placeholder="Step / noise magnitude">
+              </p-inputnumber>
+            </span>
+          </ng-container>
+
+          <!-- PeriodicWave: wave period -->
+          <ng-container *ngIf="showWavePeriodField">
+            <span class="dp-label">Wave Period (ms)</span>
+            <span class="dp-value">
+              <p-inputnumber formControlName="wavePeriodSeconds"
+                [minFractionDigits]="0" [maxFractionDigits]="0"
+                styleClass="w-full" placeholder="Period in seconds (default 86400 = 24 h)">
+              </p-inputnumber>
+            </span>
+          </ng-container>
+
+          <!-- Counter: linked power point -->
+          <ng-container *ngIf="showLinkedDataPointId">
+            <span class="dp-label">Linked Data Point ID</span>
+            <span class="dp-value">
+              <input pInputText formControlName="linkedDataPointId"
+                class="w-full" placeholder="ID of the source power datapoint">
+            </span>
+          </ng-container>
+
+        </div>
+      </section>
+
+      <p-divider></p-divider>
+
+      <!-- ── Current Value ──────────────────────────────────────────────── -->
+      <section class="dp-section">
+        <h4 class="dp-section-title">Value</h4>
+        <div class="dp-grid">
+
+          <span class="dp-label">Current Value</span>
+          <span class="dp-value">
+
+            <!-- Single Point: boolean toggle -->
+            <p-toggleswitch *ngIf="isSinglePoint()" formControlName="simpleValue">
+            </p-toggleswitch>
+
+            <!-- Double Point: DPI enum dropdown with standard state labels -->
+            <p-select *ngIf="isDoublePoint()" [options]="dpiOptions"
+              optionLabel="label" optionValue="value"
+              formControlName="simpleValue" styleClass="w-full"
+              appendTo="body">
+            </p-select>
+
+            <!-- Float / Scaled / Numeric: number input -->
+            <p-inputnumber *ngIf="!isSinglePoint() && !isDoublePoint()"
+              formControlName="simpleValue"
+              [minFractionDigits]="0"
+              [maxFractionDigits]="isFloatType() ? 4 : 0"
+              styleClass="w-full">
+            </p-inputnumber>
+
+          </span>
+        </div>
+      </section>
+
+      <!-- ── Actions ──────────────────────────────────────────────────────── -->
+      <div class="dp-actions">
+        <p-button label="Reset" severity="secondary" type="button"
+          [disabled]="isFrozen" (onClick)="reset()">
+        </p-button>
+        <p-button label="Save Changes" type="submit" icon="pi pi-check"
+          [disabled]="isFrozen">
+        </p-button>
+      </div>
+
+    </form>
 </div>

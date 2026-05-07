@@ -43,7 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.fetchCurrentSimulationEngineState();
     this.fetchCurrentHealthState();
-
+    this.fetchCurrentConnectedState();
   }
 
   fetchCurrentSimulationEngineState() {

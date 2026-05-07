@@ -4,7 +4,7 @@ import {Dialog} from 'primeng/dialog';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DropdownModule} from 'primeng/dropdown';
 import {Button} from 'primeng/button';
-import {DataPoint, Iec104DataTypes, SimulationMode} from '../list-view.component';
+import {DataPoint, Iec104DataTypes, SimulationMode} from '../../models';
 import {NgClass} from '@angular/common';
 import {Select} from 'primeng/select';
 
@@ -36,7 +36,6 @@ export class CreateDialogComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {
     this.profileForm = this.fb.group({
-      id: ['', Validators.required],
       stationaryAddress: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       objectAddress: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       iec104DataType: ['', Validators.required],
@@ -60,9 +59,11 @@ export class CreateDialogComponent implements OnInit {
   save() {
     if (this.profileForm.valid) {
       const profileData = this.profileForm.value;
+      const ca = profileData.stationaryAddress;
+      const ioa = profileData.objectAddress;
 
       let dataPoint: DataPoint = {
-        id : profileData.id,
+        id : `CA${ca}_IOA${ioa}`,
         mode: profileData.mode,
         value: profileData.value,
         stationaryAddress: profileData.stationaryAddress,

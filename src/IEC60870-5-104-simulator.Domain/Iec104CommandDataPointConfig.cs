@@ -10,6 +10,7 @@ namespace IEC60870_5_104_simulator.Domain
     public class Iec104CommandDataPointConfig
     {
         public string Id { get; set; }
+        public string? Name { get; set; }
         public IecAddress Address { get; set; }
         public Iec104DataTypes Iec104DataType { get; set; }
         public Iec104DataPoint SimulatedDataPoint { get; set; }
