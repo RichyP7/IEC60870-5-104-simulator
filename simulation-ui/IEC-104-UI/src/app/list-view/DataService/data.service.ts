@@ -1,7 +1,7 @@
 ﻿import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {DataPoint} from '../list-view.component';
+import {DataPoint} from '../../models';
 import {environment} from '../../../environments/environment.development';
 import {MessageService} from 'primeng/api';
 
