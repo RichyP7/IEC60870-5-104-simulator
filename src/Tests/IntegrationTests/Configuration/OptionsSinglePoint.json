@@ -5,11 +5,13 @@
 
       "Measures": [
         {
+          "Id": "CA20_IOA26",
           "Ca": "20",
           "Oa": "26",
           "TypeId": 1
         },
         {
+          "Id": "CA20_IOA57",
           "Ca": "20",
           "Oa": "57",
           "TypeId": 1,
@@ -18,6 +20,7 @@
       ],
       "Commands":[
         {
+          "Id": "CA100_IOA26",
           "Ca": "100",
           "Oa": "26",
           "TypeId": 45,
