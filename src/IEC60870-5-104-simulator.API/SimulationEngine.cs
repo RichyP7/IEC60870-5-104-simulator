@@ -173,7 +173,7 @@ namespace IEC60870_5_104_simulator.Service
                     var responseDataPoint = resultMeasures.SingleOrDefault(v => v.Id.Equals(item.ResponseId));
                     if (responseDataPoint == null)
                     {
-                        throw new InvalidOperationException($"Invalid config for command CA{item.Ca}_IOA{item.Oa}, ResponseId: {item.ResponseId}");
+                        throw new InvalidOperationException($"Invalid config for command '{item.Id}', ResponseId: {item.ResponseId}");
                     }
                     var commandDataPoint = commandDataPoints.Single(v =>
                         v.Address.StationaryAddress == item.Ca && v.Address.ObjectAddress == item.Oa);
