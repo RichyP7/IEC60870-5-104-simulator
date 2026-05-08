@@ -11,13 +11,13 @@ namespace IEC60870_5_104_simulator.API.Mapping
         {
             CreateMap<CommandPointConfig, Iec104CommandDataPointConfig>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new IecAddress(src.Ca,src.Oa)))
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"CA{src.Ca}_IOA{src.Oa}"))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Iec104DataType, opt => opt.MapFrom(src => src.TypeId ));
 
             CreateMap<DataPointConfig, Iec104DataPoint>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new IecAddress(src.Ca, src.Oa)))
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"CA{src.Ca}_IOA{src.Oa}"))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Iec104DataType, opt => opt.MapFrom(src => src.TypeId))
                 .ForMember(dest => dest.InitString, opt => opt.MapFrom(src => src.InitValue))
@@ -33,7 +33,7 @@ namespace IEC60870_5_104_simulator.API.Mapping
 
             CreateMap<Iec104DataPointDto, Iec104DataPoint>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new IecAddress(src.StationaryAddress, src.ObjectAddress)))
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"CA{src.StationaryAddress}_IOA{src.ObjectAddress}"))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
 
             CreateMap<IecValueDto, IecValueObject>().ConvertUsing<DtoValueMapper>();
