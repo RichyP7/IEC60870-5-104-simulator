@@ -88,8 +88,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             _logger.LogInformation("Interrogation event (QOI={QOI})", qoi);
 
+            asdu.Cot = CauseOfTransmission.ACTIVATION_CON;
+            asdu.IsNegative = false;
+            connection.SendASDU(asdu);
+
             var respondPoints = _repository.GetAllDataPoints()
-                .Where(dp => dp.Mode == SimulationMode.Static || dp.Mode == SimulationMode.CounterOnDemand)
+                .Where(dp => !dp.Frozen)
                 .ToList();
 
             if (respondPoints.Count > 0)
