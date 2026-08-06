@@ -10,6 +10,8 @@ It is designed as a containerized application for testing the protocol in cloud-
 
 The application uses the [lib60870.NET](https://github.com/mz-automation) library by mz-automation.
 
+In short, this simulator aims to behave like a realistic IEC 60870-5-104 outstation and help you develop *cloud-native iec104 clients* for modular OT-scenarios.
+
 ### What is IEC 60870
 
 Wikipedia:
@@ -90,90 +92,16 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 }
 ```
 
-### Simulation Modes
+### Simulation and Protocol Details
 
-| Mode | Transmission | Description |
-|------|-------------|-------------|
-| `Static` | On startup / interrogation only | Fixed value, never sent on the periodic cycle |
-| `Periodic` | Every cycle | Re-sends the current value with COT=PERIODIC |
-| `RandomWalk` | Every cycle | Value steps randomly by up to `FluctuationRate`, clamped to `MinValue`/`MaxValue` |
-| `GaussianNoise` | Every cycle | Gaussian noise around `BaseValue` ± `FluctuationRate`, bounded by `MinValue`/`MaxValue` |
-| `PeriodicWave` | Every cycle | Positive half-sine wave with period `WavePeriodSeconds`, peak at `BaseValue` |
-| `Profile` | Every cycle | Iterates through the inline `ProfileValues` array (loops continuously) |
-| `EnergyCounter` | Every cycle | Accumulates energy from the linked data point (`LinkedDataPointId`) each cycle |
-| `CounterOnDemand` | On interrogation only | Silently accumulates each cycle but only transmitted on GI/CI request |
-| `CommandResponse` | On command receipt | Mirrors an incoming command ASDU as a measurement response |
+For a complete description of:
 
-### Initial Values
+- Supported IEC 60870-5-104 ASDU types
+- Simulation modes and cyclic behaviour
+- General interrogation (GI) sequence and value handling
+- Command processing and counter behaviour
 
-Each measure can optionally define an `InitValue` field that sets the value of the data point at startup. If omitted, a type-specific default is used.
-
-| TypeId | Type | `InitValue` format | Example | Default |
-|--------|------|--------------------|---------|---------|
-| 1 | M_SP_NA_1 | `"true"` or `"false"` | `"true"` | `"false"` |
-| 3 | M_DP_NA_1 | `"INTERMEDIATE"`, `"OFF"`, `"ON"`, or `"INDETERMINATE"` | `"INDETERMINATE"` | `"OFF"` |
-| 5 | M_ST_NA_1 | Integer string in range -64 to 63 | `"5"` | `"0"` |
-| 9 | M_ME_NA_1 | Float string (e.g. `"0.5"`) | `"0.5"` | `"0"` |
-| 11 | M_ME_NB_1 | Integer string | `"100"` | `"0"` |
-| 13 | M_ME_NC_1 | Float string (e.g. `"3.14"`) | `"3.14"` | `"0"` |
-
-Example:
-
-```json
-{
-  "Id": "CA20_IOA26",
-  "Name": "Status Signal",
-  "Ca": "20",
-  "Oa": "26",
-  "TypeId": 1,
-  "InitValue": "true"
-}
-```
-
-```json
-{
-  "Id": "CA20_IOA27",
-  "Name": "Switchgear Status",
-  "Ca": "20",
-  "Oa": "27",
-  "TypeId": 3,
-  "InitValue": "INDETERMINATE"
-}
-```
-
-### Profile Mode
-
-For simulating realistic measurement curves (e.g. load over time), use the `Profile` mode with an inline `ProfileValues` array:
-
-```json
-{
-  "Id": "CA20_IOA40",
-  "Name": "Load Profile",
-  "Ca": "20",
-  "Oa": "40",
-  "TypeId": 13,
-  "Mode": "Profile",
-  "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
-}
-```
-
-Each cycle, the next value in the array is sent. When the end is reached, it loops back to the beginning. This mode is supported for measured value types (float, scaled, normalized, step position) but not for single/double points.
-
-### Supported TypeIds
-
-| TypeId | IEC Type | Description |
-|--------|----------|-------------|
-| 1 | M_SP_NA_1 | Single Point Information |
-| 3 | M_DP_NA_1 | Double Point Information |
-| 5 | M_ST_NA_1 | Step Position Information |
-| 9 | M_ME_NA_1 | Normalized Measured Value |
-| 11 | M_ME_NB_1 | Scaled Measured Value |
-| 13 | M_ME_NC_1 | Short Floating Point Measured Value |
-| 45 | C_SC_NA_1 | Single Command |
-| 46 | C_DC_NA_1 | Double Command |
-| 47 | C_RC_NA_1 | Regulating Step Command |
-| 48 | C_SE_NA_1 | Set-point Normalized |
-| 49 | C_SE_NB_1 | Set-point Scaled |
+see [IEC104-Docs](docs/iec104.md).
 
 ### Custom Configuration via Docker Volume Mount
 
