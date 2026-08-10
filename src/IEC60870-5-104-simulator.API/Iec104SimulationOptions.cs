@@ -6,10 +6,19 @@ namespace IEC60870_5_104_simulator.API
     public class Iec104SimulationOptions
     {
         public const string Iec104Simulation = "Iec104Simulation";
+        /// <summary>
+        /// Time of simulation cycle in Milliseconds. 
+        /// </summary>
 
         [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int CycleTimeMs { get; set; }
+        /// <summary>
+        /// Debug output of IEC104 library. 
+        /// </summary>
         public bool Debug { get; set; }
+        /// <summary>
+        /// Sets the maximum size of the ASDU queue.
+        /// </summary>
         [Range(0, 10000, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int MaxQueueSize { get; set; } = 1000;
         [ValidateObjectMembers]
