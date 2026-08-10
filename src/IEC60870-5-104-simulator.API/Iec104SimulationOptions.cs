@@ -7,8 +7,11 @@ namespace IEC60870_5_104_simulator.API
     {
         public const string Iec104Simulation = "Iec104Simulation";
 
-        [Range(0, 100000, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int CycleTimeMs { get; set; }
+        public bool Debug { get; set; }
+        [Range(0, 10000, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+        public int MaxQueueSize { get; set; } = 1000;
         [ValidateObjectMembers]
         public IecConfiguration DataPointConfiguration { get; set; } = new IecConfiguration();
 

@@ -1,6 +1,8 @@
 ﻿{
   "Iec104Simulation": {
     "CycleTimeMs": 5000,
+    "Debug": false,
+    "MaxQueueSize": 1000,
     "DataPointConfiguration": {
 
       "Measures": [
@@ -96,7 +98,7 @@
           "Oa": "40",
           "TypeId": 13,
           "Mode": "Profile",
-          "ProfileValues": [0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0]
+          "ProfileValues": [ 0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 75.0, 50.0, 25.0, 10.0 ]
         },
         {
           "Id": "CA1_IOA101",
@@ -182,7 +184,7 @@
           "LinkedDataPointId": "CA1_IOA102"
         }
       ],
-      "Commands":[
+      "Commands": [
         {
           "Id": "CA20_IOA2",
           "Name": "Tap Changer Command",

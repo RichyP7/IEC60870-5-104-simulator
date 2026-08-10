@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<SimulationEngine>();
 builder.Services.AddHostedService(provider => provider.GetService<SimulationEngine>() ?? throw new InvalidProgramException("Register Simulation Engine "));
-builder.Services.AddServices();
+
 builder.Services.AddTransient<DataPointConfigService>();
 builder.Services.AddTransient<DataPointValueService>();
 builder.Services.AddHealthChecks()
@@ -57,9 +57,13 @@ builder.Services.AddAutoMapper(t.Assembly);
 builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile("Configuration/Scenarios.json", optional: true, reloadOnChange: true);
 
-builder.Services.AddOptions<Iec104SimulationOptions>().Bind(
-    builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation))
+Iec104SimulationOptions options = new Iec104SimulationOptions();
+IConfigurationSection iecSection = builder.Configuration.GetSection(Iec104SimulationOptions.Iec104Simulation);
+iecSection.Bind(options);
+builder.Services.AddOptions<Iec104SimulationOptions>().Bind(iecSection)
     .ValidateDataAnnotations().ValidateOnStart();
+
+builder.Services.AddServices(options.Debug,options.MaxQueueSize);
 
 builder.Services.AddOptions<ScenariosOptions>().Bind(builder.Configuration);
 

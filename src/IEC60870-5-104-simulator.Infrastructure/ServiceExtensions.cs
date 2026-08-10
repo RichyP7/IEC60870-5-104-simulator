@@ -9,7 +9,7 @@ namespace ServiceExtensionMethods
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services, bool debug, int maxqueuesize)
         {
             services.AddSingleton<IIec104Service, Iec104Service>();
             services.AddSingleton<IASDUDispatcher, ASDUDispatcher>();
@@ -19,9 +19,9 @@ namespace ServiceExtensionMethods
             services.AddSingleton<lib60870.CS104.Server>(v =>
             {
                 var server = new lib60870.CS104.Server();
-                server.DebugOutput = false;
+                server.DebugOutput = debug;
                 server.EnqueueMode = lib60870.CS104.EnqueueMode.REMOVE_OLDEST;
-                server.MaxQueueSize = 100;
+                server.MaxQueueSize = maxqueuesize;
                 server.SetLocalPort(2404);
                 return server;
             });
