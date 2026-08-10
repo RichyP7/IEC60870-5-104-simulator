@@ -23,6 +23,7 @@ namespace ServiceExtensionMethods
                 server.EnqueueMode = lib60870.CS104.EnqueueMode.REMOVE_OLDEST;
                 server.MaxQueueSize = maxqueuesize;
                 server.SetLocalPort(2404);
+                server.MaxOpenConnections = 10;
                 return server;
             });
             services.AddSingleton<IInformationObjectFactory, ObjectFactory>();
