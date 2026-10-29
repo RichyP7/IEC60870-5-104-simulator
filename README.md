@@ -19,25 +19,65 @@ Wikipedia:
 
 ## Quickstart
 
-### Prerequisites
+There are two ways to run the simulator: **locally from source** (fastest for development) or **with Docker/Podman** (no toolchain needed).
+
+### Option A: Run locally from source
+
+#### Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (LTS)
+- [Node.js 22 LTS](https://nodejs.org/) (only needed for the web UI)
+
+#### 1. Start the simulator backend
+
+```bash
+dotnet run --project src/IEC60870-5-104-simulator.API
+```
+
+This starts:
+
+- the IEC 104 server on `localhost:2404`
+- the REST API on `http://localhost:8080/api/`
+- Swagger UI on `http://localhost:8080/swagger`
+
+#### 2. Start the web UI (optional, in a second terminal)
+
+```bash
+cd simulation-ui/IEC-104-UI
+npm ci
+npm start
+```
+
+Open `http://localhost:4200`. The UI connects to the backend on port 8080 automatically (CORS for `localhost:4200` is pre-configured in development mode).
+
+#### 3. Run the tests
+
+```bash
+dotnet test src/IEC60870-5-104-simulator.sln   # backend unit + integration tests
+cd simulation-ui/IEC-104-UI && npm test        # frontend unit tests (Vitest, headless)
+```
+
+### Option B: Run with Docker / Podman
+
+#### Prerequisites
 
 - **Docker** or **Podman** installed
 
-### Run with Docker
+#### Run with Docker
 
 ```bash
 docker pull ghcr.io/richyp7/iec60870-5-104-simulator:main
 docker run -p 2404:2404 -p 8080:8080 ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 
-### Run with Podman
+#### Run with Podman
 
 ```bash
 podman pull ghcr.io/richyp7/iec60870-5-104-simulator:main
 podman run -p 2404:2404 -p 8080:8080 ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 
-### Run with Docker Compose (includes UI)
+#### Run with Docker Compose (includes UI)
 
 ```bash
 docker compose up
@@ -45,7 +85,7 @@ docker compose up
 
 This starts both the simulator backend (ports 2404 + 8080) and the configuration UI (port 4300).
 
-### Build from source
+#### Build the image from source
 
 ```bash
 docker build -t iec104-simulator .
@@ -127,7 +167,8 @@ docker run -p 2404:2404 -p 8080:8080 \
 | POST | `/api/DataPointValues/{Ca}/{Oa}` | Send a value immediately |
 | GET | `/api/Scenarios` | List all scenario states |
 | POST | `/api/Scenarios/{name}/trigger` | Trigger a fault scenario (202 Accepted / 409 Conflict if already running) |
-| GET | `/api/Status` | Simulator status (uptime, engine state, active IEC clients) |
+| GET | `/api/SimulationEngineState` | Simulation engine state (Running/Stopped) |
+| POST | `/api/SimulationEngineState?command=Start\|Stop` | Start or stop the simulation engine |
 | GET | `/health/ready` | Readiness check (server + connection) |
 | GET | `/health/live` | Liveness check (server started) |
 
@@ -181,14 +222,18 @@ curl http://localhost:8080/api/Scenarios
 
 ## Running Tests
 
+Locally with the .NET SDK and Node.js:
+
 ```bash
-docker build --target test .
+dotnet test src/IEC60870-5-104-simulator.sln   # backend unit + integration tests
+cd simulation-ui/IEC-104-UI && npm test        # frontend unit tests (Vitest, headless)
 ```
 
-Or with docker compose:
+Or containerized (no toolchain required):
 
 ```bash
-docker compose build
+docker build --target test .           # infrastructure unit tests
+docker build --target test-service .   # integration tests
 ```
 
 ## Roadmap
