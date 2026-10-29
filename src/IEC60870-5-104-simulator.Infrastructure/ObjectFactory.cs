@@ -11,14 +11,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
     {
         private readonly IInformationObjectTemplate _template;
         private readonly IIecValueRepository _repository;
-        private readonly Random _random;
+        private readonly Random _random = Random.Shared;
         private readonly Dictionary<SimulationMode, ISimulationStrategy> _strategies;
 
         public ObjectFactory(IInformationObjectTemplate template, IIecValueRepository valueRepository)
         {
             _template = template;
             _repository = valueRepository;
-            _random = new Random();
             _strategies = new Dictionary<SimulationMode, ISimulationStrategy>
             {
                 [SimulationMode.GaussianNoise]  = new GaussianNoiseStrategy(_random),

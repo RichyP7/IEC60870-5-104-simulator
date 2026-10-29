@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 
 namespace IEC60870_5_104_simulator.Domain.Service
 {
+    /// <summary>
+    /// Holds the configured IEC-104 datapoints and commands.
+    /// </summary>
     public class Iec104ConfigurationService : IIec104ConfigurationService
     {
-        public Dictionary<IecAddress, Iec104DataPoint> DataPoints { get; }
-        public Dictionary<IecAddress, Iec104CommandDataPointConfig> commandDataPoints;
+        private readonly ConcurrentDictionary<IecAddress, Iec104DataPoint> dataPoints = new();
+        private readonly ConcurrentDictionary<IecAddress, Iec104CommandDataPointConfig> commandDataPoints = new();
         private readonly IIecValueRepository storage;
+
+        public IReadOnlyDictionary<IecAddress, Iec104DataPoint> DataPoints => dataPoints;
+        public IReadOnlyDictionary<IecAddress, Iec104CommandDataPointConfig> CommandDataPoints => commandDataPoints;
 
         public Iec104ConfigurationService(IIecValueRepository storage)
         {
-            DataPoints = new();
-            commandDataPoints = new();
             this.storage = storage;
         }
 
@@ -25,44 +25,42 @@ namespace IEC60870_5_104_simulator.Domain.Service
         {
             foreach (var data in datapoints)
             {
-                DataPoints.Add(data.Address, data);
+                if (!dataPoints.TryAdd(data.Address, data))
+                    throw new ArgumentException($"Duplicate datapoint address {data.Address.StationaryAddress}/{data.Address.ObjectAddress}");
             }
             foreach (var command in commands)
             {
-                commandDataPoints.Add(command.Address, command);
+                if (!commandDataPoints.TryAdd(command.Address, command))
+                    throw new ArgumentException($"Duplicate command address {command.Address.StationaryAddress}/{command.Address.ObjectAddress}");
             }
             InitStorage();
-
         }
 
         public bool AddConfiguredDataPoint(Iec104DataPoint dataPoint)
         {
-            return DataPoints.TryAdd(dataPoint.Address, dataPoint);
+            return dataPoints.TryAdd(dataPoint.Address, dataPoint);
         }
+
         private void InitStorage()
         {
-
-            foreach (var data in DataPoints)
+            foreach (var data in dataPoints)
             {
-
                 storage.AddDataPoint(data.Key, data.Value);
             }
         }
-    
 
-    public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
-    {
-        if (commandDataPoints.TryGetValue(iecAddress, out Iec104CommandDataPointConfig value))
+        public Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress)
         {
-            return value;
+            if (commandDataPoints.TryGetValue(iecAddress, out Iec104CommandDataPointConfig? value))
+            {
+                return value;
+            }
+            throw new KeyNotFoundException("no iec config for this iec address has been found");
         }
-        throw new KeyNotFoundException("no iec config for this iec address has been found");
-    }
-    public bool CheckCommandExisting(IecAddress iecAddress)
-    {
-        return commandDataPoints.TryGetValue(iecAddress, out _);
 
+        public bool CheckCommandExisting(IecAddress iecAddress)
+        {
+            return commandDataPoints.ContainsKey(iecAddress);
+        }
     }
-
-}
 }

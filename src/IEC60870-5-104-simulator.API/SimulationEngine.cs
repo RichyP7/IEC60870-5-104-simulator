@@ -1,4 +1,3 @@
-using AutoMapper;
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Hubs;
@@ -17,7 +16,6 @@ namespace IEC60870_5_104_simulator.Service
         private readonly ILogger<SimulationEngine> logger;
         private readonly Iec104SimulationOptions options;
         private readonly IIec104ConfigurationService datapointConfigService;
-        private readonly IMapper mapper;
         private readonly ServerStartedHealthCheck healthCheck;
         private readonly IHubContext<SimulationHub> hubContext;
         private bool dataConfigurationDone = false;
@@ -30,7 +28,7 @@ namespace IEC60870_5_104_simulator.Service
         private readonly int cycleTimeMs;
 
         public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options,
-            IIec104ConfigurationService datapointconfig, IMapper mapper, ServerStartedHealthCheck healthCheck,
+            IIec104ConfigurationService datapointconfig, ServerStartedHealthCheck healthCheck,
             IHubContext<SimulationHub> hubContext)
         {
             this.logger = logger;
@@ -38,7 +36,6 @@ namespace IEC60870_5_104_simulator.Service
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
             this.datapointConfigService = datapointconfig;
-            this.mapper = mapper;
             this.healthCheck = healthCheck;
             this.hubContext = hubContext;
         }
@@ -51,12 +48,14 @@ namespace IEC60870_5_104_simulator.Service
             }
             await iecService.Start();
             healthCheck.ServerIsRunning = true;
+            int consecutiveFailures = 0;
+            const int maxConsecutiveFailures = 10;
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     logger.LogTrace("Worker running at: {Time}", DateTimeOffset.Now);
-                    await Task.Delay(cycleTimeMs);
+                    await Task.Delay(cycleTimeMs, stoppingToken);
                     await iecService.SimulateCyclic(datapointConfigService.DataPoints.Values, cycleTimeMs);
 
                     // Push real-time snapshot to all connected UI clients
@@ -69,16 +68,26 @@ namespace IEC60870_5_104_simulator.Service
                         _lastClientCount = currentCount;
                         await hubContext.Clients.All.SendAsync("ClientCountUpdate", currentCount, stoppingToken);
                     }
+                    consecutiveFailures = 0;
                 }
-                catch (TaskCanceledException ex)
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
                 {
-                    logger.LogWarning(ex, "Task was cancelled");
-                    throw;
+                    logger.LogInformation("Simulation loop stopping (cancellation requested)");
+                    break;
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Simulation failed {Message}", ex.Message);
-                    throw;
+                    // A single faulty datapoint or transient error must not kill the
+                    // whole simulator: log, skip this cycle and keep going.
+                    consecutiveFailures++;
+                    logger.LogError(ex, "Simulation cycle failed ({Failures}/{Max}): {Message}",
+                        consecutiveFailures, maxConsecutiveFailures, ex.Message);
+                    if (consecutiveFailures >= maxConsecutiveFailures)
+                    {
+                        logger.LogCritical("Simulation aborted after {Max} consecutive failed cycles", maxConsecutiveFailures);
+                        healthCheck.ServerIsRunning = false;
+                        throw;
+                    }
                 }
             }
         }
@@ -92,7 +101,7 @@ namespace IEC60870_5_104_simulator.Service
                     dp.Id ?? string.Empty,
                     dp.Iec104DataType.ToString(),
                     dp.Mode.ToString(),
-                    dp.Value != null ? mapper.Map<IecValueDto>(dp.Value) : null,
+                    dp.Value != null ? dp.Value.ToDto() : null,
                     dp.Frozen))
                 .ToList();
 
@@ -127,8 +136,8 @@ namespace IEC60870_5_104_simulator.Service
 
             var commands = options.DataPointConfiguration.Commands;
             var measures = options.DataPointConfiguration.Measures;
-            var commandDataPoints = this.mapper.Map<List<Iec104CommandDataPointConfig>>(commands);
-            var resultMeasures = this.mapper.Map<List<Iec104DataPoint>>(measures);
+            var commandDataPoints = commands?.Select(c => c.ToDomain()).ToList() ?? new List<Iec104CommandDataPointConfig>();
+            var resultMeasures = measures?.Select(m => m.ToDomain()).ToList() ?? new List<Iec104DataPoint>();
             if (commands != null)
                 AssignResponses(commands, commandDataPoints, resultMeasures);
             ValidateProfiles(resultMeasures);
