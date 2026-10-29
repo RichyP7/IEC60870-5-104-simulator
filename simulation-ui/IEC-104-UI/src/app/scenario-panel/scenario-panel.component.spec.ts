@@ -1,36 +1,47 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ScenarioPanelComponent } from './scenario-panel.component';
-import { ScenarioService } from '../services/scenario.service';
-import { SignalRService } from '../services/signal-r.service';
+import { ScenarioService, ScenarioInfo } from '../services/scenario.service';
+import { SignalRService, ScenarioUpdate } from '../services/signal-r.service';
 import { provideHttpClient } from '@angular/common/http';
-import { Subject, of } from 'rxjs';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Subject, BehaviorSubject, of } from 'rxjs';
 
 describe('ScenarioPanelComponent', () => {
   let component: ScenarioPanelComponent;
   let fixture: ComponentFixture<ScenarioPanelComponent>;
-  let scenarioServiceSpy: jasmine.SpyObj<ScenarioService>;
-  let signalRServiceSpy: jasmine.SpyObj<SignalRService> & { scenarioUpdate$: Subject<any> };
+  let scenarioUpdate$: Subject<ScenarioUpdate>;
+  let scenarioServiceStub: {
+    getScenarios: ReturnType<typeof vi.fn>;
+    getScenarioDefinitions: ReturnType<typeof vi.fn>;
+    triggerScenario: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
-    const scenarioUpdate$ = new Subject<any>();
+    scenarioUpdate$ = new Subject<ScenarioUpdate>();
 
-    scenarioServiceSpy = jasmine.createSpyObj('ScenarioService', ['getScenarios', 'triggerScenario']);
-    scenarioServiceSpy.getScenarios.and.returnValue(of([
-      { name: 'ca1-transformer-trip', status: 'Idle', remainingMs: 0 }
-    ]));
-    scenarioServiceSpy.triggerScenario.and.returnValue(of({}));
+    scenarioServiceStub = {
+      getScenarios: vi.fn().mockReturnValue(of<ScenarioInfo[]>([
+        { name: 'ca1-transformer-trip', status: 'Idle', remainingMs: 0 }
+      ])),
+      getScenarioDefinitions: vi.fn().mockReturnValue(of([])),
+      triggerScenario: vi.fn().mockReturnValue(of({})),
+    };
 
-    signalRServiceSpy = jasmine.createSpyObj('SignalRService',
-      [], { scenarioUpdate$, fullSnapshot$: new Subject(), clientCount$: new Subject(), connected$: new Subject() }) as any;
-    (signalRServiceSpy as any).scenarioUpdate$ = scenarioUpdate$;
+    const signalRStub = {
+      scenarioUpdate$,
+      fullSnapshot$: new Subject(),
+      dataPointChanged$: new Subject(),
+      clientCount$: new BehaviorSubject(0),
+      connected$: new BehaviorSubject(false),
+    };
 
     await TestBed.configureTestingModule({
-      imports: [ScenarioPanelComponent, NoopAnimationsModule],
+      imports: [ScenarioPanelComponent],
       providers: [
         provideHttpClient(),
-        { provide: ScenarioService, useValue: scenarioServiceSpy },
-        { provide: SignalRService, useValue: signalRServiceSpy },
+        provideNoopAnimations(),
+        { provide: ScenarioService, useValue: scenarioServiceStub },
+        { provide: SignalRService, useValue: signalRStub },
       ]
     }).compileComponents();
 
@@ -44,29 +55,24 @@ describe('ScenarioPanelComponent', () => {
   });
 
   it('should load scenarios on init', () => {
-    expect(scenarioServiceSpy.getScenarios).toHaveBeenCalled();
+    expect(scenarioServiceStub.getScenarios).toHaveBeenCalled();
     expect(component.scenarios.length).toBe(1);
     expect(component.scenarios[0].name).toBe('ca1-transformer-trip');
   });
 
   it('should disable trigger button while scenario is Running', () => {
-    // Emit a Running update from SignalR
-    (signalRServiceSpy as any).scenarioUpdate$.next({
+    scenarioUpdate$.next({
       name: 'ca1-transformer-trip',
       status: 'Running',
       remainingMs: 25000
     });
     fixture.detectChanges();
 
-    expect(component.isRunning('ca1-transformer-trip')).toBeTrue();
-
-    const btn = fixture.nativeElement.querySelector('p-button');
-    // PrimeNG Button renders as disabled when [disabled]="true"
-    expect(component.isRunning('ca1-transformer-trip')).toBeTrue();
+    expect(component.isRunning('ca1-transformer-trip')).toBe(true);
   });
 
   it('should show countdown when Running', () => {
-    (signalRServiceSpy as any).scenarioUpdate$.next({
+    scenarioUpdate$.next({
       name: 'ca1-transformer-trip',
       status: 'Running',
       remainingMs: 15000
@@ -77,18 +83,16 @@ describe('ScenarioPanelComponent', () => {
   });
 
   it('should re-enable trigger button after scenario Completes', () => {
-    // First set Running
-    (signalRServiceSpy as any).scenarioUpdate$.next({
+    scenarioUpdate$.next({
       name: 'ca1-transformer-trip', status: 'Running', remainingMs: 1000
     });
     fixture.detectChanges();
-    expect(component.isRunning('ca1-transformer-trip')).toBeTrue();
+    expect(component.isRunning('ca1-transformer-trip')).toBe(true);
 
-    // Then Completed
-    (signalRServiceSpy as any).scenarioUpdate$.next({
+    scenarioUpdate$.next({
       name: 'ca1-transformer-trip', status: 'Completed', remainingMs: 0
     });
     fixture.detectChanges();
-    expect(component.isRunning('ca1-transformer-trip')).toBeFalse();
+    expect(component.isRunning('ca1-transformer-trip')).toBe(false);
   });
 });

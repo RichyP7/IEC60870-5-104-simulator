@@ -14,17 +14,16 @@ import {NgStyle} from '@angular/common';
 import {interval, of, startWith, Subject, tap} from 'rxjs';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    Menubar,
-    PrimeTemplate,
-    ToggleButton,
-    FormsModule,
-    NgStyle,
-  ],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+    selector: 'app-header',
+    imports: [
+        Menubar,
+        PrimeTemplate,
+        ToggleButton,
+        FormsModule,
+        NgStyle,
+    ],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   isSimulating: boolean = false;

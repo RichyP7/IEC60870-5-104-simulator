@@ -1,10 +1,20 @@
 # IEC104UI
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
+Angular 20 single-page application (no SSR) using PrimeNG 20.
+
+## Prerequisites
+
+- Node.js 22 LTS
+- npm
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```bash
+npm ci
+npm start
+```
+
+Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files. The UI expects the simulator backend API on `http://localhost:8080` (see `src/environments/`).
 
 ## Docker
 

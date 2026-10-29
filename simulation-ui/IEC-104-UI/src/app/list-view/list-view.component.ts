@@ -13,24 +13,23 @@ import {DatapointDetailsComponent} from '../datapoint-details/datapoint-details.
 import {DataPoint, GroupedData, SimulationMode} from '../models';
 
 @Component({
-  selector: 'app-list-view',
-  standalone: true,
-  imports: [
-    Accordion,
-    AccordionPanel,
-    NgForOf,
-    NgClass,
-    NgIf,
-    AccordionHeader,
-    AccordionContent,
-    Button,
-    CreateDialogComponent,
-    DatapointDetailsComponent,
-    Dialog,
-    Toast,
-  ],
-  templateUrl: './list-view.component.html',
-  styleUrl: './list-view.component.scss'
+    selector: 'app-list-view',
+    imports: [
+        Accordion,
+        AccordionPanel,
+        NgForOf,
+        NgClass,
+        NgIf,
+        AccordionHeader,
+        AccordionContent,
+        Button,
+        CreateDialogComponent,
+        DatapointDetailsComponent,
+        Dialog,
+        Toast,
+    ],
+    templateUrl: './list-view.component.html',
+    styleUrl: './list-view.component.scss'
 })
 export class ListViewComponent implements OnInit, OnDestroy {
 

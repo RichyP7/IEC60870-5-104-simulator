@@ -1,12 +1,12 @@
-﻿FROM node:lts AS frontend-build
+﻿FROM node:22-alpine AS frontend-build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY ./ ./
-RUN npm run build --configuration=production
+RUN npm run build -- --configuration=production
 
 FROM nginx:alpine
 

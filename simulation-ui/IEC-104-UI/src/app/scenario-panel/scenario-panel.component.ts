@@ -8,10 +8,9 @@ import { SignalRService, ScenarioUpdate } from '../services/signal-r.service';
 import { Subscription, interval } from 'rxjs';
 
 @Component({
-  selector: 'app-scenario-panel',
-  standalone: true,
-  imports: [CommonModule, Button, Tag, TooltipModule],
-  templateUrl: './scenario-panel.component.html',
+    selector: 'app-scenario-panel',
+    imports: [CommonModule, Button, Tag, TooltipModule],
+    templateUrl: './scenario-panel.component.html'
 })
 export class ScenarioPanelComponent implements OnInit, OnDestroy {
   scenarios: ScenarioInfo[] = [];

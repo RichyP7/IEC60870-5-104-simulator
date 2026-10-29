@@ -126,20 +126,19 @@ export const DPI_OPTIONS: DpiOption[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Component({
-  selector: 'app-datapoint-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    Button,
-    Select,
-    ReactiveFormsModule,
-    InputText,
-    ToggleSwitch,
-    InputNumber,
-    Divider,
-  ],
-  templateUrl: './datapoint-details.component.html',
-  styleUrl: './datapoint-details.component.scss'
+    selector: 'app-datapoint-details',
+    imports: [
+        CommonModule,
+        Button,
+        Select,
+        ReactiveFormsModule,
+        InputText,
+        ToggleSwitch,
+        InputNumber,
+        Divider,
+    ],
+    templateUrl: './datapoint-details.component.html',
+    styleUrl: './datapoint-details.component.scss'
 })
 export class DatapointDetailsComponent implements OnChanges {
   @Input() item: DataPoint | null = null;
