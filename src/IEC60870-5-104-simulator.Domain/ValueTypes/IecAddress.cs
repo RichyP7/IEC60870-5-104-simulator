@@ -8,7 +8,7 @@
             ObjectAddress = objectAddress;
         }
 
-        public int StationaryAddress { get; set; }
-        public int ObjectAddress { get; set; }
+        public int StationaryAddress { get; init; }
+        public int ObjectAddress { get; init; }
     }
 }

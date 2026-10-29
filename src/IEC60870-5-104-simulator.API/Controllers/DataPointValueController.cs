@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using IEC60870_5_104_simulator.API.Mapping;
+﻿using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.API.Services;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +27,7 @@ public class DataPointValuesController : ControllerBase
         {
             return NotFound();
         }
-        catch (Exception ex) when (ex is AutoMapperMappingException || ex is InvalidCastException)
+        catch (InvalidCastException)
         {
             return BadRequest("Supplied value to send is invalid");
         }
@@ -46,7 +45,7 @@ public class DataPointValuesController : ControllerBase
         {
             return NotFound();
         }
-        catch (Exception ex) when (ex is AutoMapperMappingException || ex is InvalidCastException)
+        catch (InvalidCastException)
         {
             return BadRequest("Supplied value to send is invalid");
         }

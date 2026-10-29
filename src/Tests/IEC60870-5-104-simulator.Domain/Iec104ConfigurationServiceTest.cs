@@ -24,7 +24,7 @@ namespace IEC60870_5_104_simulator.Domain.UnitTests
 
             this.service.ConfigureDataPoints(commandsToAdd, new List<Iec104DataPoint>());
 
-            Assert.True(service.commandDataPoints.Count == 1);
+            Assert.True(service.CommandDataPoints.Count == 1);
         }
     }
 }

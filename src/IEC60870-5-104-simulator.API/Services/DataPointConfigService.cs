@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using IEC60870_5_104_simulator.API.Mapping;
+﻿using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
@@ -10,24 +9,22 @@ public class DataPointConfigService
 {
     private readonly IIecValueRepository _iecValueRepository;
     private IIec104ConfigurationService _configurationService;
-    private readonly IMapper mapper;
 
-    public DataPointConfigService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService, IMapper mapper)
+    public DataPointConfigService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService)
     {
         _iecValueRepository = iecValueRepository;
         _configurationService = configurationService;
-        this.mapper = mapper;
     }
 
     public List<Iec104DataPointDto> GetAllDataPoints()
     {
         var data = _iecValueRepository.GetAllDataPoints();
-        return mapper.Map<IEnumerable<Iec104DataPointDto>>(data).ToList();
+        return data.Select(dp => dp.ToDto()).ToList();
     }
 
     public Iec104DataPoint CreateDataPoint(Iec104DataPointDto dataPointDto)
     {
-        var dataPoint = mapper.Map< Iec104DataPoint>(dataPointDto);
+        var dataPoint = dataPointDto.ToDomain();
         _iecValueRepository.AddDataPoint(dataPoint.Address, dataPoint);
         _configurationService.AddConfiguredDataPoint(dataPoint);
         return dataPoint;
@@ -37,12 +34,12 @@ public class DataPointConfigService
     {
         _iecValueRepository.GetDataPointValue(address);
         _iecValueRepository.SetSimulationMode(address, mode);
-        return mapper.Map<Iec104DataPointDto>(_iecValueRepository.GetDataPointValue(address));
+        return _iecValueRepository.GetDataPointValue(address).ToDto();
     }
 
     public Iec104DataPointDto GetDataPoint(IecAddress id)
     {
-        return mapper.Map<Iec104DataPointDto>(_iecValueRepository.GetDataPointValue(id));
+        return _iecValueRepository.GetDataPointValue(id).ToDto();
     }
 
     public bool DeleteDataPoint(int idStationary, int idObject)

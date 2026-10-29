@@ -78,7 +78,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
             {
                 return NotFound();
             }
-            catch (Exception ex) when (ex is AutoMapper.AutoMapperMappingException || ex is InvalidCastException)
+            catch (InvalidCastException)
             {
                 return BadRequest("Supplied value is invalid");
             }

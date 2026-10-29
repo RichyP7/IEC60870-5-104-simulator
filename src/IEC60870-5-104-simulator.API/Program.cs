@@ -51,9 +51,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
-Type t = typeof(IecConfigProfile);
-builder.Services.AddAutoMapper(t.Assembly);
-
 builder.Configuration.AddJsonFile("Configuration/SimulationOptions.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile("Configuration/Scenarios.json", optional: true, reloadOnChange: true);
 
