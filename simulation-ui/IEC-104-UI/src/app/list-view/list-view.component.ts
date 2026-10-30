@@ -5,6 +5,7 @@ import {Button} from 'primeng/button';
 import {DataService} from './DataService/data.service';
 import {CreateDialogComponent} from './create-dialog/create-dialog.component';
 import {Toast} from 'primeng/toast';
+import {Tooltip} from 'primeng/tooltip';
 import {Dialog} from 'primeng/dialog';
 import {catchError, of, Subscription} from 'rxjs';
 import {MessageService} from 'primeng/api';
@@ -27,6 +28,7 @@ import {DataPoint, GroupedData, SimulationMode} from '../models';
         DatapointDetailsComponent,
         Dialog,
         Toast,
+        Tooltip,
     ],
     templateUrl: './list-view.component.html',
     styleUrl: './list-view.component.scss'
@@ -215,6 +217,23 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   reloadData() {
     this.dataService.fetchData();
+  }
+
+  /** Downloads the current configuration as SimulationOptions.json. */
+  exportConfiguration() {
+    this.dataService.exportConfiguration().subscribe(blob => {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'SimulationOptions.json';
+      anchor.click();
+      URL.revokeObjectURL(url);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Configuration Exported',
+        detail: 'Replace Configuration/SimulationOptions.json with the downloaded file to start with this state next time.',
+      });
+    });
   }
 
   processDialogChange($event: boolean) {

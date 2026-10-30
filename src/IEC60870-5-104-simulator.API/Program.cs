@@ -31,6 +31,7 @@ builder.Services.AddHostedService(provider => provider.GetService<SimulationEngi
 
 builder.Services.AddTransient<DataPointConfigService>();
 builder.Services.AddTransient<DataPointValueService>();
+builder.Services.AddTransient<ConfigurationExportService>();
 builder.Services.AddHealthChecks()
     .AddCheck<ConnectionEstablishedHealthCheck>("readiness",HealthStatus.Healthy, new List<string> { "ready"})
     .AddCheck<ServerStartedHealthCheck>("liveness");

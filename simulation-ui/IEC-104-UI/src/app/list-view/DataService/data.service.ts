@@ -81,6 +81,20 @@ export class DataService {
     );
   }
 
+  /** Downloads the current configuration as a SimulationOptions.json file. */
+  exportConfiguration(): Observable<Blob> {
+    return this.http.get(`${environment.API_ENDPOINT}ConfigurationExport`, { responseType: 'blob' }).pipe(
+      catchError(error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Export Failed',
+          detail: 'Could not export the configuration.',
+        });
+        throw error;
+      })
+    );
+  }
+
   fetchSimulationEngineState(): Observable<SimulationState> {
     return this.http.get<SimulationState>(environment.API_ENDPOINT + 'SimulationEngineState');
   }

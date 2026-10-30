@@ -5,7 +5,7 @@ namespace IEC60870_5_104_simulator.Domain.Interfaces
     public interface IIec104ConfigurationService
     {
         IReadOnlyDictionary<IecAddress, Iec104DataPoint> DataPoints { get; }
-
+        IReadOnlyDictionary<IecAddress, Iec104CommandDataPointConfig> CommandDataPoints { get; }
         bool CheckCommandExisting(IecAddress iecAddress);
         void ConfigureDataPoints(List<Iec104CommandDataPointConfig> commands, List<Iec104DataPoint> datapoints);
         Iec104CommandDataPointConfig GetCommand(IecAddress iecAddress);

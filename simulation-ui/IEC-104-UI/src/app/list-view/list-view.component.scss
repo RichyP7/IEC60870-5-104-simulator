@@ -142,6 +142,11 @@ p-accordion {
   opacity: 1;
 }
 
+.toolbar-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .dialog-actions {
   display: flex;
   justify-content: flex-end;

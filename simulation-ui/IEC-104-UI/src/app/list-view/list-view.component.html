@@ -66,7 +66,13 @@
 </div>
 <div class="card accordion-container">
   <p-button label="Reload DataPoints" (onClick)="reloadData()" />
-  <p-button label="Create DataPoint" (click)="showDialog = true" />
+  <div class="toolbar-right">
+    <p-button label="Export Config" icon="pi pi-download" severity="secondary"
+              pTooltip="Download the current configuration as SimulationOptions.json"
+              tooltipPosition="top"
+              (onClick)="exportConfiguration()" />
+    <p-button label="Create DataPoint" (click)="showDialog = true" />
+  </div>
 </div>
 <app-create-dialog
   [visible]="showDialog"
