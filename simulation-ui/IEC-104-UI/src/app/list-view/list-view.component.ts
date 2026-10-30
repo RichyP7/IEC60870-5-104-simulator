@@ -228,7 +228,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
           this.messageService.add({
             severity: 'error',
             summary: 'Error - Bad Request',
-            detail: error.error?.exceptionMessage ?? 'Failed to create datapoint',
+            detail: this.extractErrorDetail(error) ?? 'Failed to create datapoint',
           });
           return of(null);
         })
@@ -236,6 +236,18 @@ export class ListViewComponent implements OnInit, OnDestroy {
       .subscribe(response => {
         if (response) this.reloadData();
       });
+  }
+
+  /** Extracts a readable message from an API error (ValidationProblemDetails or custom). */
+  private extractErrorDetail(error: any): string | null {
+    const body = error?.error;
+    if (!body) return null;
+    if (body.exceptionMessage) return body.exceptionMessage;
+    if (body.errors && typeof body.errors === 'object') {
+      const messages = Object.values(body.errors).flat();
+      if (messages.length) return messages.join(' ');
+    }
+    return body.detail ?? body.title ?? null;
   }
 }
 
