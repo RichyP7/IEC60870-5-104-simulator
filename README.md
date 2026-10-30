@@ -6,7 +6,6 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Docker Image](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/docker-image.yml/badge.svg)](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/docker-image.yml)
-[![CodeQL](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/RichyP7/IEC60870-5-104-simulator/security/code-scanning)
 [![Vulnerability Scan](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/vulnerability-scan.yml/badge.svg)](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/vulnerability-scan.yml)
 [![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-UI-DD0031?logo=angular&logoColor=white)](simulation-ui/IEC-104-UI)
