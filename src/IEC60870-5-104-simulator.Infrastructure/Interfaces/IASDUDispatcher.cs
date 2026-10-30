@@ -8,6 +8,6 @@ namespace IEC60870_5_104_simulator.Infrastructure.Interfaces
         ASDU CreateAsdu(int ca, CauseOfTransmission cot);
         IEnumerable<ASDU> BuildAsdus(IEnumerable<Iec104DataPoint> datapoints, CauseOfTransmission cot);
         void Send(ASDU asdu);
-        void Send(IEnumerable<ASDU> asdus);
+        int Send(IEnumerable<ASDU> asdus);
     }
 }

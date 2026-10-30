@@ -4,6 +4,6 @@ namespace IEC60870_5_104_simulator.Infrastructure.Interfaces
 {
     public interface ICyclicSimulationService
     {
-        void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs);
+        int SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs);
     }
 }

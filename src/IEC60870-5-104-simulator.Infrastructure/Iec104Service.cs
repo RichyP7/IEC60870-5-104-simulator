@@ -61,10 +61,10 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return _commandHandler.Simulate(dataPoint);
         }
 
-        public Task SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
+        public Task<int> SimulateCyclic(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
         {
-            _cyclicSimulation.SimulateCyclicValues(datapoints, cycleTimeMs);
-            return Task.CompletedTask;
+            int sentCount = _cyclicSimulation.SimulateCyclicValues(datapoints, cycleTimeMs);
+            return Task.FromResult(sentCount);
         }
 
         public bool ConnectionEstablished() => _connected;

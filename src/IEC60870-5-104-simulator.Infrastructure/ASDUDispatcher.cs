@@ -58,13 +58,16 @@ namespace IEC60870_5_104_simulator.Infrastructure
             return result;
         }
 
-        public void Send(IEnumerable<ASDU> asdus)
+        public int Send(IEnumerable<ASDU> asdus)
         {
-            _logger.LogInformation("Number of elements to send: {number}", asdus.Sum(v => v.NumberOfElements));
+            int sentCount = 0;
             foreach (var toSend in asdus.Where(a => a.NumberOfElements > 0))
             {
                 Send(toSend);
+                sentCount += toSend.NumberOfElements;
             }
+            _logger.LogInformation("Number of elements to send: {number}", sentCount);
+            return sentCount;
         }
 
         public void Send(ASDU toSend)

@@ -19,6 +19,12 @@ export interface ScenarioUpdate {
   remainingMs: number;
 }
 
+export interface CycleSent {
+  sentCount: number;
+  activeIecClients: number;
+  timestampUtc: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SignalRService implements OnDestroy {
   private connection: import('@microsoft/signalr').HubConnection | null = null;
@@ -28,6 +34,7 @@ export class SignalRService implements OnDestroy {
   readonly scenarioUpdate$ = new Subject<ScenarioUpdate>();
   readonly clientCount$ = new BehaviorSubject<number>(0);
   readonly connected$ = new BehaviorSubject<boolean>(false);
+  readonly cycleSent$ = new Subject<CycleSent>();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
@@ -59,6 +66,10 @@ export class SignalRService implements OnDestroy {
 
     this.connection.on('ClientCountUpdate', (count: number) => {
       this.clientCount$.next(count);
+    });
+
+    this.connection.on('CycleSent', (info: CycleSent) => {
+      this.cycleSent$.next(info);
     });
 
     this.connection.onclose(() => this.connected$.next(false));

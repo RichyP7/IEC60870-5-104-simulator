@@ -7,6 +7,16 @@
 
   <ng-template pTemplate="end">
 
+    @if (lastCycle) {
+      <span class="send-indicator mr-4"
+            [pTooltip]="sendIndicatorTooltip" tooltipPosition="bottom"
+            aria-live="polite">
+        <span class="send-dot" [class.pulse]="sendPulse"></span>
+        <span class="send-text">{{ lastCycle.sentCount }} pts</span>
+        <span class="send-time">{{ lastSentAt | date:'HH:mm:ss' }}</span>
+      </span>
+    }
+
     <p-toggleButton [ngModel]="isConnected"
                     class="mr-3"
                     [ngStyle]="{ 'pointer-events': 'none'}"

@@ -32,3 +32,46 @@
 .github-link:hover {
   color: var(--p-text-muted-color, #c9c9c9);
 }
+
+// ── "Datapoints sent" indicator ────────────────────────────────────────────────
+
+.send-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--p-text-muted-color);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.send-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--p-green-500, #22c55e);
+  flex-shrink: 0;
+
+  &.pulse {
+    animation: send-pulse 0.7s ease-out;
+  }
+}
+
+@keyframes send-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--p-green-500, #22c55e) 60%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+.send-text {
+  font-weight: 600;
+  color: var(--p-text-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.send-time {
+  font-variant-numeric: tabular-nums;
+}

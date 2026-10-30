@@ -56,18 +56,11 @@ namespace IEC60870_5_104_simulator.Service
                 {
                     logger.LogTrace("Worker running at: {Time}", DateTimeOffset.Now);
                     await Task.Delay(cycleTimeMs, stoppingToken);
-                    await iecService.SimulateCyclic(datapointConfigService.DataPoints.Values, cycleTimeMs);
+                    int sentCount = await iecService.SimulateCyclic(datapointConfigService.DataPoints.Values, cycleTimeMs);
 
-                    // Push real-time snapshot to all connected UI clients
                     await PushFullSnapshotAsync();
-
-                    // Push client count update only when it changes
-                    int currentCount = iecService.GetActiveClientCount();
-                    if (currentCount != _lastClientCount)
-                    {
-                        _lastClientCount = currentCount;
-                        await hubContext.Clients.All.SendAsync("ClientCountUpdate", currentCount, stoppingToken);
-                    }
+                    await NotifyUiClientsDataPointsSent(sentCount, stoppingToken);
+                    await PushClientCount(stoppingToken);
                     consecutiveFailures = 0;
                 }
                 catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -77,8 +70,6 @@ namespace IEC60870_5_104_simulator.Service
                 }
                 catch (Exception ex)
                 {
-                    // A single faulty datapoint or transient error must not kill the
-                    // whole simulator: log, skip this cycle and keep going.
                     consecutiveFailures++;
                     logger.LogError(ex, "Simulation cycle failed ({Failures}/{Max}): {Message}",
                         consecutiveFailures, maxConsecutiveFailures, ex.Message);
@@ -89,6 +80,26 @@ namespace IEC60870_5_104_simulator.Service
                         throw;
                     }
                 }
+            }
+        }
+
+        private async Task PushClientCount(CancellationToken stoppingToken)
+        {
+            int currentCount = iecService.GetActiveClientCount();
+            if (currentCount != _lastClientCount)
+            {
+                _lastClientCount = currentCount;
+                await hubContext.Clients.All.SendAsync("ClientCountUpdate", currentCount, stoppingToken);
+            }
+        }
+
+        private async Task NotifyUiClientsDataPointsSent(int sentCount, CancellationToken stoppingToken)
+        {
+            if (sentCount > 0)
+            {
+                await hubContext.Clients.All.SendAsync("CycleSent",
+                    new CycleSentDto(sentCount, iecService.GetActiveClientCount(), DateTime.UtcNow),
+                    stoppingToken);
             }
         }
 

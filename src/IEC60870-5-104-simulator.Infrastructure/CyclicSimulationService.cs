@@ -32,7 +32,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             _logger = logger;
         }
 
-        public void SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
+        public int SimulateCyclicValues(IEnumerable<Iec104DataPoint> datapoints, int cycleTimeMs)
         {
             var allPoints = datapoints.ToList();
             var pointsById = allPoints.Where(dp => dp.Id != null).ToDictionary(dp => dp.Id!);
@@ -61,7 +61,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             foreach (var dp in allPoints.Where(dp => !dp.Frozen && dp.Mode == SimulationMode.CounterOnDemand))
                 TrySimulateDataPoint(dp, () => AccumulateCounter(dp, pointsById, cycleTimeMs));
 
-            _dispatcher.Send(asduLists.SelectMany(kv => kv.Value));
+            return _dispatcher.Send(asduLists.SelectMany(kv => kv.Value));
         }
 
         private void TrySimulateDataPoint(Iec104DataPoint dp, Action simulate)
@@ -95,8 +95,6 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             // Read current accumulated value from repo.
             double current = ExtractNumericValue(_repository.GetDataPointValue(dp.Address).Value) ?? dp.BaseValue ?? 0.0;
-
-            // Resolve the linked power point using the pre-built O(1) dictionary.
             double powerKw = 0.0;
             if (!string.IsNullOrEmpty(dp.LinkedDataPointId))
             {

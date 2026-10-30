@@ -31,4 +31,10 @@ namespace IEC60870_5_104_simulator.API.Hubs
         double UptimeSeconds,
         string EngineState,
         int ActiveIecClients);
+
+    /// <summary>Pushed after every simulation cycle that enqueued datapoint values for IEC-104 clients.</summary>
+    public record CycleSentDto(
+        int SentCount,
+        int ActiveIecClients,
+        DateTime TimestampUtc);
 }
