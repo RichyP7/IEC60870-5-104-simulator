@@ -59,7 +59,7 @@ jobs:
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@v6
       with:
         images: ${{ env.REGISTRY }}/RichyP7/${{ matrix.image }}
         # v1.2.3 tag -> 1.2.3, 1.2, 1, latest; main branch -> main
