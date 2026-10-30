@@ -17,18 +17,17 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public int GetStepValue(IecAddress address)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 var ret = test.Value as IecIntValueObject;
-                return ret.Value;
+                return ret?.Value ?? throw new InvalidCastException("step value cast");
             }
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
         public void SetStepValue(IecAddress address, int value)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
-                var ret = test.Value as IecIntValueObject;
                 test.Value = new IecIntValueObject(value);
             }
             else
@@ -37,7 +36,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public bool GetSinglePoint(IecAddress address)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 var ret = test.Value as IecSinglePointValueObject;
                 return ret?.Value ?? throw new InvalidCastException("boolean cast");
@@ -47,11 +46,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public void DeleteDataPoint(IecAddress address)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint foundValue))
-            {
-                StoredDataPoints.Remove(address, out Iec104DataPoint removedValue);
-                if (removedValue != null) return;
-            }
+            if (StoredDataPoints.TryRemove(address, out _)) return;
             throw new KeyNotFoundException($"invalidkey for Ca: {address.StationaryAddress} Oa:{address.ObjectAddress} ");
         }
 
@@ -74,7 +69,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public void SetSinglePoint(IecAddress address, bool value)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 test.Value = new IecSinglePointValueObject(value);
             }
@@ -84,7 +79,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public IecDoublePointValue GetDoublePoint(IecAddress address)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 var ret = test.Value as IecDoublePointValueObject;
                 return ret?.Value ?? throw new InvalidCastException($"double cast: {address.StationaryAddress} Oa:{address.ObjectAddress}");
@@ -94,7 +89,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public void SetDoublePoint(IecAddress address, IecDoublePointValue value)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 test.Value = new IecDoublePointValueObject(value);
             }
@@ -104,7 +99,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public void SetObjectValue(IecAddress address, IecValueObject value)
         {
-            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint test))
+            if (StoredDataPoints.TryGetValue(address, out Iec104DataPoint? test))
             {
                 test.Value = value;
             }

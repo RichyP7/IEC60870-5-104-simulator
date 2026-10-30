@@ -4,13 +4,13 @@ namespace IEC60870_5_104_simulator.Domain
 {
     public class Iec104DataPoint
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string? Name { get; set; }
-        public IecAddress Address { get; set; }
+        public IecAddress Address { get; set; } = null!;
         public Iec104DataTypes Iec104DataType { get; set; }
-        public IecValueObject Value { get; set; }
+        public IecValueObject Value { get; set; } = null!;
         public SimulationMode Mode { get; set; }
-        public string InitString { get; set; }
+        public string InitString { get; set; } = string.Empty;
         public float[]? ProfileValues { get; set; }
         public int ProfileIndex { get; set; }
 

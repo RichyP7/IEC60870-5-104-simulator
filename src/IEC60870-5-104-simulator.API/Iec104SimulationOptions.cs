@@ -43,7 +43,7 @@ namespace IEC60870_5_104_simulator.API
             public int TypeId { get; set; }
             public string? Id { get; set; }
             public SimulationModeConfig Mode { get; set; }
-            public string InitValue{ get; set; }
+            public string InitValue { get; set; } = string.Empty;
             public float[]? ProfileValues { get; set; }
 
             // Simulation realism parameters (optional)
@@ -76,7 +76,7 @@ namespace IEC60870_5_104_simulator.API
             [Range(45, 87, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
             public int TypeId { get; set; }
             public string? Id { get; set; }
-            public string ResponseId { get; set; }
+            public string ResponseId { get; set; } = string.Empty;
         }
     }
 }

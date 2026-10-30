@@ -20,7 +20,8 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public InformationObject Update(Iec104CommandDataPointConfig commandCfg, InformationObject sentCommand)
         {
-            var responseDataPoint = commandCfg.SimulatedDataPoint;
+            var responseDataPoint = commandCfg.SimulatedDataPoint
+                ?? throw new InvalidOperationException($"Command '{commandCfg.Id}' has no response datapoint assigned");
             switch (responseDataPoint.Iec104DataType)
             {
                 case Iec104DataTypes.M_ST_NA_1:

@@ -19,6 +19,7 @@ describe('HeaderComponent', () => {
       scenarioUpdate$: new Subject(),
       clientCount$: new BehaviorSubject(0),
       connected$: new BehaviorSubject(false),
+      cycleSent$: new Subject(),
     };
 
     await TestBed.configureTestingModule({

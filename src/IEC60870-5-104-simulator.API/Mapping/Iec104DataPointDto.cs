@@ -5,7 +5,7 @@ namespace IEC60870_5_104_simulator.API.Mapping;
 
 public class Iec104DataPointDto
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string? Name { get; set; }
     [Required]
     public int StationaryAddress { get; set; }

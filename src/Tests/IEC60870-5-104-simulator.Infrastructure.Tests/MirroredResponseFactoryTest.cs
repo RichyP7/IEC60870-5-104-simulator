@@ -12,7 +12,6 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests
         private MirroredResponseFactory factory;
         private Mock<IInformationObjectTemplate> templateMock;
         private Mock<IIecValueRepository> storageMock;
-        private Mock<InformationObject> infoObjectMock;
         public MirroredResponseFactoryTest()
         {
             storageMock = new Mock<IIecValueRepository>();
