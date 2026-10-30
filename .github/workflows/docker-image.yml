@@ -14,7 +14,7 @@ jobs:
     name: Run containerized tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Build  the test Docker image
       run: DOCKER_BUILDKIT=1 docker build --pull --target test -t iec60870-5-104-simulatortest:${{ github.run_id }} .
 
@@ -47,7 +47,7 @@ jobs:
             context: ./simulation-ui/IEC-104-UI
             description: "IEC 60870-5-104 simulator web UI (Angular, nginx)"
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Log in to the Container registry
       if: github.event_name != 'pull_request'
