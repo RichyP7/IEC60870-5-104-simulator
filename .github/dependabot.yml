@@ -1,0 +1,46 @@
+# Dependabot: automatic dependency update PRs + security alerts.
+# Security updates are created immediately when an advisory matches,
+version: 2
+updates:
+  # Backend (.NET) - scans all csproj in the repo
+  - package-ecosystem: "nuget"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      # Keep noise low: one PR for all minor/patch bumps, separate PRs for majors
+      nuget-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Frontend (Angular UI)
+  - package-ecosystem: "npm"
+    directory: "/simulation-ui/IEC-104-UI"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      angular:
+        patterns: ["@angular/*"]
+      npm-minor-patch:
+        update-types: ["minor", "patch"]
+        exclude-patterns: ["@angular/*"]
+
+  # GitHub Actions used in workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+
+  # Base images in Dockerfiles (dotnet/aspnet, dotnet/sdk, node, nginx)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+  - package-ecosystem: "docker"
+    directory: "/simulation-ui/IEC-104-UI"
+    schedule:
+      interval: "weekly"
+      day: "monday"
