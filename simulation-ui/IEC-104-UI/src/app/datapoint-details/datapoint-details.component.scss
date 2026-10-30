@@ -25,13 +25,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--orange-50, #fff7ed);
-  border: 1px solid var(--orange-300, #fdba74);
+  background: color-mix(in srgb, var(--p-orange-500, #f97316) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p-orange-500, #f97316) 45%, transparent);
   border-radius: 0.375rem;
   padding: 0.6rem 0.85rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: var(--orange-800, #9a3412);
+  color: var(--p-orange-600, #ea580c);
 
   i { font-size: 1rem; flex-shrink: 0; }
 }
@@ -47,7 +47,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-color-secondary, #6c757d);
+  color: var(--p-text-muted-color, #6c757d);
   margin: 0 0 0.6rem 0;
 }
 
@@ -64,7 +64,7 @@
 .dp-label {
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--text-color-secondary, #6c757d);
+  color: var(--p-text-muted-color, #6c757d);
   white-space: nowrap;
 }
 
@@ -74,7 +74,7 @@
 
   &.id-value {
     font-size: 0.75rem;
-    color: var(--text-color-secondary, #6c757d);
+    color: var(--p-text-muted-color, #6c757d);
     font-family: monospace;
   }
 
@@ -87,14 +87,14 @@
   display: block;
   margin-top: 0.25rem;
   font-size: 0.75rem;
-  color: var(--text-color-secondary, #6c757d);
+  color: var(--p-text-muted-color, #6c757d);
 }
 
 // ── Utility ──────────────────────────────────────────────────────────────────
 
 .info-link {
   margin-left: 0.4rem;
-  color: var(--primary-color, #3b82f6);
+  color: var(--p-primary-color, #3b82f6);
   vertical-align: middle;
 }
 

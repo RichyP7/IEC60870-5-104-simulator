@@ -9,7 +9,7 @@ p-accordion {
 .station-count {
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--text-color-secondary, #6c757d);
+  color: var(--p-text-muted-color, #6c757d);
   margin-left: 0.4rem;
 }
 
@@ -35,7 +35,7 @@ p-accordion {
   transition: background 0.15s ease;
 
   &:hover {
-    background: var(--surface-hover, #f3f4f6);
+    background: var(--p-content-hover-background, #f3f4f6);
   }
 }
 
@@ -56,21 +56,21 @@ p-accordion {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--text-color, #1f2937);
+  color: var(--p-text-color, #1f2937);
 }
 
 .dp-ioa {
   font-weight: 700;
   font-size: 0.8rem;
   min-width: 4.5rem;
-  color: var(--text-color, #1f2937);
+  color: var(--p-text-color, #1f2937);
 }
 
 .dp-type {
   font-size: 0.75rem;
   font-family: monospace;
-  background: var(--surface-200, #e5e7eb);
-  color: var(--text-color-secondary, #374151);
+  background: var(--p-content-hover-background, #e5e7eb);
+  color: var(--p-text-muted-color, #374151);
   border-radius: 0.25rem;
   padding: 0.1rem 0.4rem;
   white-space: nowrap;
@@ -82,30 +82,30 @@ p-accordion {
   border-radius: 0.75rem;
   padding: 0.15rem 0.55rem;
   white-space: nowrap;
-  background: var(--primary-100, #dbeafe);
-  color: var(--primary-700, #1d4ed8);
+  background: color-mix(in srgb, var(--p-blue-500, #3b82f6) 15%, transparent);
+  color: var(--p-blue-600, #1d4ed8);
 
   &[data-mode="GaussianNoise"],
   &[data-mode="Solar"],
   &[data-mode="Wind"] {
-    background: var(--green-100, #dcfce7);
-    color: var(--green-700, #15803d);
+    background: color-mix(in srgb, var(--p-green-500, #22c55e) 15%, transparent);
+    color: var(--p-green-600, #15803d);
   }
 
   &[data-mode="Static"] {
-    background: var(--surface-200, #f3f4f6);
-    color: var(--text-color-secondary, #6b7280);
+    background: var(--p-content-hover-background, #f3f4f6);
+    color: var(--p-text-muted-color, #6b7280);
   }
 
   &[data-mode="CommandResponse"] {
-    background: var(--purple-100, #ede9fe);
-    color: var(--purple-700, #6d28d9);
+    background: color-mix(in srgb, var(--p-purple-500, #a855f7) 15%, transparent);
+    color: var(--p-purple-600, #6d28d9);
   }
 
   &[data-mode="EnergyCounter"],
   &[data-mode="CounterOnDemand"] {
-    background: var(--orange-100, #ffedd5);
-    color: var(--orange-700, #c2410c);
+    background: color-mix(in srgb, var(--p-orange-500, #f97316) 15%, transparent);
+    color: var(--p-orange-600, #c2410c);
   }
 }
 
@@ -113,13 +113,13 @@ p-accordion {
   margin-left: auto;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--primary-600, #2563eb);
+  color: var(--p-primary-color, #2563eb);
   white-space: nowrap;
 }
 
 .dp-frozen {
   font-size: 0.72rem;
-  color: var(--orange-600, #ea580c);
+  color: var(--p-orange-500, #ea580c);
   margin-left: 0.25rem;
 }
 

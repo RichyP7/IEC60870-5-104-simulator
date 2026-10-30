@@ -9,7 +9,7 @@
 }
 
 .separator {
-  border-left: 2px solid #ccc;
+  border-left: 2px solid var(--p-content-border-color, #ccc);
   margin-left: 20px;
   height: 24px;
   display: inline-block;
@@ -21,7 +21,7 @@
 
 .github-link {
   margin-left: 1rem;
-  color: var(--text-color);
+  color: var(--p-text-color);
   text-decoration: none;
 }
 
@@ -30,5 +30,5 @@
   vertical-align: sub;
 }
 .github-link:hover {
-  color: #c9c9c9;
+  color: var(--p-text-muted-color, #c9c9c9);
 }
