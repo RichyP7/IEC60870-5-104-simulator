@@ -1,106 +1,133 @@
-# IEC60870-5-104-simulator
+<div align="center">
 
-<img src="https://github.com/RichyP7/IEC60870-5-104-simulator/assets/14166202/f8c22afe-d4a0-4a1e-8655-43f6c3116cfe)" width=25% height=25%> <sup>[1](#myfootnote1)</sup>
+# IEC 60870-5-104 Simulator
+
+**A cloud-native IEC 60870-5-104 outstation simulator for testing SCADA clients — with REST API, real-time web UI, and fault-scenario engine.**
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Docker Image](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/docker-image.yml/badge.svg)](https://github.com/RichyP7/IEC60870-5-104-simulator/actions/workflows/docker-image.yml)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Angular](https://img.shields.io/badge/Angular-UI-DD0031?logo=angular&logoColor=white)](simulation-ui/IEC-104-UI)
+[![GHCR](https://img.shields.io/badge/ghcr.io-container-2496ED?logo=docker&logoColor=white)](https://github.com/RichyP7/IEC60870-5-104-simulator/pkgs/container/iec60870-5-104-simulator)
+
+<img src="docs/assets/hero.jpg" alt="IEC 60870-5-104 Simulator logo" width="25%"> <sup>[1](#myfootnote1)</sup>
+
+[Quickstart](#-quickstart) •
+[Features](#-features) •
+[Configuration](#%EF%B8%8F-configuration) •
+[REST API](#rest-api) •
+[SCADA Demo](#-scada-demo) •
+[Contributing](#-contributing)
+
+</div>
+
+---
 
 ## Overview
 
-This repository contains an IEC 60870-104 protocol simulator written in .NET. The simulator acts as an IEC 104 server (controlled station) that listens on TCP port 2404 and allows IEC 104 clients to connect to it.
+This simulator acts as an **IEC 60870-5-104 server (controlled station / outstation)** listening on TCP port `2404`, so any IEC 104 client can connect and interact with it. It is built as a containerized .NET application for cloud-native OT test scenarios.
 
-It is designed as a containerized application for testing the protocol in cloud-native scenarios. Whether you're testing your SCADA system, developing a new application, or learning the protocol, this simulator provides a convenient way to validate your implementation.
+Whether you're testing a SCADA system, developing a new IEC 104 client, or learning the protocol — this simulator gives you a realistic, scriptable outstation in seconds.
 
-The application uses the [lib60870.NET](https://github.com/mz-automation) library by mz-automation.
+Built on top of [lib60870.NET](https://github.com/mz-automation) by mz-automation.
 
-In short, this simulator aims to behave like a realistic IEC 60870-5-104 outstation and help you develop *cloud-native iec104 clients* for modular OT-scenarios.
+<!-- SCREENSHOT: Web UI overview here -->
+<img src="docs/assets/iec104simulator-ui-screenshot.png" alt="IEC 60870-5-104 Simulator UI" width="50%">
 
-### What is IEC 60870
+<details>
+<summary><b>What is IEC 60870?</b></summary>
 
-Wikipedia:
-> In electrical engineering and power system automation, the International Electrotechnical Commission 60870 standards define systems used for telecontrol (supervisory control and data acquisition). Such systems are used for controlling electric power transmission grids and other geographically widespread control systems. By use of standardized protocols, equipment from many different suppliers can be made to interoperate. IEC standard 60870 has six parts, defining general information related to the standard, operating conditions, electrical interfaces, performance requirements, and data transmission protocols. The 60870 standards are developed by IEC Technical Committee 57 (Working Group 03).
+> In electrical engineering and power system automation, the International Electrotechnical Commission 60870 standards define systems used for telecontrol (supervisory control and data acquisition). Such systems are used for controlling electric power transmission grids and other geographically widespread control systems. By use of standardized protocols, equipment from many different suppliers can be made to interoperate. — *Wikipedia*
 
-## Quickstart
+</details>
 
-There are two ways to run the simulator: **locally from source** (fastest for development) or **with Docker/Podman** (no toolchain needed).
+## ✨ Features
 
-### Option A: Run locally from source
+- 🖧 **Full IEC 104 outstation** — measurements, commands, general interrogation, counter interrogation
+- 📈 **Realistic simulation modes** — GaussianNoise, PeriodicWave, RandomWalk, EnergyCounter, Profiles, and more
+- ⚡ **Fault scenario engine** — timed multi-step fault sequences with automatic recovery, triggered via REST
+- 🌐 **REST API + Swagger** — configure datapoints and control the engine at runtime
+- 🔄 **SignalR real-time push** — live datapoint values, scenario status, and client count over WebSocket
+- 🖥️ **Angular web UI** — configure and monitor the simulator in your browser
+- 🐳 **Container-first** — prebuilt image on GHCR, docker-compose setup, health checks for Kubernetes
 
-#### Prerequisites
+## 🚀 Quickstart
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (LTS)
-- [Node.js 22 LTS](https://nodejs.org/) (only needed for the web UI)
-
-#### 1. Start the simulator backend
-
-```bash
-dotnet run --project src/IEC60870-5-104-simulator.API
-```
-
-This starts:
-
-- the IEC 104 server on `localhost:2404`
-- the REST API on `http://localhost:8080/api/`
-- Swagger UI on `http://localhost:8080/swagger`
-
-#### 2. Start the web UI (optional, in a second terminal)
+### Option A: Docker / Podman (no toolchain needed)
 
 ```bash
-cd simulation-ui/IEC-104-UI
-npm ci
-npm start
-```
-
-Open `http://localhost:4200`. The UI connects to the backend on port 8080 automatically (CORS for `localhost:4200` is pre-configured in development mode).
-
-#### 3. Run the tests
-
-```bash
-dotnet test src/IEC60870-5-104-simulator.sln   # backend unit + integration tests
-cd simulation-ui/IEC-104-UI && npm test        # frontend unit tests (Vitest, headless)
-```
-
-### Option B: Run with Docker / Podman
-
-#### Prerequisites
-
-- **Docker** or **Podman** installed
-
-#### Run with Docker
-
-```bash
-docker pull ghcr.io/richyp7/iec60870-5-104-simulator:main
 docker run -p 2404:2404 -p 8080:8080 ghcr.io/richyp7/iec60870-5-104-simulator:main
-```
-
-#### Run with Podman
-
-```bash
-podman pull ghcr.io/richyp7/iec60870-5-104-simulator:main
+# or
 podman run -p 2404:2404 -p 8080:8080 ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
 
-#### Run with Docker Compose (includes UI)
+With the web UI included (backend on 2404 + 8080, UI on 4300):
 
 ```bash
 docker compose up
 ```
 
-This starts both the simulator backend (ports 2404 + 8080) and the configuration UI (port 4300).
-
-#### Build the image from source
+Build the image yourself:
 
 ```bash
 docker build -t iec104-simulator .
 docker run -p 2404:2404 -p 8080:8080 iec104-simulator
 ```
 
+### Option B: Run locally from source
+
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) · [Node.js 22 LTS](https://nodejs.org/) (web UI only)
+
+```bash
+# 1. Start the simulator backend
+dotnet run --project src/IEC60870-5-104-simulator.API
+
+# 2. (Optional) Start the web UI in a second terminal
+cd simulation-ui/IEC-104-UI
+npm ci
+npm start   # → http://localhost:4200 (CORS pre-configured in dev mode)
+```
+
 ### Connect
 
-Once running, connect your IEC 104 client to `localhost:2404`. The REST API is available at `http://localhost:8080/api/` and Swagger UI at `http://localhost:8080/swagger` (development mode).
+| Endpoint | Address |
+|----------|---------|
+| IEC 104 server | `localhost:2404` |
+| REST API | `http://localhost:8080/api/` |
+| Swagger UI | `http://localhost:8080/swagger` (development mode) |
+| SignalR hub | `ws://localhost:8080/hubs/simulation` |
 
-## Configuration
+<img src="docs/assets/swagger.png" alt="IEC 60870-5-104 Simulator Swagger" width="50%">
+
+## 🏗 Architecture
+
+<details>
+<summary><b>System architecture</b></summary>
+
+```mermaid
+flowchart LR
+    SCADA["IEC 104 Client / SCADA"]
+    BROWSER["Browser"]
+    REST["REST / API Client"]
+
+    SIM["Simulator Backend<br/>(.NET container)"]
+    UI["Web UI<br/>(Angular container)"]
+
+    SCADA <-->|"IEC 60870-5-104 · TCP 2404"| SIM
+    BROWSER -->|"HTTP 4300"| UI
+    UI -->|"REST + WebSocket · 8080"| SIM
+    REST -->|"HTTP 8080"| SIM
+```
+
+> 📖 A detailed internal architecture diagram is available in **[docs/architecture.md](docs/architecture.md)**.
+
+</details>
+
+## ⚙️ Configuration
 
 ### Datapoint Configuration
 
-Datapoints are configured in `Configuration/SimulationOptions.json`. Each measure defines a Common Address (Ca), Object Address (Oa), and TypeId corresponding to an IEC 60870-5-104 data type.
+Datapoints are configured in `Configuration/SimulationOptions.json`. Each measure defines a Common Address (`Ca`), Object Address (`Oa`), and `TypeId` corresponding to an IEC 60870-5-104 data type.
 
 ```json
 {
@@ -132,26 +159,15 @@ Datapoints are configured in `Configuration/SimulationOptions.json`. Each measur
 }
 ```
 
-### Simulation and Protocol Details
-
-For a complete description of:
-
-- Supported IEC 60870-5-104 ASDU types
-- Simulation modes and cyclic behaviour
-- General interrogation (GI) sequence and value handling
-- Command processing and counter behaviour
-
-see [IEC104-Docs](docs/iec104.md).
-
-### Custom Configuration via Docker Volume Mount
-
-To use your own configuration, mount your config files into the container:
+Use your own configuration with a volume mount:
 
 ```bash
 docker run -p 2404:2404 -p 8080:8080 \
   -v ./my-config/SimulationOptions.json:/app/Configuration/SimulationOptions.json \
   ghcr.io/richyp7/iec60870-5-104-simulator:main
 ```
+
+> 📖 For supported ASDU types, simulation modes, general interrogation behaviour, and command processing details, see the **[IEC 104 protocol docs](docs/iec104.md)**.
 
 ### REST API
 
@@ -183,7 +199,7 @@ Connect to `ws://localhost:8080/hubs/simulation` for real-time updates:
 | `ScenarioUpdate` | `ScenarioStateDto` | Scenario status change (Idle/Running/Completed/Failed) |
 | `ClientCountUpdate` | `int` | Number of connected IEC-104 clients changed |
 
-## SCADA Demo
+## 🔌 SCADA Demo
 
 The built-in demo configuration (`SimulationOptions.json`) includes CA1 stations with realistic waveforms:
 
@@ -197,7 +213,9 @@ The built-in demo configuration (`SimulationOptions.json`) includes CA1 stations
 | CA1_IOA106 | Wind Power Output (W) | 106 | M_ME_NC_1 | RandomWalk | Random walk ~1200 W, bounded 0–3000 W |
 | CA1_IOA107 | Energy Meter (Wh) | 107 | M_ME_NC_1 | EnergyCounter | Accumulates Wh from CA1_IOA102 each cycle |
 
-### Running the Transformer-Trip Fault Scenario
+<!-- SCREENSHOT: Live datapoint dashboard here -->
+
+### Transformer-Trip Fault Scenario
 
 The `ca1-transformer-trip` scenario simulates a fault followed by automatic recovery:
 
@@ -210,17 +228,17 @@ The `ca1-transformer-trip` scenario simulates a fault followed by automatic reco
 | 5 | 5.5 s | Breaker → OFF (trip confirmed) |
 | Recovery | +10 s | Restores power/alarm/voltage/breaker to pre-fault values |
 
-**Trigger via REST:**
 ```bash
+# Trigger via REST
 curl -X POST http://localhost:8080/api/Scenarios/ca1-transformer-trip/trigger
-```
 
-**Check status:**
-```bash
+# Check status
 curl http://localhost:8080/api/Scenarios
 ```
 
-## Running Tests
+<!-- SCREENSHOT: Scenario running in UI here -->
+
+## 🧪 Running Tests
 
 Locally with the .NET SDK and Node.js:
 
@@ -236,23 +254,23 @@ docker build --target test .           # infrastructure unit tests
 docker build --target test-service .   # integration tests
 ```
 
-## Roadmap
+## 🤝 Contributing
 
-| **Feature**                 | **Description**                                                                                   | **Status**       |
-|-----------------------------|---------------------------------------------------------------------------------------------------|------------------|
-| Basic Communication         | Establish communication channels between master and outstations.                                  | ✅ Implemented   |
-| Command acknowledgement     | Acknowledge all command types                                                                     | ✅ Implemented   |
-| Cyclic random Measurements  | Send cyclic random measurement for configured types                                               | ✅ Implemented   |
-| Custom Simulation Profiles  | Iterate through predefined value profiles for measured values                                     | ✅ Implemented   |
-| Configuration UI            | Web UI for configuration of simulator                                                             | ✅ Implemented   |
-| Sim Measurements for Commands | Send Measurement types if a connected command gets sent                                         | ✅ Implemented   |
-| ASDU Types                  | Support all ASDU types 1, 2, 30, 31                                                               | ⏳ In Progress   |
-| Unit Testing                | Comprehensive unit tests to ensure reliability.                                                   | ⏳ In Progress   |
-| Logging and Debugging       | Detailed logs for troubleshooting and debugging.                                                  | ⏳ In Progress   |
-| Secure Authentication       | Implement secure authentication mechanisms.                                                       | Not started      |
-| Performance Optimization    | Optimize performance for large-scale simulations.                                                 | Not started      |
-| Real-time Monitoring        | Real-time visualization of communication exchanges.                                               | ✅ Implemented   |
-| Fault Scenario Engine       | Timed multi-step fault sequences with auto-recovery via REST trigger.                             | ✅ Implemented   |
-| Realism Simulation Modes    | GaussianNoise, PeriodicWave, RandomWalk, EnergyCounter, CounterOnDemand, Profile modes.            | ✅ Implemented   |
+Contributions are welcome! If you'd like to help:
 
-<a name="myfootnote1">1</a>: Supported by DALL-E 3
+1. Check the [issues](https://github.com/RichyP7/IEC60870-5-104-simulator/issues) for open topics or create a new one to discuss your idea
+2. Fork the repository and create a feature branch
+3. Make sure tests pass (`dotnet test` + `npm test`)
+4. Open a pull request
+
+Planned areas of work include full coverage of additional ASDU types (1, 2, 30, 31), secure authentication, and performance optimization for large-scale simulations.
+
+## 📄 License
+
+This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgements
+
+- [lib60870.NET](https://github.com/mz-automation) by mz-automation — the IEC 60870-5-104 protocol implementation this simulator builds on
+
+<a name="myfootnote1">1</a>: Logo supported by DALL-E 3
