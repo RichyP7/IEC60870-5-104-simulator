@@ -47,18 +47,41 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 .ToDictionary(kv => kv.Key, kv => new List<ASDU> { kv.Value });
 
             foreach (var dp in nonCounterCyclic)
-                AddInformationObjectToAsdus(asduLists, dp);
+                TrySimulateDataPoint(dp, () => AddInformationObjectToAsdus(asduLists, dp));
 
             foreach (var dp in energyCounters)
             {
-                IecValueObject newValue = AccumulateCounter(dp, pointsById, cycleTimeMs);
-                AppendToAsdus(asduLists, dp, _factory.CreateInformationObjectWithValue(dp, newValue));
+                TrySimulateDataPoint(dp, () =>
+                {
+                    IecValueObject newValue = AccumulateCounter(dp, pointsById, cycleTimeMs);
+                    AppendToAsdus(asduLists, dp, _factory.CreateInformationObjectWithValue(dp, newValue));
+                });
             }
 
             foreach (var dp in allPoints.Where(dp => !dp.Frozen && dp.Mode == SimulationMode.CounterOnDemand))
-                AccumulateCounter(dp, pointsById, cycleTimeMs);
+                TrySimulateDataPoint(dp, () => AccumulateCounter(dp, pointsById, cycleTimeMs));
 
             _dispatcher.Send(asduLists.SelectMany(kv => kv.Value));
+        }
+
+        private void TrySimulateDataPoint(Iec104DataPoint dp, Action simulate)
+        {
+            try
+            {
+                simulate();
+            }
+            catch (KeyNotFoundException)
+            {
+                _logger.LogDebug(
+                    "Skipping datapoint Ca={Ca} Oa={Oa}: no longer present in the value repository (probably deleted)",
+                    dp.Address.StationaryAddress, dp.Address.ObjectAddress);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Simulation step failed for datapoint Ca={Ca} Oa={Oa} (mode {Mode}): {Message}",
+                    dp.Address.StationaryAddress, dp.Address.ObjectAddress, dp.Mode, ex.Message);
+            }
         }
 
         /// <summary>

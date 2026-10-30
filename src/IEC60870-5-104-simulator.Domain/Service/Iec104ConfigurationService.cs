@@ -41,6 +41,11 @@ namespace IEC60870_5_104_simulator.Domain.Service
             return dataPoints.TryAdd(dataPoint.Address, dataPoint);
         }
 
+        public bool RemoveConfiguredDataPoint(IecAddress address)
+        {
+            return dataPoints.TryRemove(address, out _);
+        }
+
         private void InitStorage()
         {
             foreach (var data in dataPoints)

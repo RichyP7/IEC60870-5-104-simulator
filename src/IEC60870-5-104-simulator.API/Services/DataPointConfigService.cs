@@ -48,6 +48,7 @@ public class DataPointConfigService
         try
         {
             _iecValueRepository.DeleteDataPoint(address);
+            _configurationService.RemoveConfiguredDataPoint(address);
             return true;
         }
         catch (KeyNotFoundException)
@@ -77,5 +78,17 @@ public class DataPointConfigService
             dp.WavePeriodSeconds = dto.WavePeriodSeconds;
         if (dto.LinkedDataPointId != null)
             dp.LinkedDataPointId = dto.LinkedDataPointId;
+
+        // Persist the submitted value into the repository object. Without this the new
+        // value is only transmitted once (spontaneous frame) while the simulation loop
+        // and all UI reads keep working on the old stored value.
+        if (HasValue(dto.Value))
+            dp.Value = dto.Value.ToDomain();
     }
+
+    private static bool HasValue(IecValueDto? value) =>
+        value != null &&
+        (value.NumericValue != null || value.SinglePointValue != null ||
+         value.DoublePointValue != null || value.FloatValue != null ||
+         value.ScaledValue != null);
 }
