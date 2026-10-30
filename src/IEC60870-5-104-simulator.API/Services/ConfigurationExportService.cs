@@ -9,7 +9,7 @@ namespace IEC60870_5_104_simulator.API.Services;
 
 /// <summary>
 /// Builds a SimulationOptions.json-compatible document from the current runtime state,
-/// so users can persist changes made via the UI (created/updated/deleted datapoints)
+/// users can persist changes made via the UI (created/updated/deleted datapoints)
 /// and restart the simulator with that file.
 /// </summary>
 public class ConfigurationExportService
@@ -25,10 +25,6 @@ public class ConfigurationExportService
         _options = options;
     }
 
-    /// <summary>
-    /// Document shaped exactly like Configuration/SimulationOptions.json:
-    /// { "Iec104Simulation": { ... } }
-    /// </summary>
     public Dictionary<string, Iec104SimulationOptions> BuildExportDocument()
     {
         var current = _options.Value;
@@ -67,8 +63,7 @@ public class ConfigurationExportService
         Oa = dp.Address.ObjectAddress,
         TypeId = (int)dp.Iec104DataType,
         Mode = (SimulationModeConfig)dp.Mode,
-        // Persist the current value so the next start resumes from the exported state.
-        InitValue = ToInitValue(dp),
+        InitValue = ToInitValue(dp), //current value to init
         ProfileValues = dp.ProfileValues,
         BaseValue = dp.BaseValue,
         MinValue = dp.MinValue,
@@ -78,10 +73,6 @@ public class ConfigurationExportService
         LinkedDataPointId = dp.LinkedDataPointId,
     };
 
-    /// <summary>
-    /// Serializes the current value into the InitValue string format that the repository
-    /// parses on startup (bool / double-point enum name / integer / invariant-culture float).
-    /// </summary>
     private static string ToInitValue(Iec104DataPoint dp) => dp.Value switch
     {
         IecSinglePointValueObject sp => sp.Value ? "true" : "false",

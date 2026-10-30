@@ -99,6 +99,26 @@ npm start   # → http://localhost:4200 (CORS pre-configured in dev mode)
 
 <img src="docs/assets/swagger.png" alt="IEC 60870-5-104 Simulator Swagger" width="50%">
 
+### Evaluate with the built-in test client
+
+If you don't have a SCADA/IEC-104 master at hand, a minimal console test client is included to inspect what the simulator actually sends on the wire — useful for verifying your datapoint configuration:
+
+```bash
+# Simulator must be running (see above), then in a second terminal:
+dotnet run --project src/Tests/IEC60870-5-104-simulator.TestClient            # connects to 127.0.0.1:2404
+dotnet run --project src/Tests/IEC60870-5-104-simulator.TestClient 10.0.0.5 2404   # or a custom host/port
+```
+
+On connect it sends a general interrogation (so you immediately see all configured points) and then prints every received value in one line per information object:
+
+```
+12:09:30.321 | PERIODIC                | M_SP_NA_1  | CA   20 | IOA    57 | OFF (false)  [GOOD]
+12:09:30.324 | PERIODIC                | M_ME_NC_1  | CA    1 | IOA   104 |     108.423  [GOOD]
+12:10:09.740 | INTERROGATED_BY_STATION | M_DP_NA_1  | CA    1 | IOA   101 |          ON  [GOOD]
+```
+
+Columns: local receive time · cause of transmission · IEC type · common address · information object address · value · quality (and the sender timestamp for time-tagged types). Press `Q` or `Ctrl+C` to quit.
+
 ## 🏗 Architecture
 
 <details>
