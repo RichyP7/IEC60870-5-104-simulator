@@ -23,7 +23,7 @@
     "@angular/platform-browser-dynamic": "^20.3.34",
     "@angular/router": "^20.3.34",
     "@microsoft/signalr": "^8.0.7",
-    "@primeng/themes": "^20.4.0",
+    "@primeng/themes": "^21.0.4",
     "primeicons": "^8.0.2",
     "primeng": "^20.4.0",
     "rxjs": "~7.8.0",
