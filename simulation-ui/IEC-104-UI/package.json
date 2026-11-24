@@ -14,11 +14,11 @@
     "@vitest/mocker": "^4.1.12"
   },
   "dependencies": {
-    "@angular/animations": "^20.3.34",
-    "@angular/common": "^20.3.34",
-    "@angular/compiler": "^20.3.34",
-    "@angular/core": "^20.3.34",
-    "@angular/forms": "^20.3.34",
+    "@angular/animations": "^22.2.6",
+    "@angular/common": "^22.2.6",
+    "@angular/compiler": "^22.2.6",
+    "@angular/core": "^22.2.6",
+    "@angular/forms": "^22.2.6",
     "@angular/platform-browser": "^20.3.34",
     "@angular/platform-browser-dynamic": "^20.3.34",
     "@angular/router": "^20.3.34",
