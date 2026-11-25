@@ -5,7 +5,6 @@ using IEC60870_5_104_simulator.API.Mapping;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
-using static IEC60870_5_104_simulator.API.Iec104SimulationOptions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 

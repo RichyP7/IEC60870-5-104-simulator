@@ -49,7 +49,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             var def = _definitions.FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (def == null)
             {
-                _logger.LogWarning("Scenario '{Name}' not found", name);
+                _logger.LogWarning("Scenario '{Name}' not found", name.Replace(Environment.NewLine, ""));
                 return false;
             }
 

@@ -1,8 +1,8 @@
-using System.Globalization;
 using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using static IEC60870_5_104_simulator.API.Iec104SimulationOptions;
 
 namespace IEC60870_5_104_simulator.API.Services;
