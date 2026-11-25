@@ -13,6 +13,8 @@ jobs:
   containerized-tests:
     name: Run containerized tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - uses: actions/checkout@v7
     - name: Build  the test Docker image
