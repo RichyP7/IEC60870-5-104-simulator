@@ -1,5 +1,4 @@
 using IEC60870_5_104_simulator.Domain.Interfaces;
-using IEC60870_5_104_simulator.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IEC60870_5_104_simulator.API.Controllers
@@ -34,7 +33,7 @@ namespace IEC60870_5_104_simulator.API.Controllers
         [HttpPost("{scenarioName}/trigger")]
         public async Task<IActionResult> TriggerScenario([FromRoute] string scenarioName, CancellationToken ct)
         {
-            _logger.LogInformation("Trigger requested for scenario '{Name}'", scenarioName);
+            _logger.LogInformation("Trigger requested for scenario '{Name}'", scenarioName.Replace(Environment.NewLine, ""));
             bool triggered = await _scenarioService.TriggerAsync(scenarioName, ct);
             if (!triggered)
                 return Conflict(new { error = $"Scenario '{scenarioName}' not found or already running." });
