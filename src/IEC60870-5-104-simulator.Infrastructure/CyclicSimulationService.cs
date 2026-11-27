@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;
@@ -12,7 +12,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     {
         private readonly IASDUDispatcher _dispatcher;
         private readonly IInformationObjectFactory _factory;
-        private readonly IIecValueRepository _repository;
+        private readonly IDatapointRegistry _registry;
         private readonly ILogger<CyclicSimulationService> _logger;
 
         // Per-datapoint profile cycle index (wraps on each tick)
@@ -23,12 +23,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public CyclicSimulationService(
             IASDUDispatcher dispatcher,
             IInformationObjectFactory factory,
-            IIecValueRepository repository,
+            IDatapointRegistry registry,
             ILogger<CyclicSimulationService> logger)
         {
             _dispatcher = dispatcher;
             _factory = factory;
-            _repository = repository;
+            _registry = registry;
             _logger = logger;
         }
 
@@ -94,7 +94,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             int cycleTimeMs)
         {
             // Read current accumulated value from repo.
-            double current = ExtractNumericValue(_repository.GetDataPointValue(dp.Address).Value) ?? dp.BaseValue ?? 0.0;
+            double current = ExtractNumericValue(_registry.Get(dp.Address).Value) ?? dp.BaseValue ?? 0.0;
             double powerKw = 0.0;
             if (!string.IsNullOrEmpty(dp.LinkedDataPointId))
             {
@@ -118,7 +118,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             newValue = Math.Clamp(newValue, dp.MinValue ?? double.MinValue, dp.MaxValue ?? double.MaxValue);
 
             IecValueObject valueObj = WrapCounterValue(dp, newValue);
-            _repository.SetObjectValue(dp.Address, valueObj);
+            _registry.SetValue(dp.Address, valueObj);
             return valueObj;
         }
 
@@ -174,7 +174,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             InformationObject ioa = dataPoint.Mode switch
             {
                 SimulationMode.Periodic => _factory.CreateInformationObjectWithValue(
-                    dataPoint, _repository.GetDataPointValue(dataPoint.Address).Value),
+                    dataPoint, _registry.Get(dataPoint.Address).Value),
                 SimulationMode.Profile => CreateProfileInformationObject(dataPoint),
                 _ => _factory.CreateRandomInformationObject(dataPoint)
             };
@@ -191,14 +191,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
             var values = dataPoint.ProfileValues;
             if (values == null || values.Length == 0)
                 return _factory.CreateInformationObjectWithValue(
-                    dataPoint, _repository.GetDataPointValue(dataPoint.Address).Value);
+                    dataPoint, _registry.Get(dataPoint.Address).Value);
 
             int index = _profileIndices.AddOrUpdate(
                 dataPoint.Address, 0,
                 (_, current) => (current + 1) % values.Length);
             float profileValue = values[index];
             IecValueObject value = CreateValueObjectFromProfile(dataPoint.Iec104DataType, profileValue);
-            _repository.SetObjectValue(dataPoint.Address, value);
+            _registry.SetValue(dataPoint.Address, value);
             return _factory.CreateInformationObjectWithValue(dataPoint, value);
         }
 

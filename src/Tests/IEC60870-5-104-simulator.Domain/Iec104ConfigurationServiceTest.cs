@@ -1,30 +1,43 @@
-using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
-using Moq;
-using Xunit.Sdk;
 
 namespace IEC60870_5_104_simulator.Domain.UnitTests
 {
     public class Iec104ConfigurationServiceTest
     {
-        Iec104ConfigurationService service;
-        Mock<IIecValueRepository> storageMock;
-
-        public Iec104ConfigurationServiceTest()
-        {
-            storageMock = new Mock<IIecValueRepository>();
-            this.service = new Iec104ConfigurationService(storageMock.Object);
-        }
         [Fact]
-        public void ConfigureDataPointsTest_Add_CountNumber()
+        public void ConfigureDataPoints_AddsCommand()
         {
-            List<Iec104CommandDataPointConfig> commandsToAdd = new List<Iec104CommandDataPointConfig>();
-            commandsToAdd.Add(new Iec104CommandDataPointConfig(new IecAddress(11,122),Iec104DataTypes.C_CD_NA_1));
+            var service = new Iec104ConfigurationService();
+            var commands = new List<Iec104CommandDataPointConfig>
+            {
+                new(new IecAddress(11, 122), Iec104DataTypes.C_CD_NA_1)
+            };
 
-            this.service.ConfigureDataPoints(commandsToAdd, new List<Iec104DataPoint>());
+            service.ConfigureDataPoints(commands);
 
-            Assert.True(service.CommandDataPoints.Count == 1);
+            Assert.Single(service.CommandDataPoints);
+        }
+
+        [Fact]
+        public void ConfigureDataPoints_RejectsDuplicateCommandAddress()
+        {
+            var service = new Iec104ConfigurationService();
+            var commands = new List<Iec104CommandDataPointConfig>
+            {
+                new(new IecAddress(11, 122), Iec104DataTypes.C_CD_NA_1),
+                new(new IecAddress(11, 122), Iec104DataTypes.C_CD_NA_1)
+            };
+
+            Assert.Throws<ArgumentException>(() => service.ConfigureDataPoints(commands));
+        }
+
+        [Fact]
+        public void GetCommand_ThrowsForUnknownAddress()
+        {
+            var service = new Iec104ConfigurationService();
+
+            Assert.Throws<KeyNotFoundException>(() => service.GetCommand(new IecAddress(11, 122)));
         }
     }
 }

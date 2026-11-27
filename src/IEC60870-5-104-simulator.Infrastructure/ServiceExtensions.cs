@@ -16,6 +16,8 @@ namespace ServiceExtensionMethods
             services.AddSingleton<IIec104CommandHandler, Iec104CommandHandler>();
             services.AddSingleton<ICyclicSimulationService, CyclicSimulationService>();
             services.AddSingleton<IIec104ConfigurationService, Iec104ConfigurationService>();
+            services.AddSingleton<DatapointRegistry>();
+            services.AddSingleton<IDatapointRegistry>(sp => sp.GetRequiredService<DatapointRegistry>());
             services.AddSingleton<lib60870.CS104.Server>(v =>
             {
                 var server = new lib60870.CS104.Server();
@@ -29,7 +31,6 @@ namespace ServiceExtensionMethods
             services.AddSingleton<IInformationObjectFactory, ObjectFactory>();
             services.AddSingleton<ICommandResponseFactory, MirroredResponseFactory>();
             services.AddSingleton<IInformationObjectTemplate, InformationObjectTemplateMethod>();
-            services.AddSingleton<IIecValueRepository, IecValueLocalStorageRepository>();
             return services;
         }
 

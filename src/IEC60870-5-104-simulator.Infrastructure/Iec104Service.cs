@@ -14,7 +14,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class Iec104Service : IIec104Service
     {
         private readonly lib60870.CS104.Server _server;
-        private readonly IIecValueRepository _repository;
+        private readonly IDatapointRegistry _registry;
         private readonly IASDUDispatcher _dispatcher;
         private readonly IIec104CommandHandler _commandHandler;
         private readonly ICyclicSimulationService _cyclicSimulation;
@@ -25,14 +25,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public Iec104Service(
             lib60870.CS104.Server server,
-            IIecValueRepository repository,
+            IDatapointRegistry registry,
             IASDUDispatcher dispatcher,
             IIec104CommandHandler commandHandler,
             ICyclicSimulationService cyclicSimulation,
             ILogger<Iec104Service> logger)
         {
             _server = server;
-            _repository = repository;
+            _registry = registry;
             _dispatcher = dispatcher;
             _commandHandler = commandHandler;
             _cyclicSimulation = cyclicSimulation;
@@ -92,7 +92,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             asdu.IsNegative = false;
             connection.SendASDU(asdu);
 
-            var respondPoints = _repository.GetAllDataPoints()
+            var respondPoints = _registry.Snapshot()
                 .Where(dp => !dp.Frozen)
                 .ToList();
 

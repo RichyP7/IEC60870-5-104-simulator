@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;
 using lib60870.CS101;
@@ -11,7 +11,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     {
         private readonly lib60870.CS104.Server _server;
         private readonly IInformationObjectFactory _factory;
-        private readonly IIecValueRepository _repository;
+        private readonly IDatapointRegistry _registry;
         private readonly ILogger<ASDUDispatcher> _logger;
 
         private const int MaxInformationObjectsPerASDU = 20;
@@ -19,12 +19,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
         public ASDUDispatcher(
             lib60870.CS104.Server server,
             IInformationObjectFactory factory,
-            IIecValueRepository repository,
+            IDatapointRegistry registry,
             ILogger<ASDUDispatcher> logger)
         {
             _server = server;
             _factory = factory;
-            _repository = repository;
+            _registry = registry;
             _logger = logger;
         }
 
@@ -51,7 +51,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
                         asdu = CreateAsdu(group.Key.StationaryAddress, cot);
                     }
                     asdu.AddInformationObject(
-                        _factory.CreateInformationObjectWithValue(dp, _repository.GetDataPointValue(dp.Address).Value));
+                        _factory.CreateInformationObjectWithValue(dp, _registry.Get(dp.Address).Value));
                 }
                 result.Add(asdu);
             }

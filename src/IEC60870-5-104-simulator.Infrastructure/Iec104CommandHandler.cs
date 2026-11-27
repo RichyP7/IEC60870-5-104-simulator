@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using IEC60870_5_104_simulator.Infrastructure.Interfaces;

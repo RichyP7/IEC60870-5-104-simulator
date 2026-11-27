@@ -9,12 +9,12 @@ namespace IEC60870_5_104_simulator.Infrastructure
 {
     public class MirroredResponseFactory : ICommandResponseFactory
     {
-        private readonly IIecValueRepository repository;
+        private readonly IDatapointRegistry registry;
         private readonly IInformationObjectTemplate template;
 
-        public MirroredResponseFactory(IIecValueRepository repository, IInformationObjectTemplate template)
+        public MirroredResponseFactory(IDatapointRegistry registry, IInformationObjectTemplate template)
         {
-            this.repository = repository;
+            this.registry = registry;
             this.template = template;
         }
 
@@ -95,7 +95,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
             {
                 DoubleCommand dc = (DoubleCommand)sentCommand;
                 var dcValue = (IecDoublePointValue)dc.State;
-                this.repository.SetDoublePoint(address, dcValue);
+                this.registry.SetValue(address, new IecDoublePointValueObject(dcValue));
                 return dcValue;
             }
             else
@@ -103,7 +103,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
         private bool CreateMirroredSinglePointValue(InformationObject sentCommand, IecAddress address)
         {
-            return repository.GetSinglePoint(address);
+            return ((IecSinglePointValueObject)registry.Get(address).Value).Value;
         }
 
         private CP56Time2a GetCP56Now()
@@ -118,29 +118,22 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         private int CreateAdjustedStepValue(InformationObject commands, IecAddress address)
         {
-            if (commands is StepCommand)
+            if (commands is StepCommand stepc)
             {
-                StepCommand stepc = (StepCommand)commands;
-                int stepState;
-                if (stepc.State == StepCommandValue.HIGHER )
+                int delta = stepc.State switch
                 {
-                    stepState = repository.GetStepValue(address);
-                    if(stepState < 63)
-                        stepState++;
-                }
-                else if (stepc.State == StepCommandValue.LOWER)
-                {
-                    stepState = repository.GetStepValue(address);
-                    if (stepState > -64)
-                        stepState--;
-                }
-                else
+                    StepCommandValue.HIGHER => 1,
+                    StepCommandValue.LOWER => -1,
+                    _ => 0
+                };
+
+                if (delta == 0)
                     return -1;
-                repository.SetStepValue(address, stepState);
-                return stepState;
+
+                return registry.AdjustStep(address, delta);
             }
-            else
-                throw new InvalidCastException($"type {commands}, {commands.ObjectAddress}is not a stepcommand");
+
+            throw new InvalidCastException($"type {commands}, {commands.ObjectAddress}is not a stepcommand");
         }
     }
 }
