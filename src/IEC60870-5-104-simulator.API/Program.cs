@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Hubs;
@@ -80,7 +80,7 @@ builder.Services.AddSingleton<IScenarioService>(sp =>
 
     return new ScenarioService(
         definitions,
-        sp.GetRequiredService<IIecValueRepository>(),
+        sp.GetRequiredService<IDatapointRegistry>(),
         sp.GetRequiredService<IIec104Service>(),
         sp.GetRequiredService<IScenarioEventPublisher>(),
         sp.GetRequiredService<ILogger<ScenarioService>>());

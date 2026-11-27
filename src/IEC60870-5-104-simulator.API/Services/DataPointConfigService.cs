@@ -7,39 +7,36 @@ namespace IEC60870_5_104_simulator.API.Services;
 
 public class DataPointConfigService
 {
-    private readonly IIecValueRepository _iecValueRepository;
-    private IIec104ConfigurationService _configurationService;
+    private readonly IDatapointRegistry _registry;
 
-    public DataPointConfigService(IIecValueRepository iecValueRepository, IIec104ConfigurationService configurationService)
+    public DataPointConfigService(IDatapointRegistry registry)
     {
-        _iecValueRepository = iecValueRepository;
-        _configurationService = configurationService;
+        _registry = registry;
     }
 
     public List<Iec104DataPointDto> GetAllDataPoints()
     {
-        var data = _iecValueRepository.GetAllDataPoints();
+        var data = _registry.Snapshot();
         return data.Select(dp => dp.ToDto()).ToList();
     }
 
     public Iec104DataPoint CreateDataPoint(Iec104DataPointDto dataPointDto)
     {
         var dataPoint = dataPointDto.ToDomain();
-        _iecValueRepository.AddDataPoint(dataPoint.Address, dataPoint);
-        _configurationService.AddConfiguredDataPoint(dataPoint);
+        _registry.Add(dataPoint);
         return dataPoint;
     }
 
     public Iec104DataPointDto UpdateSimulationMode(IecAddress address, SimulationMode mode)
     {
-        _iecValueRepository.GetDataPointValue(address);
-        _iecValueRepository.SetSimulationMode(address, mode);
-        return _iecValueRepository.GetDataPointValue(address).ToDto();
+        _registry.Get(address);
+        _registry.SetMode(address, mode);
+        return _registry.Get(address).ToDto();
     }
 
     public Iec104DataPointDto GetDataPoint(IecAddress id)
     {
-        return _iecValueRepository.GetDataPointValue(id).ToDto();
+        return _registry.Get(id).ToDto();
     }
 
     public bool DeleteDataPoint(int idStationary, int idObject)
@@ -47,9 +44,7 @@ public class DataPointConfigService
         var address = new IecAddress(idStationary, idObject);
         try
         {
-            _iecValueRepository.DeleteDataPoint(address);
-            _configurationService.RemoveConfiguredDataPoint(address);
-            return true;
+            return _registry.Remove(address);
         }
         catch (KeyNotFoundException)
         {
@@ -63,7 +58,7 @@ public class DataPointConfigService
     /// </summary>
     public void UpdateDataPointParams(IecAddress address, Iec104DataPointDto dto)
     {
-        var dp = _iecValueRepository.GetDataPointValue(address);
+        var dp = _registry.Get(address);
         if (dto.Mode != default)
             dp.Mode = (SimulationMode)dto.Mode;
         if (dto.BaseValue.HasValue)

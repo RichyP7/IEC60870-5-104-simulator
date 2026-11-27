@@ -9,12 +9,12 @@ namespace IEC60870_5_104_simulator.API.Services
     public class DataPointValueService
     {
         private readonly IIec104Service service;
-        private readonly IIecValueRepository repo;
+        private readonly IDatapointRegistry registry;
 
-        public DataPointValueService(IIec104Service service, IIecValueRepository repo)
+        public DataPointValueService(IIec104Service service, IDatapointRegistry registry)
         {
             this.service = service;
-            this.repo = repo;
+            this.registry = registry;
         }
         public Task SendNewIecValue(Iec104DataPointDto dto)
         {
@@ -23,7 +23,7 @@ namespace IEC60870_5_104_simulator.API.Services
         }
         public Task<Iec104DataPointDto> GetCurrentValue(IecAddress address)
         {
-            Iec104DataPoint dpvalue = this.repo.GetDataPointValue(address);
+            Iec104DataPoint dpvalue = this.registry.Get(address);
             return Task.FromResult(dpvalue.ToDto());
         }
     }

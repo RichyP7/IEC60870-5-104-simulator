@@ -10,14 +10,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class ObjectFactory : IInformationObjectFactory
     {
         private readonly IInformationObjectTemplate _template;
-        private readonly IIecValueRepository _repository;
+        private readonly IDatapointRegistry _registry;
         private readonly Random _random = Random.Shared;
         private readonly Dictionary<SimulationMode, ISimulationStrategy> _strategies;
 
-        public ObjectFactory(IInformationObjectTemplate template, IIecValueRepository valueRepository)
+        public ObjectFactory(IInformationObjectTemplate template, IDatapointRegistry registry)
         {
             _template = template;
-            _repository = valueRepository;
+            _registry = registry;
             _strategies = new Dictionary<SimulationMode, ISimulationStrategy>
             {
                 [SimulationMode.GaussianNoise]  = new GaussianNoiseStrategy(_random),
@@ -110,28 +110,28 @@ namespace IEC60870_5_104_simulator.Infrastructure
                 case Iec104DataTypes.M_ME_TC_1:
                 case Iec104DataTypes.M_ME_TF_1:
                     var floatVal = new IecValueFloatObject((float)value);
-                    _repository.SetObjectValue(dp.Address, floatVal);
+                    _registry.SetValue(dp.Address, floatVal);
                     return _template.GetMeasuredValueShort(dp.Address.ObjectAddress, floatVal, dp.Iec104DataType);
 
                 case Iec104DataTypes.M_ME_NB_1:
                 case Iec104DataTypes.M_ME_TB_1:
                 case Iec104DataTypes.M_ME_TE_1:
                     var scaledVal = new IecValueScaledObject(new ScaledValueRecord((int)value));
-                    _repository.SetObjectValue(dp.Address, scaledVal);
+                    _registry.SetValue(dp.Address, scaledVal);
                     return _template.GetMeasuredValueScaled(dp.Address.ObjectAddress, scaledVal, dp.Iec104DataType);
 
                 case Iec104DataTypes.M_ME_NA_1:
                 case Iec104DataTypes.M_ME_TA_1:
                 case Iec104DataTypes.M_ME_ND_1:
                     var normVal = new IecValueFloatObject((float)value);
-                    _repository.SetObjectValue(dp.Address, normVal);
+                    _registry.SetValue(dp.Address, normVal);
                     return _template.GetMeasuredValueNormalized(dp.Address.ObjectAddress, normVal, dp.Iec104DataType);
 
                 case Iec104DataTypes.M_ST_NA_1:
                 case Iec104DataTypes.M_ST_TA_1:
                 case Iec104DataTypes.M_ST_TB_1:
                     int stepVal = (int)Math.Round(value);
-                    _repository.SetStepValue(dp.Address, stepVal);
+                    _registry.SetValue(dp.Address, new IecIntValueObject(stepVal));
                     return _template.GetStepposition(dp.Address.ObjectAddress, new IecIntValueObject(stepVal), dp.Iec104DataType);
 
                 default:
@@ -217,35 +217,35 @@ namespace IEC60870_5_104_simulator.Infrastructure
         private float CreateRandomFloat(IecAddress address)
         {
             float value = NextFloat(_random);
-            _repository.SetObjectValue(address, new IecValueFloatObject(value));
+            _registry.SetValue(address, new IecValueFloatObject(value));
             return value;
         }
 
         private int CreateRandomScaledValue(IecAddress address)
         {
             int value = _random.Next();
-            _repository.SetObjectValue(address, new IecIntValueObject(value));
+            _registry.SetValue(address, new IecIntValueObject(value));
             return value;
         }
 
         private bool CreateSinglePointValue(IecAddress address)
         {
             bool value = _random.NextDouble() >= 0.5;
-            _repository.SetSinglePoint(address, value);
+            _registry.SetValue(address, new IecSinglePointValueObject(value));
             return value;
         }
 
         private IecDoublePointValue CreateDoublePointValue(IecAddress address)
         {
             IecDoublePointValue value = _random.NextDouble() >= 0.5 ? IecDoublePointValue.OFF : IecDoublePointValue.ON;
-            _repository.SetDoublePoint(address, value);
+            _registry.SetValue(address, new IecDoublePointValueObject(value));
             return value;
         }
 
         private int CreateRandomStepValue(IecAddress address)
         {
             int value = _random.Next(-64, 63);
-            _repository.SetStepValue(address, value);
+            _registry.SetValue(address, new IecIntValueObject(value));
             return value;
         }
 
@@ -257,7 +257,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         {
             try
             {
-                var stored = _repository.GetDataPointValue(dp.Address);
+                var stored = _registry.Get(dp.Address);
                 return stored.Value switch
                 {
                     IecValueScaledObject sv => sv.Value.Value,

@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
 using Microsoft.Extensions.Options;
@@ -14,13 +14,16 @@ namespace IEC60870_5_104_simulator.API.Services;
 /// </summary>
 public class ConfigurationExportService
 {
+    private readonly IDatapointRegistry _registry;
     private readonly IIec104ConfigurationService _configurationService;
     private readonly IOptions<Iec104SimulationOptions> _options;
 
     public ConfigurationExportService(
+        IDatapointRegistry registry,
         IIec104ConfigurationService configurationService,
         IOptions<Iec104SimulationOptions> options)
     {
+        _registry = registry;
         _configurationService = configurationService;
         _options = options;
     }
@@ -36,7 +39,7 @@ public class ConfigurationExportService
             MaxQueueSize = current.MaxQueueSize,
             DataPointConfiguration = new IecConfiguration
             {
-                Measures = _configurationService.DataPoints.Values
+                Measures = _registry.Snapshot()
                     .OrderBy(dp => dp.Address.StationaryAddress)
                     .ThenBy(dp => dp.Address.ObjectAddress)
                     .Select(ToMeasureConfig)

@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
@@ -9,13 +9,13 @@ namespace IEC60870_5_104_simulator.Infrastructure.Tests;
 
 public class ScenarioServiceTest
 {
-    private readonly Mock<IIecValueRepository> _repoMock = new();
+    private readonly DatapointRegistry _registry = new();
     private readonly Mock<IIec104Service> _iecMock = new();
     private readonly Mock<IScenarioEventPublisher> _publisherMock = new();
     private readonly Mock<ILogger<ScenarioService>> _loggerMock = new();
 
     private ScenarioService CreateService(IReadOnlyList<ScenarioDefinition> definitions)
-        => new(definitions, _repoMock.Object, _iecMock.Object, _publisherMock.Object, _loggerMock.Object);
+        => new(definitions, _registry, _iecMock.Object, _publisherMock.Object, _loggerMock.Object);
 
     private static Iec104DataPoint MakeDoublePoint(int ca, int oa)
         => new(new IecAddress(ca, oa), Iec104DataTypes.M_DP_NA_1)
@@ -43,7 +43,7 @@ public class ScenarioServiceTest
     public async Task TriggerAsync_ValidScenario_AppliesStepsAndRecovery()
     {
         var address = new IecAddress(1, 101);
-        _repoMock.Setup(r => r.GetDataPointValue(address)).Returns(MakeDoublePoint(1, 101));
+        _registry.Add(MakeDoublePoint(1, 101));
         _iecMock.Setup(s => s.Simulate(It.IsAny<Iec104DataPoint>())).Returns(Task.CompletedTask);
         _publisherMock.Setup(p => p.PublishScenarioUpdate(It.IsAny<ScenarioState>())).Returns(Task.CompletedTask);
 
@@ -66,12 +66,12 @@ public class ScenarioServiceTest
         // Give the background task time to complete
         await Task.Delay(200);
 
-        // Freeze was called during fault step, unfreeze during recovery
-        _repoMock.Verify(r => r.FreezeDataPoint(address), Times.Once);
-        _repoMock.Verify(r => r.UnfreezeDataPoint(address), Times.Once);
+        // Fault step froze, recovery step cleared it
+        Assert.False(_registry.Get(address).Frozen);
 
-        // SetObjectValue called twice: fault + recovery
-        _repoMock.Verify(r => r.SetObjectValue(address, It.IsAny<IecValueObject>()), Times.Exactly(2));
+        // The recovery step restored the value, so the fault value did not survive
+        var finalValue = Assert.IsType<IecDoublePointValueObject>(_registry.Get(address).Value);
+        Assert.Equal(IecDoublePointValue.ON, finalValue.Value);
 
         // ScenarioUpdate published: Running (start) + Running (after step) + Completed
         _publisherMock.Verify(p => p.PublishScenarioUpdate(It.IsAny<ScenarioState>()), Times.AtLeast(2));
@@ -85,7 +85,7 @@ public class ScenarioServiceTest
     public async Task TriggerAsync_AlreadyRunning_ReturnsFalse()
     {
         var address = new IecAddress(1, 101);
-        _repoMock.Setup(r => r.GetDataPointValue(address)).Returns(MakeDoublePoint(1, 101));
+        _registry.Add(MakeDoublePoint(1, 101));
         _iecMock.Setup(s => s.Simulate(It.IsAny<Iec104DataPoint>())).Returns(Task.CompletedTask);
         _publisherMock.Setup(p => p.PublishScenarioUpdate(It.IsAny<ScenarioState>())).Returns(Task.CompletedTask);
 

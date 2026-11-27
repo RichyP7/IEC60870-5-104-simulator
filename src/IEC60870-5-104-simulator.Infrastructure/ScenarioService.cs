@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.Domain;
+﻿using IEC60870_5_104_simulator.Domain;
 using IEC60870_5_104_simulator.Domain.Interfaces;
 using IEC60870_5_104_simulator.Domain.Service;
 using IEC60870_5_104_simulator.Domain.ValueTypes;
@@ -11,7 +11,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
     public class ScenarioService : IScenarioService
     {
         private readonly IReadOnlyList<ScenarioDefinition> _definitions;
-        private readonly IIecValueRepository _repository;
+        private readonly IDatapointRegistry _registry;
         private readonly IIec104Service _iec104Service;
         private readonly IScenarioEventPublisher _eventPublisher;
         private readonly ILogger<ScenarioService> _logger;
@@ -22,13 +22,13 @@ namespace IEC60870_5_104_simulator.Infrastructure
 
         public ScenarioService(
             IReadOnlyList<ScenarioDefinition> definitions,
-            IIecValueRepository repository,
+            IDatapointRegistry registry,
             IIec104Service iec104Service,
             IScenarioEventPublisher eventPublisher,
             ILogger<ScenarioService> logger)
         {
             _definitions = definitions;
-            _repository = repository;
+            _registry = registry;
             _iec104Service = iec104Service;
             _eventPublisher = eventPublisher;
             _logger = logger;
@@ -128,17 +128,14 @@ namespace IEC60870_5_104_simulator.Infrastructure
             var address = new IecAddress(step.Ca, step.Oa);
             try
             {
-                var dataPoint = _repository.GetDataPointValue(address);
+                var dataPoint = _registry.Get(address);
                 var value = ParseValue(step.ValueStr, dataPoint);
-                _repository.SetObjectValue(address, value);
+                _registry.SetValue(address, value);
 
-                if (step.Freeze)
-                    _repository.FreezeDataPoint(address);
-                else
-                    _repository.UnfreezeDataPoint(address);
+                _registry.SetFrozen(address, step.Freeze);
 
                 // Re-fetch so the dataPoint object has the updated value before sending
-                var updated = _repository.GetDataPointValue(address);
+                var updated = _registry.Get(address);
                 _ = _iec104Service.Simulate(updated);
 
                 // Push real-time update to UI clients immediately (don't wait for next cyclic snapshot)
@@ -169,7 +166,7 @@ namespace IEC60870_5_104_simulator.Infrastructure
         }
 
         // -----------------------------------------------------------------------
-        // Value parsing — same rules as IecValueLocalStorageRepository.AddDataPoint
+        // Value parsing for scenario steps
         // -----------------------------------------------------------------------
         private static IecValueObject ParseValue(string valueStr, Iec104DataPoint dp)
         {

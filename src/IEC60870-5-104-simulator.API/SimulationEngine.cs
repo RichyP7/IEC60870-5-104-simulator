@@ -1,4 +1,4 @@
-using IEC60870_5_104_simulator.API;
+﻿using IEC60870_5_104_simulator.API;
 using IEC60870_5_104_simulator.API.HealthChecks;
 using IEC60870_5_104_simulator.API.Hubs;
 using IEC60870_5_104_simulator.API.Mapping;
@@ -14,7 +14,8 @@ namespace IEC60870_5_104_simulator.Service
     {
         private readonly ILogger<SimulationEngine> logger;
         private readonly Iec104SimulationOptions options;
-        private readonly IIec104ConfigurationService datapointConfigService;
+        private readonly IDatapointRegistry registry;
+        private readonly IIec104ConfigurationService commandConfig;
         private readonly ServerStartedHealthCheck healthCheck;
         private readonly IHubContext<SimulationHub> hubContext;
         private bool dataConfigurationDone = false;
@@ -27,14 +28,15 @@ namespace IEC60870_5_104_simulator.Service
         private readonly int cycleTimeMs;
 
         public SimulationEngine(ILogger<SimulationEngine> logger, IIec104Service iecservice, IOptions<Iec104SimulationOptions> options,
-            IIec104ConfigurationService datapointconfig, ServerStartedHealthCheck healthCheck,
+            IDatapointRegistry registry, IIec104ConfigurationService commandConfig, ServerStartedHealthCheck healthCheck,
             IHubContext<SimulationHub> hubContext)
         {
             this.logger = logger;
             this.iecService = iecservice;
             this.options = options.Value;
             this.cycleTimeMs = this.GetCycleTime();
-            this.datapointConfigService = datapointconfig;
+            this.registry = registry;
+            this.commandConfig = commandConfig;
             this.healthCheck = healthCheck;
             this.hubContext = hubContext;
         }
@@ -55,7 +57,7 @@ namespace IEC60870_5_104_simulator.Service
                 {
                     logger.LogTrace("Worker running at: {Time}", DateTimeOffset.Now);
                     await Task.Delay(cycleTimeMs, stoppingToken);
-                    int sentCount = await iecService.SimulateCyclic(datapointConfigService.DataPoints.Values, cycleTimeMs);
+                    int sentCount = await iecService.SimulateCyclic(registry.Snapshot(), cycleTimeMs);
 
                     await PushFullSnapshotAsync();
                     await NotifyUiClientsDataPointsSent(sentCount, stoppingToken);
@@ -104,7 +106,7 @@ namespace IEC60870_5_104_simulator.Service
 
         private Task PushFullSnapshotAsync()
         {
-            var snapshot = datapointConfigService.DataPoints.Values
+            var snapshot = registry.Snapshot()
                 .Select(dp => new DataPointUpdateDto(
                     dp.Address.StationaryAddress,
                     dp.Address.ObjectAddress,
@@ -152,7 +154,10 @@ namespace IEC60870_5_104_simulator.Service
                 AssignResponses(commands, commandDataPoints, resultMeasures);
             ValidateProfiles(resultMeasures);
             ValidateLinkedPowerPoints(resultMeasures);
-            this.datapointConfigService.ConfigureDataPoints(commandDataPoints, resultMeasures);
+            foreach (var measure in resultMeasures)
+                registry.Add(measure);
+
+            commandConfig.ConfigureDataPoints(commandDataPoints);
 
             logger.LogInformation("{NumberCommands} commands and {NumberMeasures} measurements got configured", commands?.Count, measures?.Count);
             resultMeasures.ForEach(v => logger.LogInformation("Id:{Id} Ca {Ca} Oa {Oa} Type {Type}", v.Id, v.Address.StationaryAddress, v.Address.ObjectAddress, v.Iec104DataType));

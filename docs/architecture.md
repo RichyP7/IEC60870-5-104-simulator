@@ -22,9 +22,9 @@ flowchart LR
             CYCLIC["Cyclic Simulation Service"]
             SCEN["Scenario Service"]
             CMD["Command Handler"]
-            REPO["Value Repository<br/>(in-memory)"]
         end
-        DOMAIN["Domain Layer<br/>(datapoint model, simulation modes)"]
+        REGISTRY["Datapoint Registry<br/>(measures + commands, in-memory)"]
+        DOMAIN["Domain Layer<br/>(datapoint model, simulation modes, registry)"]
         CONFIG[("SimulationOptions.json")]
     end
 
@@ -37,13 +37,14 @@ flowchart LR
     RESTCLIENT --> CTRL
 
     CTRL --> ENGINE
+    ENGINE --> REGISTRY
     ENGINE --> CYCLIC
     ENGINE --> SCEN
-    CYCLIC --> REPO
-    SCEN --> REPO
+    CYCLIC --> REGISTRY
+    SCEN --> REGISTRY
     IEC --> CMD
-    CMD --> REPO
-    REPO --> IEC
+    CMD --> REGISTRY
+    REGISTRY --> IEC
     CYCLIC -.->|push updates| HUB
     SCEN -.->|scenario status| HUB
     CONFIG --> ENGINE
@@ -54,5 +55,12 @@ flowchart LR
 ## Layers
 
 - **API Layer** (`src/IEC60870-5-104-simulator.API`) — REST controllers, SignalR hub, health checks, and the simulation engine orchestration
-- **Infrastructure Layer** (`src/IEC60870-5-104-simulator.Infrastructure`) — IEC 104 server (lib60870.NET), cyclic simulation, scenario execution, command handling, value storage
-- **Domain Layer** (`src/IEC60870-5-104-simulator.Domain`) — datapoint model and simulation mode logic
+- **Infrastructure Layer** (`src/IEC60870-5-104-simulator.Infrastructure`) — IEC 104 server (lib60870.NET), cyclic simulation, scenario execution, command handling
+- **Domain Layer** (`src/IEC60870-5-104-simulator.Domain`) — datapoint model, simulation mode logic, and the `DatapointRegistry` that owns both measures and commands. No package dependencies.
+
+## Datapoint ownership
+
+`DatapointRegistry` is the single owner of datapoints: it holds the address uniqueness rule, the
+value typing rule, and the command→response link. Readers get live references; every write goes
+through a registry method. The rationale is recorded in
+[ADR 0001](adr/0001-datapoint-registry.md).
